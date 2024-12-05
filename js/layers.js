@@ -134,6 +134,11 @@ return true; // Makes sure the layer is visible
     tabFormat: [
         "main-display",
         "resource-display",
+        ["display-text", function() {
+            return [
+                "Your Energy Base is" + format(passivebase) + ".",
+            ];
+        }],
         "blank",
         "buyables",
         "upgrades",
