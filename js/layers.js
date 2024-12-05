@@ -44,29 +44,29 @@ addLayer("energy", {
             description: "Unlocks an Energy buyable.",
             cost: new Decimal(260),
         },
-        buyables: {
-            11: {
-                title: "Enhanced Energy",
-                cost(x) { return new Decimal(250).add(new Decimal(15).times(new Decimal(x))) },
-                display() { 
-                    let amt = getBuyableAmount("energy", 11);
-                    return `Adds +1.00 to Energy base.\n\nCost: ${this.cost(amt).toString()}\nBought: ${amt}`; 
-                },
-                canAfford() { 
-                    let amt = getBuyableAmount("energy", 11);
-                    return player["energy"].points.gte(this.cost(amt)); 
-                },
-                buy() {
-                    let amt = getBuyableAmount("energy", 11);
-                    player["energy"].points = player["energy"].points.sub(this.cost(amt));
-                    setBuyableAmount("energy", 11, amt.add(1));
-                },
-                effect(x) {
-                    return new Decimal(x).add(1); 
-                },
-                unlocked() {
-                    return hasUpgrade('energy', 14);
-                },
+    },
+    buyables: {
+        11: {
+            title: "Enhanced Energy",
+            cost(x) { return new Decimal(250).add(new Decimal(15).times(new Decimal(x))) },
+            display() { 
+                let amt = getBuyableAmount("energy", 11);
+                return `Adds +1.00 to Energy base.\n\nCost: ${this.cost(amt).toString()}\nBought: ${amt}`; 
+            },
+            canAfford() { 
+                let amt = getBuyableAmount("energy", 11);
+                return player["energy"].points.gte(this.cost(amt)); 
+            },
+            buy() {
+                let amt = getBuyableAmount("energy", 11);
+                player["energy"].points = player["energy"].points.sub(this.cost(amt));
+                setBuyableAmount("energy", 11, amt.add(1));
+            },
+            effect(x) {
+                return new Decimal(x).add(1); 
+            },
+            unlocked() {
+                return hasUpgrade('energy', 14);
             },
         },
     },
