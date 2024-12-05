@@ -26,18 +26,6 @@ addLayer("energy", {
 
         return passive;
     },
-    buyables: {
-        11: {
-            title: "Enhanced Energy",
-            cost(x) {return new Decimal(250).add(Decimal(15).times(x))},
-            effect(x) {return new Decimal(0).add(Decimal(1).times(x))},
-            display() {"Adds +1.00 to the Energy base."},
-            unlocked() {
-                return hasUpgrade('energy', 14)
-            },
-
-        }
-    },
     upgrades: {
         11: {
             title: "Energy",
