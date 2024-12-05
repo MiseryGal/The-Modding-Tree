@@ -17,10 +17,11 @@ addLayer("energy", {
     row: 0, // Row of the layer in the tree
     passiveGeneration() {
         let passive = new Decimal(0);
-        // Check if upgrade 11 is purchased and add passive generation
+        
         if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(0.10))
-        // Apply the multiplier from upgrade 12 if it's unlocked
-        if (hasUpgrade('energy', 12)) passive = passive.times(2); // Apply 2x multiplier
+       
+        if (hasUpgrade('energy', 12)) passive = passive.times(2);
+
         return passive;
     },
     upgrades: {
@@ -31,8 +32,8 @@ addLayer("energy", {
         },
         12: {
             title: "More Energy",
-            description: "2.00x Energy production",
-            cost: new Decimal(100),  // Cost for the second upgrade
+            description: "2.00x Energy production, Energy boosts Energy Points at a reduced rate.",
+            cost: new Decimal(99),  // Cost for the second upgrade
         },
     },
     layerShown() {
