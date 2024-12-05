@@ -44,18 +44,6 @@ addLayer("energy"), {
             description: "Unlocks an Energy buyable.",
             cost: new Decimal(260),
         },
-        
-        buyables: {
-            11: {
-                title: "Enhanced Energy",
-                cost(x) { return new Decimal(250).add(15 * x); },
-                effect(x) { return new Decimal(x).add(1); },
-                display() {
-                    return `Boosts energy by ${this.effect(player.energy.buyables[11] || 0).format()}`;
-                },
-                unlocked() { return hasUpgrade('energy', 14); },
-            },
-        },
     },
     layerShown() {
 return true; // Makes sure the layer is visible
