@@ -17,8 +17,10 @@ addLayer("energy", {
     row: 0, // Row of the layer in the tree
     passiveGeneration() {
         let passive = new Decimal(0);
+        degeneration = new thisPoint.times(0.10)
         // Check if upgrade 11 is purchased and add passive generation
-        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(thisPoints).times(0.10); 
+        if (hasUpgrade('energy', 11)) passive = passive.add(10)
+            passive = passive.sub(degenartion)
         // Apply the multiplier from upgrade 12 if it's unlocked
         if (hasUpgrade('energy', 12)) passive = passive.times(2); // Apply 2x multiplier
         return passive;
