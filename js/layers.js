@@ -41,23 +41,35 @@ addLayer("energy", {
             description: "Adds 10 to Energy rate, Energy boosts Energy Points at a reduced rate.",
             tooltip: "Rate at which Energy Points are boosted is Energy ^ 0.9.",
             cost: new Decimal(99),
+            unlocked() {
+                return hasUpgrade('energy', 11);
+            },
         },
         13: {
             title: "These are useful now",
             description: "Energy Points boost Energy Rate at a reduced rate.",
             tooltip: "Rate at which Energy Points boost Energy is Energy Points ^ 0.2.",
             cost: new Decimal(199),
+            unlocked() {
+                return hasUpgrade('energy', 12);
+            },
         },
         14: {
             title: "Something new",
             description: "Unlocks an Energy buyable.",
             cost: new Decimal(260),
+            unlocked() {
+                return hasUpgrade('energy', 13);
+            },
         },
         21: {
             title: "Power Saving",
             description: "Lowers the Energy Decay by 0.02.",
             tooltip: "New rate of Energy is 10 - (Energy x 0.08)",
             cost: new Decimal(300),
+            unlocked() {
+                return hasUpgrade('energy', 14);
+            },
         },
     },
     buyables: {
