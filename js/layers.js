@@ -22,7 +22,7 @@ addLayer("energy", {
        
         if (hasUpgrade('energy', 12)) passive = passive.add(10);
 
-        if (hasUpgrade('energy', 13)) passive = passive.add(playerPoints.pow(0.2))
+        if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2))
 
         return passive;
     },
