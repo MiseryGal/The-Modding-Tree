@@ -66,7 +66,7 @@ addLayer("energy", {
             cost(x) { return new Decimal(250).add(new Decimal(15).times(new Decimal(x))) },
             display() { 
                 let amt = getBuyableAmount("energy", 11);
-                return `Adds +1.00 to Energy base.\n\nCost: ${this.cost(amt).toString()}\nBought: ${amt}`; 
+                return `Adds +1.00 to Energy base.\nCurrent Effect: +${x} to Energy base.\n<b>Cost: ${this.cost(amt).toString()}</b>\nBought: ${amt}`; 
             },
             canAfford() { 
                 let amt = getBuyableAmount("energy", 11);
