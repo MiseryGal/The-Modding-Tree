@@ -99,10 +99,14 @@ addLayer("energy", {
             title: "Enhanced Energy",
             cost(x) {
                 let amt = getBuyableAmount("energy", 11);
-                let scalingFactor = Math.floor(amt.divide(10));  // Calculate the scaling every 10 levels
-                let baseCost = new Decimal(250).add(new Decimal(20).times(new Decimal(x)));  // Base cost calculation
-                let scaledCost = new Decimal(10).times(scalingFactor);  // Add flat scaling based on the level
-                return baseCost.add(scaledCost);
+                let baseCost = new Decimal(250);  // Base cost
+                let costPerLevel = new Decimal(20);  // Base cost per upgrade
+            
+                // Increase the cost per level by 10 every 10 levels
+                let costScaling = Math.floor(amt / 10);  // Increase scaling every 10 purchases
+                costPerLevel = costPerLevel.add(new Decimal(10).times(costScaling));
+            
+                return baseCost.add(costPerLevel.times(new Decimal(x)));  // Apply the per-level cost
             },
             effect(x) {
                 return new Decimal(x).add(1);
