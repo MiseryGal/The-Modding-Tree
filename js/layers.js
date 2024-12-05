@@ -97,7 +97,11 @@ addLayer("energy", {
     buyables: {
         11: {
             title: "Enhanced Energy",
-            cost(x) { return new Decimal(250).add(new Decimal(20).times(new Decimal(x))) },
+            cost(x) {
+                let amt = getBuyableAmount("energy", 11);
+                let costscale = new Decimal(20).add(new Decimal(10).times(amt.Math.floor(amt.divide(10)).times(10)));
+                return new Decimal(250).add(new Decimal(costscale).times(new Decimal(x)));
+            },
             effect(x) {
                 return new Decimal(x).add(1);
             },
