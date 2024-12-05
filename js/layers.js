@@ -21,6 +21,11 @@ addLayer("energy", {
             description: "Begin Energy production.",
             cost: new Decimal(1),         // Costs 1 Energy
         },
+        12: {
+            title: "More Energy",
+            description: "2.00x Energy production,",
+            cost: new Decimal(100),
+        }
     },
     tabFormat: [
         ["display-text", function() { return `You have <b>${format(this.points)}</b> Energy.` }],
