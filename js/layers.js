@@ -11,9 +11,6 @@ addLayer("energy", {
     resource: "Energy", // The resource produced by this layer
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
     baseAmount() { return player.points }, // Uses player's points as base amount
-    syncResources() {
-        // You could synchronize resources here if needed
-    },
     row: 0, // Row of the layer in the tree
     passiveGeneration() {
         let passive = new Decimal(0);
@@ -48,7 +45,7 @@ addLayer("energy", {
         14: {
             title: "Something new",
             description: "Unlocks an Energy buyable.",
-            cost: new Decimal(199),
+            cost: new Decimal(260),
         }
     },
     layerShown() {
