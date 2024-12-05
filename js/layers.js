@@ -47,7 +47,7 @@ addLayer("energy", {
         buyables: {
             11: {
                 title: "Enhanced Energy",
-                cost(x) { return new Decimal(250).add(Decimal(15).times(Decimal(x)))},
+                cost(x) { return new Decimal(250)},
                 display() { return "Adds +1.00 to Energy base." },
                 canAfford() { return player[this.layer].points.gte(this.cost()) },
                 buy() {
