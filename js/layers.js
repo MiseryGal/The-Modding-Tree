@@ -136,7 +136,7 @@ return true; // Makes sure the layer is visible
         "resource-display",
         ["display-text", function() {
             return [
-                "Your Energy Base is" + format(passivebase) + ".",
+                "Your Energy Base is" + format(new Decimal(passivebase)) + ".",
             ];
         }],
         "blank",
