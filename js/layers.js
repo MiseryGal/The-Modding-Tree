@@ -22,6 +22,8 @@ addLayer("energy", {
        
         if (hasUpgrade('energy', 12)) passive = passive.add(10);
 
+        if (hasUpgrade('energy', 13)) passive = passive.add(playerPoints.pow(0.2))
+
         return passive;
     },
     upgrades: {
@@ -29,14 +31,20 @@ addLayer("energy", {
             title: "Energy",
             description: "Begin Energy production.",
             tooltip: "Base rate of Energy is 10 - (Energy x 0.10).",
-            cost: new Decimal(1),  // Cost for upgrading
+            cost: new Decimal(1),
         },
         12: {
             title: "More Energy",
             description: "Adds 10 to Energy rate, Energy boosts Energy Points at a reduced rate.",
             tooltip: "Rate at which Energy Points are boosted is Energy ^ 0.9.",
-            cost: new Decimal(99),  // Cost for the second upgrade
+            cost: new Decimal(99),
         },
+        13: {
+            title: "These are useful now",
+            description: "Energy Points boost Energy Rate at a reduced rate.",
+            tooltip: "Rate at which Energy Points boost Energy is Energy Points ^ 0.2.",
+            cost: new Decimal(199),
+        }
     },
     layerShown() {
         return true; // Makes sure the layer is visible
