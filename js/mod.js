@@ -43,7 +43,7 @@ function getPointGen() {
 
 	let gain = new Decimal(1)
 	return gain
-at should to into "player" and be saved here, along with default values
+}
 function addedPlayerData() { return {
 }}
 
