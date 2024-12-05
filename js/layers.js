@@ -36,8 +36,10 @@ addLayer("energy", {
             tooltip() {
                 let decay = new Decimal(0.10);  // Example decay rate, adjust as necessary
                 let energyEffect = `Formula: 10 - (Energy * 0.1)`;
-                let effectDesc = `Effect: 10 - ${new Decimal(10).sub(player.energy.points.times(decay))}`;
-                return `${energyEffect}\n${effectDesc}`;  // You can use \n for line breaks
+                let effectValue = new Decimal(10).sub(player.energy.points.times(decay));  // Calculate the effect
+                let formattedEffectValue = effectValue.toFixed(2);  // Format to two decimal places
+                let effectDesc = `Effect: ${formattedEffectValue}`;
+                return `${energyEffect}\n${effectDesc}`;
             },
             cost: new Decimal(1),
         },
