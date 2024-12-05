@@ -35,8 +35,9 @@ addLayer("energy", {
             description: "Begin Energy production.",
             tooltip() {
                 let decay = new Decimal(0.10);  // Example decay rate, adjust as necessary
+                let passive = new Demical(0);
                 let energyEffect = `Formula: 10 - (Energy * 0.1)`;
-                let effectValue = new Decimal(10).sub(player.energy.points.times(decay));  // Calculate the effect
+                let effectValue = passive.add(10).sub(player.energy.points.times(decay));  // Calculate the effect
                 let formattedEffectValue = effectValue.toFixed(2);  // Format to two decimal places
                 let effectDesc = `Effect: ${formattedEffectValue}`;
                 return `${energyEffect}\n${effectDesc}`;
