@@ -1,7 +1,7 @@
 let modInfo = {
 	name: "The Energy Tree",
 	author: "MiseryGal",
-	pointsName: "Energy",
+	pointsName: "Energy Points",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
@@ -42,7 +42,7 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(0)
-	if (hasUpgrade('energy', 11)) gain = new Decimal(10)
+	if (hasUpgrade('energy', 11)) gain = new Decimal(1)
 	return gain
 	
 }
