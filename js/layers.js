@@ -6,9 +6,4 @@ addLayer("energy", {
         unlocked: true,
         points: new Decimal(1), // Starting energy points
     }},
-    color: "#ebcc34",
-    type: "static", // No prestige based on this layer
-    resource: "Energy", // The resource produced by this layer
-    baseResource: "Energy Points", // What this is based on (could be points or any other resource)
-    baseAmount() { return player.points }, // Uses player's points as base amoun
 });
