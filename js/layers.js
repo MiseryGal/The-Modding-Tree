@@ -72,7 +72,7 @@ addLayer("energy", {
             title: "Power Saving",
             description: "Lowers the Energy Decay by 0.02.",
             tooltip: "New Formula: 10-(Energy*0.08)",
-            cost: new Decimal(280),
+            cost: new Decimal(390),
             unlocked() {
                 return hasUpgrade('energy', 14);
             },
