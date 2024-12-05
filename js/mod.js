@@ -41,7 +41,7 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0)
+	let gain = new Decimal(0.1)
 	if (hasUpgrade('energy', 11)) gain = new Decimal(10)
 	return gain
 	
