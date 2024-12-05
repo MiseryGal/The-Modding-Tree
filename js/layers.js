@@ -14,6 +14,7 @@ addLayer("energy", {
     baseAmount() { return player.points }, // Uses player's points as base amount
     passiveGeneration() {
         let passive = new Decimal(0);
+        let passivebase = new Decimal(10)
 
         // decay
 
@@ -22,12 +23,13 @@ addLayer("energy", {
 
         // passive
 
-        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(decay));
-        if (hasUpgrade('energy', 12)) passive = passive.add(10);
-        if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
+        if (hasUpgrade('energy', 11)) passive = passive.add(passivebase).sub(player.energy.points.times(decay));
+        if (hasUpgrade('energy', 12)) passivebase = new Decimal(20);
+        if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2));
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
-        passive = passive.mul(buyableEffect); 
-        if (hasUpgrade('energy', 22)) passive = passive.add(10);
+        passivebase = passivebase.add(buyableEffect); 
+        if (hasUpgrade('energy', 22)) passivebase = new Decimal(30);
+        if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
         return passive;
     },
     upgrades: {
@@ -48,7 +50,7 @@ addLayer("energy", {
         },
         13: {
             title: "These are useful now",
-            description: "Energy Points boost Energy Rate at a reduced rate.",
+            description: "Energy Points boost Energy Base at a reduced rate.",
             tooltip: "Formula: Energy Points^0.2",
             cost: new Decimal(195),
             unlocked() {
@@ -75,10 +77,17 @@ addLayer("energy", {
         22: {
             title: "Optimizations",
             description: "Multiplies Energy Points by 10 and adds a further 10 to the Energy base.",
-            tooltip: "New Formula: 10-(Energy*0.08)",
             cost: new Decimal(357),
             unlocked() {
                 return hasUpgrade('energy', 21);
+            },
+        },
+        23: {
+            title: "Bored?",
+            description: "1.2x Energy Base",
+            cost: new Decimal(357),
+            unlocked() {
+                return hasUpgrade('energy', 22);
             },
         },
     },
