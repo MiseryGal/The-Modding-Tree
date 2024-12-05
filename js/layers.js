@@ -16,6 +16,15 @@ addLayer("energy", {
         let passive = new Decimal(0);
         let passivebase = new Decimal(10)
 
+        // passive base
+
+        if (hasUpgrade('energy', 12)) passivebase = new Decimal(20);
+        if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2));
+        let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
+        passivebase = passivebase.add(buyableEffect); 
+        if (hasUpgrade('energy', 22)) passivebase = new Decimal(30);
+        if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
+
         // decay
 
         let decay = new Decimal(0.10);
@@ -24,12 +33,6 @@ addLayer("energy", {
         // passive
 
         if (hasUpgrade('energy', 11)) passive = passive.add(passivebase).sub(player.energy.points.times(decay));
-        if (hasUpgrade('energy', 12)) passivebase = new Decimal(20);
-        if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2));
-        let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
-        passivebase = passivebase.add(buyableEffect); 
-        if (hasUpgrade('energy', 22)) passivebase = new Decimal(30);
-        if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
         return passive;
     },
     upgrades: {
