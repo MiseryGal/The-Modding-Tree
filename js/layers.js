@@ -7,6 +7,7 @@ addLayer("energy", {
 		points: new Decimal(0),
     }},
     color: "#ebcc34",
+    resource: "Energy",
     type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already hav
     row: 0, // Row the layer is in on the tree (0 is the first row)
     upgrades: {
