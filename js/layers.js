@@ -27,6 +27,7 @@ addLayer("energy", {
         if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passive = passive.mul(buyableEffect); 
+        if (hasUpgrade('energy', 22)) passive = passive.add(10);
         return passive;
     },
     upgrades: {
@@ -38,7 +39,7 @@ addLayer("energy", {
         },
         12: {
             title: "More Energy",
-            description: "Adds 10 to Energy rate, Energy boosts Energy Points at a reduced rate.",
+            description: "Adds 10 to the Energy base, Energy boosts Energy Points at a reduced rate.",
             tooltip: "Formula: Energy^0.9",
             cost: new Decimal(95),
             unlocked() {
@@ -69,6 +70,15 @@ addLayer("energy", {
             cost: new Decimal(280),
             unlocked() {
                 return hasUpgrade('energy', 14);
+            },
+        },
+        22: {
+            title: "Optimizations",
+            description: "Multiplies Energy Points by 10 and adds a further 10 to the Energy base.",
+            tooltip: "New Formula: 10-(Energy*0.08)",
+            cost: new Decimal(357),
+            unlocked() {
+                return hasUpgrade('energy', 21);
             },
         },
     },
