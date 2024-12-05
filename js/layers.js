@@ -7,9 +7,6 @@ addLayer("energy", {
 		points: new Decimal(0),
     }},
     color: "#ebcc34",
-    resource: "Energy", // Name of prestige currency
-    baseResource: "Energy", // Name of resource prestige is based on
-    baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already hav
     row: 0, // Row the layer is in on the tree (0 is the first row)
     upgrades: {
