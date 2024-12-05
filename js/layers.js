@@ -33,7 +33,7 @@ addLayer("energy", {
         11: {
             title: "Energy",
             description: "Begin Energy production.",
-            tooltip: "Formula: 10-(Energy*0.1)"
+            tooltip: "Formula: 10-(Energy*0.1)",
             cost: new Decimal(1),
         },
         12: {
