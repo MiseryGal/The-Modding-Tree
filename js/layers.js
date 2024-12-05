@@ -53,7 +53,6 @@ addLayer("energy", {
                 buy() {
                     player[this.layer].points = player[this.layer].points.sub(this.cost())
                     setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))},
-                effect(x) {return new Decimal(x)},
                 },
         },
     },
