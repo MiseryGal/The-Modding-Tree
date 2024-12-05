@@ -44,29 +44,23 @@ addLayer("energy", {
             description: "Unlocks an Energy buyable.",
             cost: new Decimal(260),
         },
-        buyables: {
-            11: {
-                title: "Enhanced Energy",
-                cost(x) { return new Decimal(250).add(Decimal(15).times(Decimal(x)))},
-                display() { return "Adds +1.00 to Energy base." },
-                canAfford() { return player[this.layer].points.gte(this.cost()) },
-                buy() {
-                    player[this.layer].points = player[this.layer].points.sub(this.cost())
-                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))},
-                effect(x) {return new Decimal(x)},
-                unlocked() {
-                    hasUpgrade('energy', 14)
+    buyables: {
+        11: {
+            title: "Enhanced Energy",
+            cost(x) { return new Decimal(250).add(Decimal(15).times(Decimal(x)))},
+            display() { return "Adds +1.00 to Energy base." },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))},
+            effect(x) {return new Decimal(x)},
+            unlocked() {
+                hasUpgrade('energy', 14)
                 },
-                },
+            },
         },
     },
     layerShown() {
 return true; // Makes sure the layer is visible
     },
-    tabFormat: [
-        "main-display",
-        "blank",
-        "buyables",
-        "upgrades",
-    ],
 });
