@@ -81,7 +81,7 @@ addLayer("energy", {
             },
             display() { 
                 let amt = getBuyableAmount("energy", 11);
-                return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${x} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
+                return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(x)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
             },
             canAfford() { 
                 let amt = getBuyableAmount("energy", 11);
