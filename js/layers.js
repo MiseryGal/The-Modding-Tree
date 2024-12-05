@@ -30,7 +30,7 @@ addLayer("energy", {
         }
         return degeneration;
     },
-    update() {
+    update(diff) {
         // Apply the degeneration every second
         player.energy.points = player.energy.points.sub(this.passiveDeGeneration());
     },
