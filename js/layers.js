@@ -33,7 +33,12 @@ addLayer("energy", {
         11: {
             title: "Energy",
             description: "Begin Energy production.",
-            tooltip: "Base rate of Energy is 10 - (Energy x 0.10).",
+            tooltip() {
+                let decay = new Decimal(0.10);  // Example decay rate, adjust as necessary
+                let energyEffect = `Formula: 10 - (Energy * 0.1)`;
+                let effectDesc = `Effect: 10 - (Energy * 0.1) = ${new Decimal(10).sub(player.energy.points.times(decay))}`;
+                return `${energyEffect}\n${effectDesc}`;  // You can use \n for line breaks
+            },
             cost: new Decimal(1),
         },
         12: {
