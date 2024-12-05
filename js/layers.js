@@ -1,28 +1,57 @@
-addLayer("p", {
-    name: "prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+addLayer("energy", {
+    name: "Energy", // The name of the layer
+    symbol: "EN", // The symbol for the layer's node
+    position: 0, // Position of the layer in the tree
+    row: 0, // Row of the layer in the tree
     startData() { return {
         unlocked: true,
-		points: new Decimal(0),
+        points: new Decimal(1), // Starting energy points
     }},
-    color: "#4BDC13",
-    requires: new Decimal(10), // Can be a function that takes requirement increases into account
-    resource: "prestige points", // Name of prestige currency
-    baseResource: "points", // Name of resource prestige is based on
-    baseAmount() {return player.points}, // Get the current amount of baseResource
-    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.5, // Prestige currency exponent
-    gainMult() { // Calculate the multiplier for main currency from bonuses
-        mult = new Decimal(1)
-        return mult
+    color: "#ebcc34",
+    type: "static", // No prestige based on this layer
+    resource: "Energy", // The resource produced by this layer
+    baseResource: "Energy Points", // What this is based on (could be points or any other resource)
+    baseAmount() { return player.points }, // Uses player's points as base amount
+    passiveGeneration() {
+        if (!player.energy) return new Decimal(0); // Handle undefined case
+        let passive = new Decimal(0);
+        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(0.10));
+        if (hasUpgrade('energy', 12)) passive = passive.add(10);
+        if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
+        return passive;
     },
-    gainExp() { // Calculate the exponent on main currency from bonuses
-        return new Decimal(1)
+    upgrades: {
+        11: {
+            title: "Energy",
+            description: "Begin Energy production.",
+            tooltip: "Base rate of Energy is 10 - (Energy x 0.10).",
+            cost: new Decimal(1),
+        },
+        12: {
+            title: "More Energy",
+            description: "Adds 10 to Energy rate, Energy boosts Energy Points at a reduced rate.",
+            tooltip: "Rate at which Energy Points are boosted is Energy ^ 0.9.",
+            cost: new Decimal(99),
+        },
+        13: {
+            title: "These are useful now",
+            description: "Energy Points boost Energy Rate at a reduced rate.",
+            tooltip: "Rate at which Energy Points boost Energy is Energy Points ^ 0.2.",
+            cost: new Decimal(199),
+        },
+        14: {
+            title: "Something new",
+            description: "Unlocks an Energy buyable.",
+            cost: new Decimal(260),
+        },
     },
-    row: 0, // Row the layer is in on the tree (0 is the first row)
-    hotkeys: [
-        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    layerShown() {
+return true; // Makes sure the layer is visible
+    },
+    tabFormat: [
+        "main-display",
+        "blank",
+        "buyables",
+        "upgrades",
     ],
-    layerShown(){return true}
-})
+});
