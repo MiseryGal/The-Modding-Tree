@@ -99,7 +99,10 @@ addLayer("energy", {
             title: "Enhanced Energy",
             cost(x) {
                 let amt = getBuyableAmount("energy", 11);
-                return new Decimal(250).add(new Decimal(20).times(new Decimal(x))) 
+                let baseCost = new Decimal(250).add(new Decimal(20).times(new Decimal(amt)));
+                let extraScalingFactor = Math.floor(amt.divide(10)); // Calculate how many times the extra cost should be added
+                let adjustedCost = baseCost.add(new Decimal(extraScalingFactor).times(10)); // Add the scaling increment of 10 every 10 levels
+                return adjustedCost;
             },
             effect(x) {
                 return new Decimal(x).add(1);
