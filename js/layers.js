@@ -70,10 +70,4 @@ addLayer("energy", {
     layerShown() {
 return true; // Makes sure the layer is visible
     },
-    tabFormat: [
-        "main-display",
-        "blank",
-        "buyables",
-        "upgrades",
-    ],
 });
