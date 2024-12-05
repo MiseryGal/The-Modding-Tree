@@ -17,18 +17,15 @@ addLayer("energy", {
     row: 0, // Row of the layer in the tree
     passiveGeneration() {
         let passive = new Decimal(0);
-        // Check if upgrade 11 is purchased and add passive generation
+        // Generation
         if (hasUpgrade('energy', 11)) passive = passive.add(10); 
-        // Apply the multiplier from upgrade 12 if it's unlocked
-        if (hasUpgrade('energy', 12)) passive = passive.times(2); // Apply 2x multiplier
-        return passive;
-    },
-    passiveDeGeneration() {
-        let degeneration = new Decimal(0);
+        if (hasUpgrade('energy', 12)) passive = passive.times(2);
         if (hasUpgrade('energy', 11)) {
-            degeneration = player.energy.points.times(0.01); // 1% loss per second
+            degeneration = degeneration.add(player.energy.points.times(0.01));
         }
-        return degeneration;
+        let netGeneration = generation.sub(degeneration);
+
+        return netGeneration;
     },
     update(diff) {
         // Apply the degeneration every second
