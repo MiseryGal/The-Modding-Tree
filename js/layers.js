@@ -33,21 +33,13 @@ addLayer("energy", {
         11: {
             title: "Energy",
             description: "Begin Energy production.",
-            tooltip() {
-                let decay = new Decimal(0.10);  // Example decay rate, adjust as necessary
-                let passive = new Demical(0);
-                let energyEffect = `Formula: 10 - (Energy * 0.1)`;
-                let effectValue = passive.add(10).sub(player.energy.points.times(decay));  // Calculate the effect
-                let formattedEffectValue = effectValue.toFixed(2);  // Format to two decimal places
-                let effectDesc = `Effect: ${formattedEffectValue}`;
-                return `${energyEffect}\n${effectDesc}`;
-            },
+            tooltip: "Formula: 10-(Energy*0.1)"
             cost: new Decimal(1),
         },
         12: {
             title: "More Energy",
             description: "Adds 10 to Energy rate, Energy boosts Energy Points at a reduced rate.",
-            tooltip: "Rate at which Energy Points are boosted is Energy ^ 0.9.",
+            tooltip: "Formula: Energy^0.9",
             cost: new Decimal(99),
             unlocked() {
                 return hasUpgrade('energy', 11);
@@ -56,7 +48,7 @@ addLayer("energy", {
         13: {
             title: "These are useful now",
             description: "Energy Points boost Energy Rate at a reduced rate.",
-            tooltip: "Rate at which Energy Points boost Energy is Energy Points ^ 0.2.",
+            tooltip: "Formula: Energy Points^0.2",
             cost: new Decimal(199),
             unlocked() {
                 return hasUpgrade('energy', 12);
@@ -73,7 +65,7 @@ addLayer("energy", {
         21: {
             title: "Power Saving",
             description: "Lowers the Energy Decay by 0.02.",
-            tooltip: "New rate of Energy is 10 - (Energy x 0.08)",
+            tooltip: "New Formula: 10-(Energy*0.08)",
             cost: new Decimal(300),
             unlocked() {
                 return hasUpgrade('energy', 14);
