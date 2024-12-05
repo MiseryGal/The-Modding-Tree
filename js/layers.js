@@ -15,7 +15,8 @@ addLayer("energy", {
     passiveGeneration() {
         if (!player.energy) return new Decimal(0); // Handle undefined case
         let passive = new Decimal(0);
-        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(0.10));
+        let decay = new Decimal(0.10);
+        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(decay));
         if (hasUpgrade('energy', 12)) passive = passive.add(10);
         if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
