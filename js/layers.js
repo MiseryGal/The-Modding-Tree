@@ -1,4 +1,4 @@
-addLayer("energy", {
+addLayer("energy"), {
     name: "Energy", // The name of the layer
     symbol: "EN", // The symbol for the layer's node
     position: 0, // Position of the layer in the tree
@@ -66,4 +66,4 @@ return true; // Makes sure the layer is visible
         "buyables",
         "upgrades",
     ],
-});
+};
