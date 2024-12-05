@@ -30,6 +30,7 @@ addLayer("energy", {
         11: {
             title: "Enhanced Energy",
             cost(x) { return new Decimal(250).add(Decimal(15),times(x))},
+            effect(x) { return new Decimal(x)},
             display() { return "Adds +1.00 to Energy base per level." },
         }
     },
