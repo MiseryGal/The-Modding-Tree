@@ -101,8 +101,8 @@ addLayer("energy", {
                 let amt = getBuyableAmount("energy", 11);
                 let cost1 = new Decimal(250).add(new Decimal(20).times(new Decimal(x)))
                 let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
-                let cost2 = new Decimal(0.5).times(Decimal(tenfactor))
-                return new Decimal(cost1).times(new Decimal(1).add(Decimal(cost2)))
+                let cost2 = new Decimal(0.5).times(new Decimal(tenfactor))
+                return new Decimal(cost1).times(new Decimal(1).add(new Decimal(cost2)))
 
 
             },
