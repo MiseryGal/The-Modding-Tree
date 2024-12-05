@@ -42,6 +42,8 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	if (hasUpgrade('energy', 11)) gain = new Decimal(1)
+	if (hasUpgrade('energy', 12)) gain = gain.add(player.energy.points.pow(0.9))
 	return gain
 }
 function addedPlayerData() { return {
