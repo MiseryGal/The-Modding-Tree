@@ -79,10 +79,6 @@ addLayer("energy", {
             effect(x) {
                 return new Decimal(x).add(1);
             },
-            display() { 
-                let amt = getBuyableAmount("energy", 11);
-                return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(0).add(Decimal(x))} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
-            },
             canAfford() { 
                 let amt = getBuyableAmount("energy", 11);
                 return player["energy"].points.gte(this.cost(amt)); 
@@ -91,6 +87,10 @@ addLayer("energy", {
                 let amt = getBuyableAmount("energy", 11);
                 player["energy"].points = player["energy"].points.sub(this.cost(amt));
                 setBuyableAmount("energy", 11, amt.add(1));
+            },
+            display() { 
+                let amt = getBuyableAmount("energy", 11);
+                return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(0).add(Decimal(amt))} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
             },
             unlocked() {
                 return hasUpgrade('energy', 14);
