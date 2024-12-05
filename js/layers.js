@@ -64,9 +64,6 @@ addLayer("energy", {
                 effect(x) {
                     return new Decimal(x).add(1); 
                 },
-                unlocked() {
-                    return hasUpgrade('energy', 14);
-                },
             },
         },
     },
