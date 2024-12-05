@@ -119,6 +119,8 @@ addLayer("energy", {
             },
             display() { 
                 let amt = getBuyableAmount("energy", 11);
+                let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
+                if (amt.gte(10)) return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\nBuyable scaling starts at 10!\nCurrent scaling: +${new Decimal(tenfactor).times(new Decimal(10))}`;
                 return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
             },
             unlocked() {
