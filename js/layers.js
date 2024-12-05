@@ -14,7 +14,7 @@ addLayer("energy", {
         11: {
             title: "Energy",
             description: "Begin Energy production.",
-            cost: new Decimal(1),
+            cost: new Decimal(1),         // Costs 1 Energy
         }
     },
     layerShown(){return true}
