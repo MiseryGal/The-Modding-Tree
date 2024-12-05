@@ -57,7 +57,11 @@ addLayer("energy", {
             },
         },
     },
-    layerShown() {
-        return true; // Makes sure the layer is visible
-    },
+    layerShown() {return true},
+    tabFormat: [
+        "main-display",
+        "blank",
+        "buyables",
+        "upgrades",
+    ],
 });
