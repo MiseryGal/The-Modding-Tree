@@ -10,6 +10,5 @@ addLayer("energy", {
     type: "static", // No prestige based on this layer
     resource: "Energy", // The resource produced by this layer
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
-    baseAmount() { return player.points }, // Uses player's points as base amount
-    row: 0, // Row of the layer in the tree
+    baseAmount() { return player.points }, // Uses player's points as base amoun
 });
