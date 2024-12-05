@@ -18,7 +18,7 @@ addLayer("energy", {
     passiveGeneration() {
         let passive = new Decimal(0);
         // Check if upgrade 11 is purchased and add passive generation
-        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(thisPoint.times(0.10))
+        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(0.10))
         // Apply the multiplier from upgrade 12 if it's unlocked
         if (hasUpgrade('energy', 12)) passive = passive.times(2); // Apply 2x multiplier
         return passive;
