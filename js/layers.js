@@ -24,7 +24,26 @@ addLayer("energy", {
 
         if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2))
 
+        if (player.energy.buyables[11]) {
+            let effect = this.buyables[11].effect(player.energy.buyables[11]);
+            passive = passive.add(effect)
+        }
         return passive;
+    },
+    buyables: {
+        11: {
+            title: "Enhanced Energy",
+            cost(x) {return new Decimal(250).add(Decimal(15).times(x))},
+            effect(x) {return new Decimal(x)},
+            display() {
+                let effect = this.effect(player.energy.buyables[11] || 0);
+                return `Adds +${effect.format()} to the Energy base. Cost: ${this.cost(player.energy.buyables[11] || 0).format()}`;
+            },
+            unlocked() {
+                return hasUpgrade('energy', 14)
+            },
+
+        }
     },
     upgrades: {
         11: {
