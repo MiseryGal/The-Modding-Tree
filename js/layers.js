@@ -13,13 +13,12 @@ addLayer("energy", {
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
     baseAmount() { return player.points }, // Uses player's points as base amount
     passiveGeneration() {
-        if (!player.energy) return new Decimal(0); // Handle undefined case
         let passive = new Decimal(0);
 
         // decay
 
         let decay = new Decimal(0.10);
-        if (hasUpgrade('energy', 21)) decay = new Decimal(0.09);
+        if (hasUpgrade('energy', 21)) decay = new Decimal(0.08);
 
         // passive
 
@@ -56,8 +55,8 @@ addLayer("energy", {
         },
         21: {
             title: "Power Saving",
-            description: "Lowers the Energy Decay by 0.01.",
-            tooltip: "New rate of Energy is 10 - (Energy x 0.09)",
+            description: "Lowers the Energy Decay by 0.02.",
+            tooltip: "New rate of Energy is 10 - (Energy x 0.08)",
             cost: new Decimal(300),
         },
     },
