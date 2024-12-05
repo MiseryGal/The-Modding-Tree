@@ -99,10 +99,7 @@ addLayer("energy", {
             title: "Enhanced Energy",
             cost(x) {
                 let amt = getBuyableAmount("energy", 11);
-                let baseCost = new Decimal(250).add(new Decimal(20).times(new Decimal(x)));
-                let scaling = Math.pow(new Decimal(amt).divide(new Decimal(10).times(1.1)));
-                let adjustedCost = baseCost.times(scaling); // Apply superscale factor
-            return adjustedCost;
+                return new Decimal(250).add(new Decimal(20).times(new Decimal(x)))
             },
             effect(x) {
                 return new Decimal(x).add(1);
