@@ -102,6 +102,7 @@ return true; // Makes sure the layer is visible
     },
     tabFormat: [
         "main-display",
+        "resource-display",
         "blank",
         "buyables",
         "upgrades",
