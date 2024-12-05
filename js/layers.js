@@ -12,14 +12,6 @@ addLayer("energy", {
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
     baseAmount() { return player.points }, // Uses player's points as base amount
     row: 0, // Row of the layer in the tree
-    passiveGeneration() {
-        if (!player.energy) return new Decimal(0); // Handle undefined case
-        let passive = new Decimal(0);
-        if (hasUpgrade('energy', 11)) passive = passive.add(10).sub(player.energy.points.times(0.10));
-        if (hasUpgrade('energy', 12)) passive = passive.add(10);
-        if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
-        return passive;
-    },
     upgrades: {
         11: {
             title: "Energy",
@@ -44,7 +36,7 @@ addLayer("energy", {
             description: "Unlocks an Energy buyable.",
             cost: new Decimal(260),
         },
-
+        
         buyables: {
             11: {
                 title: "Enhanced Energy",
