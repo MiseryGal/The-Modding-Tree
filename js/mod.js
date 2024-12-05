@@ -1,5 +1,5 @@
 let modInfo = {
-		name: "The Energy Tree",
+		name: "Energy Tree of Doom and Demise",
 	author: "MiseryGal",
 	pointsName: "Energy Points",
 	modFiles: ["layers.js", "tree.js"],
