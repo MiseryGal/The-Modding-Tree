@@ -1,42 +1,41 @@
 addLayer("energy", {
-    name: "Energy", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "EN", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    name: "Energy", // The name of the layer
+    symbol: "EN", // The symbol for the layer's node
+    position: 0, // Position of the layer in the tree
     startData() { return {
         unlocked: true,
-		points: new Decimal(1),
+        points: new Decimal(1), // Starting energy points
     }},
     color: "#ebcc34",
-    type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    resource: "Energy", // Name of prestige currency
-    baseResource: "Energy Points", // Name of resource prestige is based on
-    baseAmount() {return player.points},
+    type: "none", // No prestige based on this layer
+    resource: "Energy", // The resource produced by this layer
+    baseResource: "Energy Points", // What this is based on (could be points or any other resource)
+    baseAmount() { return player.points }, // Uses player's points as base amount
     syncResources() {
-        ; // Sync resource with baseResource
+        // You could synchronize resources here if needed
     },
-    row: 0, // Row the layer is in on the tree (0 is the first row)
+    row: 0, // Row of the layer in the tree
     passiveGeneration() {
         let passive = new Decimal(0);
-        if (hasUpgrade('energy', 11)) passive = passive.add(1);
+        // Check if upgrade 11 is purchased and add passive generation
+        if (hasUpgrade('energy', 11)) passive = passive.add(1); 
+        // Apply the multiplier from upgrade 12 if it's unlocked
+        if (hasUpgrade('energy', 12)) passive = passive.times(2); // Apply 2x multiplier
         return passive;
     },
     upgrades: {
         11: {
             title: "Energy",
-            description: "Begin Energy [And Energy Point] production.",
-            cost: new Decimal(1),         // Costs 1 Energy
+            description: "Begin Energy production.",
+            cost: new Decimal(1),  // Cost for upgrading
         },
         12: {
             title: "More Energy",
-            description: "2.00x Energy production,",
-            cost: new Decimal(100),
-        }
+            description: "2.00x Energy production",
+            cost: new Decimal(100),  // Cost for the second upgrade
+        },
     },
-    tabFormat: [
-        ["display-text", function() { return `You have <b>${format(this.points)}</b> Energy.` }],
-        ["display-text", function() { return 'The basis of it all.' }],        
-        "blank",  // Adds space
-        "upgrades",  // Displays the upgrades section
-    ],
-    layerShown(){return true}
-})
+    layerShown() {
+        return true; // Makes sure the layer is visible
+    }
+});
