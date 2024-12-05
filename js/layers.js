@@ -100,8 +100,10 @@ addLayer("energy", {
             cost(x) {
                 let amt = getBuyableAmount("energy", 11);
                 let costscaling = new Decimal(Math.floor(amt.divide(10)));
-                return new Decimal(250).add(new Decimal(20).add(costscaling.times(10)).times(x));
-            },
+                let cost1 = new Decimal(250).add(new Decimal(20).times(amt));
+                let cost2 = new Decimal(costscaling.times(10))
+                return new Decimal(cost1).add(Decimal(cost2))
+            },  
             effect(x) {
                 return new Decimal(x).add(1);
             },
