@@ -47,7 +47,7 @@ addLayer("energy", {
         buyables: {
             11: {
                 title: "Enhanced Energy",
-                cost(x) { return new Decimal(250).add(Decimal(15).times(Decimal(x))) },
+                cost(x) { return new Decimal(250).add(new Decimal(15).times(new Decimal(x))) },
                 display() { 
                     let amt = getBuyableAmount(this.layer, this.id);
                     return `Adds +1.00 to Energy base.\n\nCost: ${this.cost(amt).toString()}\nBought: ${amt}`; 
