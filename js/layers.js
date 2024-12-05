@@ -135,8 +135,9 @@ return true; // Makes sure the layer is visible
         "main-display",
         "resource-display",
         ["display-text", function() {
+            let passivebase = player[this.layer].passivebase
             return [
-                "Your Energy Base is" + format(player.energy.passivebase) + ".",
+                "Your Energy Base is" + format(passivebase) + ".",
             ];
         }],
         "blank",
