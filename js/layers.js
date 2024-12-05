@@ -26,7 +26,7 @@ addLayer("energy", {
     passiveDeGeneration() {
         let degeneration = new Decimal(0);
         if (hasUpgrade('energy', 11)) {
-            degeneration = player.energy.points.times(0.10); // 1% loss per second
+            degeneration = player.energy.points.times(0.01); // 1% loss per second
         }
         return degeneration;
     },
@@ -48,5 +48,11 @@ addLayer("energy", {
     },
     layerShown() {
         return true; // Makes sure the layer is visible
-    }
+    },
+    tabFormat: [
+        "main-display",
+        "blanK",
+        "buyables",
+        "upgrades",
+    ],
 });
