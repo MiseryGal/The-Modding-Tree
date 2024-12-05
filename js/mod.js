@@ -1,12 +1,12 @@
 let modInfo = {
-	name: "The ??? Tree",
-	author: "nobody",
-	pointsName: "points",
+	name: "The Energy Tree",
+	author: "MiseryGal",
+	pointsName: "Energy Points",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
@@ -40,8 +40,10 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
-
+	
 	let gain = new Decimal(1)
+	if (hasUpgrade('energy', 11)) gain = new Decimal(1)
+	if (hasUpgrade('energy', 12)) gain = gain.add(player.energy.points.pow(0.9))
 	return gain
 }
 
