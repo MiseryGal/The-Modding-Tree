@@ -21,6 +21,7 @@ addLayer("energy", {
         if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passive = passive.mul(buyableEffect); 
+        if (hasUpgrade('energy', 21)) decay = new Decimal(0.9);
         return passive;
     },
     upgrades: {
@@ -46,6 +47,12 @@ addLayer("energy", {
             title: "Something new",
             description: "Unlocks an Energy buyable.",
             cost: new Decimal(260),
+        },
+        21: {
+            title: "Power Saving",
+            description: "Lowers the Energy Decay by 0.01.",
+            tooltip: "New rate of Energy is 10 - (Energy x 0.9)",
+            cost: new Decimal(300),
         },
     },
     buyables: {
