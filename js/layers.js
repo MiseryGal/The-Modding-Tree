@@ -33,15 +33,16 @@ addLayer("energy", {
     buyables: {
         11: {
             title: "Enhanced Energy",
-            cost(x) {return new Decimal(250).add(Decimal(15).times(x))},
-            effect(x) {return new Decimal(x)},
-            display() {
-                let effect = this.effect(player.energy.buyables[11] || 0);
-                return `Adds +${effect.format()} to the Energy base. Cost: ${this.cost(player.energy.buyables[11] || 0).format()}`;
+            cost(x) { return new Decimal(250).add(Decimal(15),times(x))},
+            display() { return "Adds +1.00 to Energy base per level." },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             unlocked() {
-                return hasUpgrade('energy', 14)
-            },
+                hasUpgrade('energy', 14)
+            }
 
         }
     },
