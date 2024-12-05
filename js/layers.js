@@ -24,10 +24,6 @@ addLayer("energy", {
 
         if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2))
 
-        if (player.energy.buyables[11]) {
-            let effect = this.buyables[11].effect(player.energy.buyables[11]);
-            passive = passive.add(effect)
-        }
         return passive;
     },
     buyables: {
