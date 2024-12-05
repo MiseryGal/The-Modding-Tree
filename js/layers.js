@@ -26,11 +26,6 @@ addLayer("energy", {
         
         return passive;
     },
-    buyables: {
-        11: {
-            
-        }
-    },
     upgrades: {
         11: {
             title: "Energy",
