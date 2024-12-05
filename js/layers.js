@@ -53,7 +53,7 @@ addLayer("energy", {
     },
     tabFormat: [
         "main-display",
-        "blanK",
+        "blank",
         "buyables",
         "upgrades",
     ],
