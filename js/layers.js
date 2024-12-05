@@ -25,8 +25,9 @@ addLayer("energy", {
     },
     passiveDeGeneration() {
         let degeneration = new Decimal(0);
-        // Subtract a percentage (e.g., 1% per second) of current Energy
-        degeneration = player.energy.points.times(0.10); // 1% loss per second
+        if (hasUpgrade('energy', 11)) {
+            degeneration = player.energy.points.times(0.10); // 1% loss per second
+        }
         return degeneration;
     },
     update() {
