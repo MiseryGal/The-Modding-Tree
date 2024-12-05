@@ -22,7 +22,7 @@ addLayer("energy", {
         if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2));
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passivebase = passivebase.add(buyableEffect); 
-        if (hasUpgrade('energy', 22)) passivebase = passivebase.add(Decimal(30));
+        if (hasUpgrade('energy', 22)) passivebase = passivebase.add(30);
         if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
 
         // decay
