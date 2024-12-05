@@ -1,12 +1,12 @@
 let modInfo = {
-	name: "The Energy Tree",
-	author: "MiseryGal",
-	pointsName: "Energy Points",
+	name: "The ??? Tree",
+	author: "nobody",
+	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (1), // Used for hard resets and new players
+	initialStartPoints: new Decimal (10), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
@@ -41,11 +41,8 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0)
-	if (hasUpgrade('energy', 11)) gain = new Decimal(1)
-	if (hasUpgrade('energy', 12)) gain = gain.add(player.energy.points.pow(0.9))
+	let gain = new Decimal(1)
 	return gain
-	
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
