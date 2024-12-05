@@ -21,7 +21,7 @@ addLayer("energy", {
         if (hasUpgrade('energy', 13)) passive = passive.add(player.points.pow(0.2));
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passive = passive.mul(buyableEffect); 
-        if (hasUpgrade('energy', 21)) decay = new Decimal(0.9);
+        if (hasUpgrade('energy', 21)) decay = new Decimal(0.09);
         return passive;
     },
     upgrades: {
