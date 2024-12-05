@@ -97,7 +97,7 @@ addLayer("energy", {
     buyables: {
         11: {
             title: "Enhanced Energy",
-            cost(x) { return new Decimal(250).add(new Decimal(5).times(new Decimal(x))) },
+            cost(x) { return new Decimal(250).add(new Decimal(15).times(new Decimal(x))) },
             effect(x) {
                 return new Decimal(x).add(1);
             },
