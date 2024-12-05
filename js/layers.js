@@ -17,9 +17,9 @@ addLayer("energy", {
         let passive = new Decimal(0);
 
         // decay
-        
+
         let decay = new Decimal(0.10);
-        if (hasUpgrade('energy', 21)) decay = new Decimal(0.07);
+        if (hasUpgrade('energy', 21)) decay = new Decimal(0.09);
 
         // passive
 
@@ -56,8 +56,8 @@ addLayer("energy", {
         },
         21: {
             title: "Power Saving",
-            description: "Lowers the Energy Decay by 0.03.",
-            tooltip: "New rate of Energy is 10 - (Energy x 0.07)",
+            description: "Lowers the Energy Decay by 0.01.",
+            tooltip: "New rate of Energy is 10 - (Energy x 0.09)",
             cost: new Decimal(300),
         },
     },
