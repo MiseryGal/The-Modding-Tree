@@ -199,12 +199,10 @@ addLayer("battery", {
     baseResource: "Energy",                 // The name of the resource your prestige gain is based on.
     baseAmount() {return player.energy.points},  // A function to return the current amount of baseResource.
     onPrestige() {
+        
         doReset("energy");
     },
-    canBuyMax() {
-        if (hasUpgrade('battery', 13)) return true;
-        return false;
-    },
+
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
