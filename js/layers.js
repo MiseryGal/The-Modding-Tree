@@ -26,7 +26,6 @@ addLayer("energy", {
         passivebase = passivebase.add(buyableEffect); 
         if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
         if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
-        passivebase = passivebase.times(new Demical(1)).times(new Decimcal(player.battery.points).add(new Decimal(1)))
 
         // decay
 
