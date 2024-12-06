@@ -48,7 +48,7 @@ addLayer("energy", {
             title: "More Energy",
             description: "Adds 10 to the Energy base, Energy boosts Energy Points at a reduced rate.",
             tooltip: "Formula: Energy^0.9",
-            cost: new Decimal(0),
+            cost: new Decimal(95),
             unlocked() {
                 return hasUpgrade('energy', 11);
             },
@@ -57,7 +57,7 @@ addLayer("energy", {
             title: "These are useful now",
             description: "Energy Points boost Energy Base at a reduced rate.",
             tooltip: "Formula: Energy Points^0.2",
-            cost: new Decimal(0),
+            cost: new Decimal(195),
             unlocked() {
                 return hasUpgrade('energy', 12);
             },
@@ -65,7 +65,7 @@ addLayer("energy", {
         14: {
             title: "Something new",
             description: "Unlocks an Energy buyable.",
-            cost: new Decimal(0),
+            cost: new Decimal(250),
             unlocked() {
                 return hasUpgrade('energy', 13);
             },
@@ -74,7 +74,7 @@ addLayer("energy", {
             title: "Power Saving",
             description: "Lowers the Energy Decay by 0.02.",
             tooltip: "New Formula: 10-(Energy*0.08)",
-            cost: new Decimal(0),
+            cost: new Decimal(320),
             unlocked() {
                 return hasUpgrade('energy', 14);
             },
@@ -82,7 +82,7 @@ addLayer("energy", {
         22: {
             title: "Optimizations",
             description: "Multiplies Energy Points by 10 and adds a further 10 to the Energy base.",
-            cost: new Decimal(0),
+            cost: new Decimal(510),
             unlocked() {
                 return hasUpgrade('energy', 21);
             },
@@ -90,7 +90,7 @@ addLayer("energy", {
         23: {
             title: "Bored?",
             description: "1.2x Energy Base",
-            cost: new Decimal(0),
+            cost: new Decimal(357),
             unlocked() {
                 return hasUpgrade('energy', 22);
             },
