@@ -188,7 +188,7 @@ addLayer("battery", {
     tabFormat: [
         "main-display",
         ["display-text", function() {
-            return "Your Batteries are boosting Energy Base by x" + format(layers.battery.points.pow(0.4).toFixed(2));;
+            return "Your Batteries are boosting Energy Base by x" + format(new Decimal(layers.battery.points).pow(0.4).toFixed(2));;
         }],
         "resource-display",
         "prestige-button",
