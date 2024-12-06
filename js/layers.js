@@ -28,8 +28,11 @@ addLayer("energy", {
 
         if (hasUpgrade('energy', 12)) passivebase = new Decimal(20);
 
-        if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2));
-        if (hasUpgrade('battery', 12)) passivebase = passivebase.add(player.points.pow(0.3));
+        if (hasUpgrade('battery', 12)) {
+            passivebase = passivebase.add(player.points.pow(0.3)); // Override
+        } else if (hasUpgrade('energy', 13)) {
+            passivebase = passivebase.add(player.points.pow(0.2)); // Only apply if battery upgrade is not active
+        }
         
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passivebase = passivebase.add(buyableEffect); 
