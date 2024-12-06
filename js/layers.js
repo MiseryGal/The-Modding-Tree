@@ -193,7 +193,7 @@ addLayer("battery", {
             },
             buy() {
                 if (this.canAfford()) {
-                    
+                    player.battery.points = player.battery.points.add(this.cost);
                 }
             },
         },
