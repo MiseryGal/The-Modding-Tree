@@ -176,7 +176,11 @@ addLayer("battery", {
     baseAmount() {return player.energy.points},  // A function to return the current amount of baseResource.
 
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
-    type: "custom",                        // Determines the formula used for calculating prestige currency
+    type: "custom",                        // Determines the formula used for calculating prestige currency.
+    getNextAt() {
+        let x = player.energy.points; 
+        return new Decimal(1000).add(new Decimal(500).times(new Decimal(player.battery.points))); 
+    },
 
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
 
