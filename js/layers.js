@@ -30,7 +30,7 @@ addLayer("energy", {
 
         if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
         if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
-            
+
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
         if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5)
 
@@ -109,7 +109,8 @@ addLayer("energy", {
             description: "Unlocks Batteries",
             cost: new Decimal(910),
             unlocked() {
-                return hasUpgrade('energy', 23);
+                if (hasUpgrade('battery', 11)) return (hasUpgrade('battery', 11))
+                return (hasUpgrade('energy', 23))
             },
         },
     },
@@ -197,9 +198,7 @@ addLayer("battery", {
                 return player.battery.points.gte(this.cost);
             },
             buy() {
-                if (this.canAfford()) {
-                    player.battery.points = player.battery.points.add(this.cost);
-                }
+                player.battery.points = player.battery.points.add(this.cost);
             },
         },
         12: {
@@ -211,9 +210,7 @@ addLayer("battery", {
                 return player.battery.points.gte(this.cost);
             },
             buy() {
-                if (this.canAfford()) {
-                    player.battery.points = player.battery.points.add(this.cost);
-                }
+                player.battery.points = player.battery.points.add(this.cost);
             },
             unlocked() {
                 return hasUpgrade('battery', 11);
