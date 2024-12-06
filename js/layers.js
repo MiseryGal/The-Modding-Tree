@@ -130,8 +130,10 @@ addLayer("energy", {
                 let amt = getBuyableAmount("energy", 11);
                 let cost1 = (new Decimal(20).times(new Decimal(x)))
                 let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
-                let cost2 = new Decimal(0.5).times(new Decimal(tenfactor))
-                return new Decimal(250).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2)))
+                let cost2 = new Decimal(0.5).times(new Decimal(tenfactor)) 
+                let fiftyfactor = Math.floor(new Decimal(amt).divide(new Decimal(50)))
+                let cost3 = new Decimal(2).pow(new Decimal(fiftyfactor)) 
+                return new Decimal(250).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2))).times(new Decimal(cost3))
 
             },
             effect(x) {
@@ -150,8 +152,11 @@ addLayer("energy", {
                 let amt = getBuyableAmount("energy", 11);
                 let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
                 let cost2 = new Decimal(0.5).times(new Decimal(tenfactor))
-                if (amt.gte(10)) return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\n\n<span style="font-size: 15px;">Buyable scaling starts at 10!</span>\nCurrent scaling: x${new Decimal(1).add(new Decimal(cost2)).toFixed(2)}`;
-                return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
+                if (amt.gte(50)) { 
+                    return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\n\n<span style="font-size: 10px;">Buyable scaling starts at 10!\nSuperscaling starts at 50!</span>\nCurrent scaling: x${new Decimal(1).add(new Decimal(cost2)).times(new Decimal(cost3)).toFixed(2)}`;
+                } else if (amt.gte(10)) {
+                    return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\n\n<span style="font-size: 15px;">Buyable scaling starts at 10!</span>\nCurrent scaling: x${new Decimal(1).add(new Decimal(cost2)).toFixed(2)}`;
+                } return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
             },
             unlocked() {
                 return hasUpgrade('energy', 14);
