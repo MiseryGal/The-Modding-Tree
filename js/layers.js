@@ -195,7 +195,7 @@ addLayer("battery", {
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
         let x = player.energy.points; 
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points))); 
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points).pow(2))); 
     },
 
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
