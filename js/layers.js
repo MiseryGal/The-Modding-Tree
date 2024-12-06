@@ -190,6 +190,7 @@ addLayer("battery", {
     tabFormat: [
         "main-display",
         "resource-display",
+        "prestige-button",
         "blank",
         "buyables",
         "upgrades",
