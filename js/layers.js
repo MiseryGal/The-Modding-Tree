@@ -98,17 +98,12 @@ addLayer("energy", {
         11: {
             title: "Enhanced Energy",
             cost(x) {
-                let amt = getBuyableAmount("energy", 11); // Current amount of the buyable
-                let baseCost = new Decimal(250); // Starting cost
-                let perUnitCost = new Decimal(20).times(new Decimal(x)); // Base cost per unit
-                let tenFactor = Math.floor(new Decimal(amt).divide(new Decimal(10))); // Factor for every 10 units
-                let additionalCost = new Decimal(10).times(new Decimal(tenFactor)); // Additional cost per 10 units
-            
-                // Smoothly scale the cost
-                let smoothScale = new Decimal(amt).times(new Decimal(10)); // Smoother scaling based on amount purchased
-            
-                // Final cost calculation
-                return baseCost.add(perUnitCost).add(additionalCost).add(smoothScale);
+                let amt = getBuyableAmount("energy", 11);
+                let cost1 = (new Decimal(20).times(new Decimal(x)))
+                let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
+                let cost2 = new Decimal(10).times(new Decimal(tenfactor))
+                return new Decimal(250).add(new Decimal(cost1)).add(new Decimal(cost2).times(new Decimal(amt).sub(new Decimal(9).add(new Decimal(tenfactor).sub(new Decimal(1)).times(new Decimal(10))))))
+
             },
             effect(x) {
                 return new Decimal(x).add(1);
