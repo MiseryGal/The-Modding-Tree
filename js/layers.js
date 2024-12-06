@@ -136,7 +136,7 @@ return true; // Makes sure the layer is visible
         "resource-display",
         ["display-text", function() {
             let passivebase = layers.energy.passivebase
-            return "Your Energy Base is" + format(passivebase) + ".";
+            return "Your Energy Base is " + format(passivebase);
         }],
         "blank",
         "buyables",
