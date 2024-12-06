@@ -33,6 +33,8 @@ addLayer("energy", {
         // passive
 
         if (hasUpgrade('energy', 11)) passive = passive.add(passivebase).sub(player.energy.points.times(decay));
+
+        this.passivebase = passivebase;
         return passive;
     },
     upgrades: {
@@ -136,8 +138,7 @@ return true; // Makes sure the layer is visible
         "main-display",
         "resource-display",
         ["display-text", function() {
-            let passivebase = layers.energy.passivebase
-            return "Your Energy Base is " + format(passivebase);
+            return "Your Energy Base is " + format(layers.energy.passivebase);
         }],
         "blank",
         "buyables",
