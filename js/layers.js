@@ -255,7 +255,7 @@ addLayer("battery", {
             return "Your Batteries are boosting Energy Base by x" + format(new Decimal(player.battery.points).pow(0.4).toFixed(2));
         }],
         ["display-text", function() {
-            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currenlty ^" + format(new Decimal(2).add(Math.log10(player.battery.points)));
+            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currenlty ^" + format(new Decimal(2).add(Math.floor(Math.log10(player.battery.points))));
         }],
         "resource-display",
         "prestige-button",
