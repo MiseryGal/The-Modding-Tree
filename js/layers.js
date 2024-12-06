@@ -155,7 +155,7 @@ addLayer("energy", {
                 let fiftyfactor = Math.floor(new Decimal(amt).divide(new Decimal(50)))
                 let cost3 = new Decimal(2).pow(Math.max(0,new Decimal(tenfactor).sub(4)))
                 if (amt.gte(50)) { 
-                    return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\n\n<span style="font-size: 10px;">Buyable scaling starts at 10!\nSuperscaling starts at 50!</span>\nCurrent scaling: x${new Decimal(1).add(new Decimal(cost2)).times(new Decimal(cost3)).toFixed(0)}`;
+                    return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\n\n<span style="font-size: 10px;">Buyable scaling starts at 10!\nSuperscaling starts at 50!</span>\nCurrent scaling: x${new Decimal(1).add(new Decimal(cost2)).times(new Decimal(cost3)).toFixed(2)}`;
                 } else if (amt.gte(10)) {
                     return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}\n\n<span style="font-size: 15px;">Buyable scaling starts at 10!</span>\nCurrent scaling: x${new Decimal(1).add(new Decimal(cost2)).toFixed(2)}`;
                 } return `Adds +1.00 to Energy base.\n<span style="font-size: 15px;">Current Effect: +${new Decimal(amt).toFixed(2)} to Energy base.\nCost: ${this.cost(amt).toString()}</span>\nBought: ${amt}`; 
@@ -201,8 +201,7 @@ addLayer("battery", {
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
-        let x = player.energy.points; 
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points).pow(2))); 
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points).pow(2).add(Math.log10(player.battery.points)))); 
     },
 
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
@@ -217,7 +216,7 @@ addLayer("battery", {
                 return player.battery.points.gte(this.cost);
             },
             onPurchase() {
-                return player.battery.points = player.battery.points.add(1)
+                return player.battery.points = player.battery.points.add(this.cost)
             },
         },
         12: {
@@ -229,10 +228,24 @@ addLayer("battery", {
                 return player.battery.points.gte(this.cost);
             },
             onPurchase() {
-                return player.battery.points = player.battery.points.add(2)
+                return player.battery.points = player.battery.points.add(this.cost)
             },
             unlocked() {
                 return hasUpgrade('battery', 11);
+            },
+        },
+        13: {
+            title: "Extra Charged",
+            description: "Allows you to buy-max Batteries, and increases the effect of Enhanced Energy by +0.10",
+            cost: new Decimal(10),
+            canAfford() {
+                return player.battery.points.gte(this.cost);
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+            unlocked() {
+                return hasUpgrade('battery', 12);
             },
         },
     },
@@ -240,6 +253,9 @@ addLayer("battery", {
         "main-display",
         ["display-text", function() {
             return "Your Batteries are boosting Energy Base by x" + format(new Decimal(player.battery.points).pow(0.4).toFixed(2));
+        }],
+        ["display-text", function() {
+            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currenlty ^" + format(new Decimal(2).add(Math.log10(player.battery.points)));
         }],
         "resource-display",
         "prestige-button",
