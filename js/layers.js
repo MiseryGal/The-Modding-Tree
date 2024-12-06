@@ -82,7 +82,7 @@ addLayer("energy", {
         22: {
             title: "Optimizations",
             description: "Multiplies Energy Points by 10 and adds a further 10 to the Energy base.",
-            cost: new Decimal(510),
+            cost: new Decimal(500),
             unlocked() {
                 return hasUpgrade('energy', 21);
             },
