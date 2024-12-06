@@ -151,7 +151,7 @@ addLayer("energy", {
             },
             display(x) { 
                 let amt = getBuyableAmount("energy", 11);
-                if (hasUpgrade('battery', 13)) amt = getBuyableAmount("energy", 11).add(0.1)
+                if (hasUpgrade('battery', 13)) amt = getBuyableAmount("energy", 11).times(1.1)
                 let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
                 let cost2 = new Decimal(0.5).times(new Decimal(tenfactor))
                 let fiftyfactor = Math.floor(new Decimal(amt).divide(new Decimal(50)))
