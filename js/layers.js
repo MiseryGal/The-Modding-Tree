@@ -90,7 +90,7 @@ addLayer("energy", {
         23: {
             title: "Bored?",
             description: "1.2x Energy Base",
-            cost: new Decimal(357),
+            cost: new Decimal(690),
             unlocked() {
                 return hasUpgrade('energy', 22);
             },
