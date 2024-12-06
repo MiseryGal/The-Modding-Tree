@@ -203,7 +203,7 @@ addLayer("battery", {
     upgrades: {
         11: {
             title: "Welcome Home",
-            description: "Welcome to the next stage! Batteries are never spent on Upgrades. Also x1. Energy Base.",
+            description: "Welcome to the next stage! Batteries are never spent on Upgrades. Also x1.5 Energy Base.",
             cost: new Decimal(1),
             canAfford() {
                 return player.battery.points.gte(this.cost);
