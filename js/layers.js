@@ -171,9 +171,7 @@ addLayer("battery", {
     symbol: "B",
     color: "#a3a19b",                       // The color for this layer, which affects many elements.
     resource: "Batteries",            // The name of this layer's main prestige resource.
-    row: 1,                                 // The row this layer is on (0 is the first row).
-    baseResource: "Energy",                 // The name of the resource your prestige gain is based on.
-    baseAmount() {return player.energy.points},  // A function to return the current amount of baseResource.
+    row: 1,                                 // The row this layer is on (0 is the first row),  // A function to return the current amount of baseResource.
 
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "custom",                        // Determines the formula used for calculating prestige currency.
