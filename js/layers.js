@@ -14,6 +14,12 @@ addLayer("energy", {
     resource: "Energy", // The resource produced by this layer
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
     baseAmount() { return player.points }, // Uses player's points as base amount
+    doReset(layer) {
+        if (layer !== this.layer) {
+            layerDataReset(this.layer, ["upgrades"]);
+            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upg === 24);
+        }
+    },
     passiveGeneration() {
         let passive = new Decimal(0);
         let passivebase = new Decimal(10)
@@ -179,7 +185,9 @@ addLayer("battery", {
     row: 1,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy",                 // The name of the resource your prestige gain is based on.
     baseAmount() {return player.energy.points},  // A function to return the current amount of baseResource.
-
+    onPrestige() {
+        doReset("energy");
+    },
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
