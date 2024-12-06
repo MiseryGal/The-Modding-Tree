@@ -21,11 +21,16 @@ addLayer("energy", {
         // passive base
 
         if (hasUpgrade('energy', 12)) passivebase = new Decimal(20);
+
         if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2));
+        if (hasUpgrade('battery', 12)) passivebase = passivebase.add(player.points.pow(0.3));
+        
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passivebase = passivebase.add(buyableEffect); 
+
         if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
         if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
+            
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
         if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5)
 
@@ -187,7 +192,6 @@ addLayer("battery", {
         11: {
             title: "Welcome Home",
             description: "Welcome to the next stage! Batteries are never spent on Upgrades. Also x1. Energy Base.",
-            tooltip: "Formula: 10-(Energy*0.1)",
             cost: new Decimal(1),
             canAfford() {
                 return player.battery.points.gte(this.cost);
@@ -196,6 +200,23 @@ addLayer("battery", {
                 if (this.canAfford()) {
                     player.battery.points = player.battery.points.add(this.cost);
                 }
+            },
+        },
+        12: {
+            title: "Oh yeah, these",
+            description: "10x boost to Energy Points, slightly boost Energy Upgrade 13's effect.",
+            tooltip: "New Formula: Energy Points^0.3",
+            cost: new Decimal(2),
+            canAfford() {
+                return player.battery.points.gte(this.cost);
+            },
+            buy() {
+                if (this.canAfford()) {
+                    player.battery.points = player.battery.points.add(this.cost);
+                }
+            },
+            unlocked() {
+                return hasUpgrade('battery', 11);
             },
         },
     },

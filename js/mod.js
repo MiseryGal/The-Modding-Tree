@@ -45,6 +45,7 @@ function getPointGen() {
 	if (hasUpgrade('energy', 11)) gain = new Decimal(1)
 	if (hasUpgrade('energy', 12)) gain = gain.add(player.energy.points.pow(0.9))
 	if (hasUpgrade('energy', 22)) gain = gain.times(10);
+	if (hasUpgrade('battery', 12)) gain = gain.times(10);
 	return gain
 }
 function addedPlayerData() { return {
