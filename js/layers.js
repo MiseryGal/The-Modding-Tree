@@ -14,9 +14,6 @@ addLayer("energy", {
     resource: "Energy", // The resource produced by this layer
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
     baseAmount() { return player.points }, // Uses player's points as base amount
-    gainMult() {                            // Returns your multiplier to your gain of the prestige resource.
-        return new Decimal(1).add(new Decimal(player.battery.points))               // Factor in any bonuses multiplying gain here.
-    },
     passiveGeneration() {
         let passive = new Decimal(0);
         let passivebase = new Decimal(10)
@@ -29,6 +26,7 @@ addLayer("energy", {
         passivebase = passivebase.add(buyableEffect); 
         if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
         if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
+        passivebase = passivebase.times(new Decimcal(player.battery.points).add(new Decimal(1)))
 
         // decay
 
@@ -189,6 +187,9 @@ addLayer("battery", {
     },
     tabFormat: [
         "main-display",
+        ["display-text", function() {
+            return "Your Batteries are boosting Energy Base by x" + format(layers.battery.points.pow(0.4).toFixed(2));;
+        }],
         "resource-display",
         "prestige-button",
         "blank",
