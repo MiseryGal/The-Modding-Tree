@@ -27,7 +27,8 @@ addLayer("energy", {
         if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
         if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
-        
+        if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5)
+
         // decay
 
         let decay = new Decimal(0.10);
