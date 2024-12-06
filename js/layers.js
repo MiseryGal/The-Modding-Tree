@@ -183,7 +183,20 @@ addLayer("battery", {
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
 
     upgrades: {
-        // Look in the upgrades docs to see what goes here!
+        11: {
+            title: "Welcome Home",
+            description: "Welcome to the next stage! Batteries are never spent on Upgrades. Also x1. Energy Base.",
+            tooltip: "Formula: 10-(Energy*0.1)",
+            cost: new Decimal(1),
+            canAfford() {
+                return player.battery.points.gte(this.cost);
+            },
+            buy() {
+                if (this.canAfford()) {
+                    
+                }
+            },
+        },
     },
     tabFormat: [
         "main-display",
