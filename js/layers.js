@@ -161,3 +161,30 @@ return true; // Makes sure the layer is visible
 
 // Battery Layer
 
+addLayer("battery", {
+    startData() { return {                  // startData is a function that returns default data for a layer. 
+        unlocked() {
+            return hasUpgrade('energy', 24);
+        },                 // You can add more variables here to add them to your layer.
+        points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
+    }},
+    symbol: "B",
+    color: "#a3a19b",                       // The color for this layer, which affects many elements.
+    resource: "Batteries",            // The name of this layer's main prestige resource.
+    row: 1,                                 // The row this layer is on (0 is the first row).
+    baseResource: "Energy",                 // The name of the resource your prestige gain is based on.
+    baseAmount() {return player.energy.points},  // A function to return the current amount of baseResource.
+
+    requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
+    type: "custom",                        // Determines the formula used for calculating prestige currency.
+    getNextAt() {
+        let x = player.energy.points; 
+        return new Decimal(1000).add(new Decimal(500).times(new Decimal(player.battery.points))); 
+    },
+
+    layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
+
+    upgrades: {
+        // Look in the upgrades docs to see what goes here!
+    },
+})
