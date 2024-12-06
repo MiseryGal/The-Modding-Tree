@@ -137,6 +137,7 @@ addLayer("energy", {
 
             },
             effect(x) {
+                if (hasUpgrade('battery', 13)) return new Decimal(x).add(1.1);
                 return new Decimal(x).add(1);
             },
             canAfford() { 
@@ -198,10 +199,14 @@ addLayer("battery", {
     onPrestige() {
         doReset("energy");
     },
+    canBuyMax() {
+        if (hasUpgrade('battery', 13)) return true;
+        return false;
+    },
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points).pow(2).add(Math.log10(player.battery.points)))); 
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points).pow(2).add(Math.floor(Math.log10(player.battery.points))))); 
     },
 
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
@@ -255,7 +260,7 @@ addLayer("battery", {
             return "Your Batteries are boosting Energy Base by x" + format(new Decimal(player.battery.points).pow(0.4).toFixed(2));
         }],
         ["display-text", function() {
-            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currenlty ^" + format(new Decimal(2).add(Math.floor(Math.log10(player.battery.points))));
+            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currently ^" + format(new Decimal(2).add(Math.floor(Math.log10(player.battery.points))));
         }],
         "resource-display",
         "prestige-button",
