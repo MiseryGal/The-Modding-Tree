@@ -204,25 +204,25 @@ addLayer("battery", {
         11: {
             title: "Welcome Home",
             description: "Welcome to the next stage! Batteries are never spent on Upgrades. Also x1.5 Energy Base.",
+            cost: new Decimal(1),
             canAfford() {
                 // The player can afford the upgrade if they have enough battery points
                 return player.battery.points.gte(this.cost);
             },
-            buy() {
-                // Do not subtract the cost; the batteries are effectively "not spent"
-                player[this.layer].upgrades.push(11); // Add this upgrade to the player's purchased upgrades
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(1)
             },
         },
         12: {
             title: "Oh yeah, these",
             description: "10x boost to Energy Points, slightly boost Energy Upgrade 13's effect.",
             tooltip: "New Formula: Energy Points^0.3",
+            cost: new Decimal(2),
             canAfford() {
                 return player.battery.points.gte(this.cost);
             },
-            buy() {
-                // Do not subtract the cost; the batteries are effectively "not spent"
-                player[this.layer].upgrades.push(11); // Add this upgrade to the player's purchased upgrades
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(2)
             },
             unlocked() {
                 return hasUpgrade('battery', 11);
