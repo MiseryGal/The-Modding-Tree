@@ -132,7 +132,7 @@ addLayer("energy", {
                 let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
                 let cost2 = new Decimal(0.5).times(new Decimal(tenfactor)) 
                 let fiftyfactor = Math.floor(new Decimal(amt).divide(new Decimal(50)))
-                let cost3 = new Decimal(2).pow(new Decimal(fiftyfactor)) 
+                let cost3 = new Decimal(2).pow(Math.max(0,new Decimal(tenfactor).sub(4)))
                 return new Decimal(250).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2))).times(new Decimal(cost3))
 
             },
