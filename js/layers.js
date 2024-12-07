@@ -259,9 +259,6 @@ addLayer("battery", {
         },
     },
     milestones: {
-        unlocked() {
-            return player.battery.points.gte(11)
-        },
         0: {
             requirementDescription: "11 Batteries",
             effectDescription: "Energy Upgrades are no longer reset on Battery.",
