@@ -17,7 +17,11 @@ addLayer("energy", {
     doReset(layer) {
         if (layer !== this.layer) {
             layerDataReset(this.layer, ["upgrades"]);
-            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upg === 24);
+            let upgradesToKeep = [24];
+            if (hasMilestone('battery', 0)) {
+                upgradesToKeep.push(11, 12, 13, 14, 21, 22, 23);
+            }
+            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upgradesToKeep.includes(upg));
         }
     },
     passiveGeneration() {
