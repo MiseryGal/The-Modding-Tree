@@ -264,11 +264,11 @@ addLayer("battery", {
             effectDescription: "Energy Upgrades are no longer reset on Battery.",
             done() {
                 return player.battery.points.gte(11)
-            }
+            },
+            unlocked() {
+                return player.battery.points.gte(11)
+            },
         },
-    },
-    unlocked() {
-        return player.battery.points.gte(11)
     },
     tabFormat: [
         "main-display",
