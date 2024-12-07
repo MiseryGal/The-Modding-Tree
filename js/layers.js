@@ -16,13 +16,22 @@ addLayer("energy", {
     baseAmount() { return player.points }, // Uses player's points as base amount
     doReset(layer) {
         if (layer !== this.layer) {
-            layerDataReset(this.layer, ["upgrades"]);
+            layerDataReset(this.layer, ["upgrades", "buyables"]);
             let upgradesToKeep = [24];
             if (hasMilestone('battery', 0)) {
                 upgradesToKeep.push(11, 12, 13, 14, 21, 22, 23);
             }
             player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upgradesToKeep.includes(upg));
-        }
+
+            if (hasMilestone('battery', 1)) {
+            const buyableID = 11;
+            if (player[this.layer].buyables[buyableID]) {
+            let currentAmount = new Decimal(player[this.layer].buyables[buyableID]);
+            let reducedAmount = currentAmount.sub(10).max(0); // Subtract 10 but ensure it doesn't go below 0
+            player[this.layer].buyables[buyableID] = reducedAmount;
+            }
+            }
+        }  
     },
     passiveGeneration() {
         let passive = new Decimal(0);
@@ -257,6 +266,20 @@ addLayer("battery", {
                 return hasUpgrade('battery', 12);
             },
         },
+        14: {
+            title: "Slowing down?",
+            description: "100x boost to Energy Points",
+            cost: new Decimal(16),
+            canAfford() {
+                return player.battery.points.gte(this.cost);
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+            unlocked() {
+                return (hasUpgrade('battery', 13) && hasMilestone('battery', 1));
+            },
+        },
     },
     milestones: {
         0: {
@@ -264,6 +287,16 @@ addLayer("battery", {
             effectDescription: "Energy Upgrades are no longer reset on Battery.",
             done() {
                 return player.battery.points.gte(11)
+            },
+            unlocked() {
+                return player.battery.points.gte(11)
+            },
+        },
+        1: {
+            requirementDescription: "14 Batteries",
+            effectDescription: "Only lose 10 levels of Enhanced Energy on Battery.",
+            done() {
+                return player.battery.points.gte(14)
             },
             unlocked() {
                 return player.battery.points.gte(11)
@@ -295,6 +328,7 @@ addLayer("battery", {
             }
             return '';
         }],
+        "blank",
         "milestones",
     ],
 })
