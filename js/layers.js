@@ -285,7 +285,13 @@ addLayer("battery", {
         "upgrades",
         ["display-text", function() {
             if (player.battery.points.gte(11)) {
-                return '<span style="font-size: 20px;"> Battery Milestones </span>\nThought that was it?'
+                return '<span style="font-size: 30px;"> Battery Milestones </span>'
+            }
+            return '';
+        }],
+        ["display-text", function() {
+            if (player.battery.points.gte(11)) {
+                return 'Thought that was it?'
             }
             return '';
         }],
