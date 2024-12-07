@@ -254,6 +254,16 @@ addLayer("battery", {
             },
         },
     },
+    milestones: {
+        unlocked() {
+            return player.battery.points.gte(11)
+        },
+        0: {
+            requirementDescription: "11 Batteries",
+            effectDescription: "Energy Upgrades are no longer reset on Battery.",
+            done() { return player.battery.points.gte(11)}
+        }
+    },
     tabFormat: [
         "main-display",
         ["display-text", function() {
@@ -267,5 +277,6 @@ addLayer("battery", {
         "blank",
         "buyables",
         "upgrades",
+        "milestones",
     ],
 })
