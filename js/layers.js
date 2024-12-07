@@ -265,8 +265,10 @@ addLayer("battery", {
         0: {
             requirementDescription: "11 Batteries",
             effectDescription: "Energy Upgrades are no longer reset on Battery.",
-            done() { return player.battery.points.gte(11)}
-        }
+            done() {
+                return player.battery.points.gte(11)
+            }
+        },
     },
     tabFormat: [
         "main-display",
