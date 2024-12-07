@@ -241,7 +241,7 @@ addLayer("battery", {
         },
         13: {
             title: "Extra Charged",
-            description: "Allows you to buy-max Batteries, and increases the effect of Enhanced Energy by +0.10",
+            description: "Increases the effect of Enhanced Energy by +0.10",
             cost: new Decimal(10),
             canAfford() {
                 return player.battery.points.gte(this.cost);
