@@ -267,6 +267,9 @@ addLayer("battery", {
             }
         },
     },
+    unlocked() {
+        return player.battery.points.gte(11)
+    },
     tabFormat: [
         "main-display",
         ["display-text", function() {
