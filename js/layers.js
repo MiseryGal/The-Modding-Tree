@@ -283,6 +283,12 @@ addLayer("battery", {
         "blank",
         "buyables",
         "upgrades",
+        ["display-text", function() {
+            if (player.battery.points.gte(11)) {
+                return '<span style="font-size: 20px;"> Battery Milestones </span>\nThought that was it?'
+            }
+            return '';
+        }],
         "milestones",
     ],
 })
