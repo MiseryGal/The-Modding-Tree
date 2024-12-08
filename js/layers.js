@@ -23,14 +23,18 @@ addLayer("energy", {
             }
             player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upgradesToKeep.includes(upg));
 
-            if (hasMilestone('battery', 1)) {
             const buyableID = 11;
+        if (hasMilestone('battery', 1)) {
             if (player[this.layer].buyables[buyableID]) {
-            let currentAmount = new Decimal(player[this.layer].buyables[buyableID]);
-            let reducedAmount = currentAmount.sub(10).max(0); // Subtract 10 but ensure it doesn't go below 0
-            player[this.layer].buyables[buyableID] = reducedAmount;
+                let currentAmount = new Decimal(player[this.layer].buyables[buyableID]);
+                let reducedAmount = currentAmount.sub(10).max(0);
+                player[this.layer].buyables[buyableID] = reducedAmount;
+            } else {
+                player[this.layer].buyables[buyableID] = new Decimal(0);
             }
-            }
+        } else {
+            player[this.layer].buyables[buyableID] = new Decimal(0);
+        }
         }  
     },
     passiveGeneration() {
@@ -199,10 +203,7 @@ return true; // Makes sure the layer is visible
 // Battery Layer
 
 addLayer("battery", {
-    startData() { return {                  // startData is a function that returns default data for a layer. 
-        unlocked() {
-            return hasUpgrade('energy', 24);
-        },                 // You can add more variables here to add them to your layer.
+    startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
     }},
     symbol: "B",
@@ -210,7 +211,10 @@ addLayer("battery", {
     resource: "Batteries",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy",                 // The name of the resource your prestige gain is based on.
-    baseAmount() {return player.energy.points},  // A function to return the current amount of baseResource.
+    baseAmount() {return player.energy.points},  
+    unlocked() {
+        return hasUpgrade('energy', 24) && player.energy.points.gte(1000);
+    },
     onPrestige() {
         
         doReset("energy");
@@ -219,10 +223,10 @@ addLayer("battery", {
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points).pow(2).add(Math.floor(Math.log10(player.battery.points))))); 
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points.max(0)).pow(2).add(Math.floor(Math.log10(player.battery.points.max(1)))))); 
     },
 
-    layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return hasUpgrade('energy', 24) },          // Returns a bool for if this layer's node should be visible in the tree.
 
     upgrades: {
         11: {
@@ -309,7 +313,7 @@ addLayer("battery", {
             return "Your Batteries are boosting Energy Base by x" + format(new Decimal(player.battery.points).pow(0.4).toFixed(2));
         }],
         ["display-text", function() {
-            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currently ^" + format(new Decimal(2).add(Math.floor(Math.log10(player.battery.points))));
+            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currently ^" + format(new Decimal(2).add(Math.floor(Math.log10(player.battery.points.max(1)))));
         }],
         "resource-display",
         "prestige-button",
