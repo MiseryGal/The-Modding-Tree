@@ -43,19 +43,11 @@ addLayer("energy", {
 
         // passive base
 
-        if (hasUpgrade('energy', 12)) passivebase = new Decimal(20);
-
-        if (hasUpgrade('battery', 12)) {
-            passivebase = passivebase.add(player.points.pow(0.3)); // Override
-        } else if (hasUpgrade('energy', 13)) {
-            passivebase = passivebase.add(player.points.pow(0.2)); // Only apply if battery upgrade is not active
-        }
+        if (hasUpgrade('energy', 12)) passivebase = passivebase.add(10);
+        if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2))
         
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passivebase = passivebase.add(buyableEffect); 
-
-        if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
-        if (hasUpgrade('energy', 23)) passivebase = passivebase.times(1.2)
 
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
         if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5)
@@ -63,11 +55,10 @@ addLayer("energy", {
         // decay
 
         let decay = new Decimal(0.10);
-        if (hasUpgrade('energy', 21)) decay = new Decimal(0.08);
 
         // passive
 
-        if (hasUpgrade('energy', 11)) passive = passive.add(passivebase).sub(player.energy.points.times(decay));
+        if (hasUpgrade('energy', 11)) passive = passive.add(passivebase).sub(Math.max(0,player.energy.points.times(decay))).sub(1);
 
         this.passivebase = passivebase;
         return passive;
@@ -76,13 +67,15 @@ addLayer("energy", {
         11: {
             title: "Energy",
             description: "Begin Energy production.",
-            tooltip: "Formula: 10-(Energy*0.1)",
+            tooltip: "Formula: 10 - (Energy * 0.1)",
             cost: new Decimal(1),
         },
         12: {
             title: "More Energy",
             description: "Adds 10 to the Energy base, Energy boosts Energy Points at a reduced rate.",
-            tooltip: "Formula: Energy^0.9",
+            tooltip: function() {
+                return "Formula: Energy ^ 0.9 <br> Effect: x" + format(new Decimal(player.energy.points).pow(0.9).toFixed(2)) + " boost to Energy Points.";
+            },
             cost: new Decimal(95),
             unlocked() {
                 return hasUpgrade('energy', 11);
@@ -90,8 +83,10 @@ addLayer("energy", {
         },
         13: {
             title: "These are useful now",
-            description: "Energy Points boost Energy Base at a reduced rate.",
-            tooltip: "Formula: Energy Points^0.2",
+            description: "Energy Points boost Energy base at a reduced rate.",
+            tooltip:function() {
+                return "Formula: Energy Points ^ 0.2 <br> Effect: +" + format(new Decimal(player.points).pow(0.2).toFixed(2)) + " boost to Energy base.";
+            },
             cost: new Decimal(195),
             unlocked() {
                 return hasUpgrade('energy', 12);
@@ -106,10 +101,12 @@ addLayer("energy", {
             },
         },
         21: {
-            title: "Power Saving",
-            description: "Lowers the Energy Decay by 0.02.",
-            tooltip: "New Formula: 10-(Energy*0.08)",
-            cost: new Decimal(320),
+            title: "Self-Powered",
+            description: "Energy Upgrades directly boost Energy gain.",
+            tooltip:function() {
+                return "Formula: 1 + 0.10 * Upgrades <br> Effect: x" + format(new Decimal(0.1).times(player.energy.upgrades.length).add(1).toFixed(2)) + " boost to Energy gain.";
+            },
+            cost: new Decimal(325),
             unlocked() {
                 return hasUpgrade('energy', 14);
             },
@@ -192,7 +189,10 @@ return true; // Makes sure the layer is visible
         "main-display",
         "resource-display",
         ["display-text", function() {
-            return "Your Energy Base is " + format(layers.energy.passivebase.sub(1));
+            return "Your Energy base is " + format(layers.energy.passivebase.sub(1));
+        }],
+        ["display-text", function() {
+            return "You are losing " + format(new Decimal(player.energy.points).divide(10)) + " Energy per second.";
         }],
         "blank",
         "buyables",
@@ -204,13 +204,18 @@ return true; // Makes sure the layer is visible
 
 addLayer("battery", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
-        points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
+        points: new Decimal(0),
+        auto: false 
     }},
     symbol: "B",
     color: "#a3a19b",                       // The color for this layer, which affects many elements.
     resource: "Batteries",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
-    baseResource: "Energy",                 // The name of the resource your prestige gain is based on.
+    baseResource: "Energy",
+    autoPrestige() {
+        if (player.battery.auto === true && hasMilestone('battery', 1))
+            return true
+    },
     baseAmount() {return player.energy.points},  
     unlocked() {
         return hasUpgrade('energy', 24) && player.energy.points.gte(1000);
@@ -284,6 +289,21 @@ addLayer("battery", {
                 return (hasUpgrade('battery', 13) && hasMilestone('battery', 1));
             },
         },
+        21: {
+            title: "Baseless",
+            description: "1.2x boost to Energy.",
+            tooltip: "Yes, this is Energy output, not base.",
+            cost: new Decimal(22),
+            canAfford() {
+                return player.battery.points.gte(this.cost);
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+            unlocked() {
+                return (hasUpgrade('battery', 14) && hasMilestone('battery', 1));
+            },
+        },
     },
     milestones: {
         0: {
@@ -301,6 +321,17 @@ addLayer("battery", {
             effectDescription: "Only lose 10 levels of Enhanced Energy on Battery.",
             done() {
                 return player.battery.points.gte(14)
+            },
+            unlocked() {
+                return player.battery.points.gte(11)
+            },
+        },
+        2: {
+            requirementDescription: "30 Batteries",
+            effectDescription: "Unlock Auto Battery. [Your Energy will still be reset!]",
+            toggles: [["battery", "auto"]],
+            done() {
+                return player.battery.points.gte(30)
             },
             unlocked() {
                 return player.battery.points.gte(11)
