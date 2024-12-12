@@ -39,18 +39,25 @@ addLayer("energy", {
     },
     passiveGeneration() {
         let passive = new Decimal(0);
-        let passivebase = new Decimal(10)
+        let passivebase = new Decimal(10);
 
         // passive base
 
         if (hasUpgrade('energy', 12)) passivebase = passivebase.add(10);
-        if (hasUpgrade('energy', 13)) passivebase = passivebase.add(player.points.pow(0.2))
+        if (hasUpgrade('energy', 13)) {
+            passivebase = passivebase.add(player.points.pow(0.2));
+        } else if (hasUpgrade('battery', 22)) {
+            passivebase = passivebase.add(player.points.pow(0.24));
+        }
+        if (hasUpgrade('energy', 21)) passivebase = passivebase.times((new Decimal(0.1).times(new Decimal(player.energy.upgrades.length)).add(1)));
+        if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
+        if (hasUpgrade('energy', 24)) passivebase = passivebase.add(5);
         
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
         passivebase = passivebase.add(buyableEffect); 
 
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
-        if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5)
+        if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5);
 
         // decay
 
@@ -58,7 +65,7 @@ addLayer("energy", {
 
         // passive
 
-        if (hasUpgrade('energy', 11)) passive = passive.add(passivebase).sub(Math.max(0,player.energy.points.times(decay))).sub(1);
+        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase.sub(new Decimal(Math.max(0,player.energy.points.times(decay))))).sub(1));
 
         this.passivebase = passivebase;
         return passive;
@@ -85,7 +92,12 @@ addLayer("energy", {
             title: "These are useful now",
             description: "Energy Points boost Energy base at a reduced rate.",
             tooltip:function() {
-                return "Formula: Energy Points ^ 0.2 <br> Effect: +" + format(new Decimal(player.points).pow(0.2).toFixed(2)) + " boost to Energy base.";
+                if (hasUpgrade('battery', 12)) {
+                return "Formula: Energy Points ^ 0.24 <br> Effect: +" + format(new Decimal(player.points).pow(0.24).toFixed(2)) + " boost to Energy base.";
+                } else {
+                    return "Formula: Energy Points ^ 0.2 <br> Effect: +" + format(new Decimal(player.points).pow(0.2).toFixed(2)) + " boost to Energy base.";
+                }
+
             },
             cost: new Decimal(195),
             unlocked() {
@@ -120,17 +132,17 @@ addLayer("energy", {
             },
         },
         23: {
-            title: "Bored?",
-            description: "1.2x Energy Base",
-            cost: new Decimal(690),
+            title: "Back-to-back",
+            description: "Doubles Energy Points.",
+            cost: new Decimal(600),
             unlocked() {
                 return hasUpgrade('energy', 22);
             },
         },
         24: {
-            title: "The Beginning",
-            description: "Unlocks Batteries",
-            cost: new Decimal(910),
+            title: "Overclock",
+            description: "Adds 5 to Energy base, reveals a new feature.",
+            cost: new Decimal(950),
             unlocked() {
                 if (hasUpgrade('battery', 11)) return (hasUpgrade('battery', 11))
                 return (hasUpgrade('energy', 23))
@@ -247,9 +259,9 @@ addLayer("battery", {
             },
         },
         12: {
-            title: "Oh yeah, these",
-            description: "10x boost to Energy Points, slightly boost Energy Upgrade 13's effect.",
-            tooltip: "New Formula: Energy Points^0.3",
+            title: "Musn't forget EP",
+            description: "Triple Energy Points, slightly boost Energy Upgrade 13's effect.",
+            tooltip: "New Formula: Energy Points^0.24",
             cost: new Decimal(2),
             canAfford() {
                 return player.battery.points.gte(this.cost);
