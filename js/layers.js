@@ -65,6 +65,9 @@ addLayer("energy", {
     }},
     update(diff){
         player.energy.spentTime=new Decimal(player.energy.spentTime).add(diff)
+        if (player.energy.points.gt(new Decimal(layers.energy.passivebase).times(10))) {
+            player.energy.points = new Decimal(layers.energy.passivebase).times(10)
+        }
       },
     color: "#ebcc34",
     type: "static", // No prestige based on this layer
