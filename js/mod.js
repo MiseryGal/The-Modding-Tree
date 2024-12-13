@@ -7,7 +7,7 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (0), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	offlineLimit: 0,  // In hours
 }
 
 // Set your version in num and name
@@ -47,6 +47,7 @@ function getPointGen() {
 	if (hasUpgrade('energy', 22)) gain = gain.times(10)
 	if (hasUpgrade('energy', 23)) gain = gain.times(2);
 	if (hasUpgrade('battery', 12)) gain = gain.times(3);
+	if (hasUpgrade('battery', 21)) gain = gain.times(player.battery.points);
 	return gain
 }
 function addedPlayerData() { return {
@@ -72,7 +73,7 @@ var backgroundStyle = {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(60) // Default is 1 hour which is just arbitrarily large
+	return(3600) // Default is 1 hour which is just arbitrarily large
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
