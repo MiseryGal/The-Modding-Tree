@@ -58,6 +58,12 @@ addLayer("energy", {
     symbol: "EN", // The symbol for the layer's node
     position: 0, // Position of the layer in the tree
     row: 0, // Row of the layer in the tree
+    style() {
+        return {
+            "background-image": "linear-gradient(to top,rgb(117, 84, 21),rgb(138, 130, 20))",
+            "background-size": "cover"
+        };
+    },
     startData() { return {
         unlocked: true,
         points: new Decimal(1), // Starting energy points
@@ -65,8 +71,8 @@ addLayer("energy", {
     }},
     update(diff){
         player.energy.spentTime=new Decimal(player.energy.spentTime).add(diff)
-        if (player.energy.points.gt(new Decimal(layers.energy.passivebase).times(10))) {
-            player.energy.points = new Decimal(layers.energy.passivebase).times(10)
+        if (player.energy.points.gt(new Decimal(layers.energy.passivebase).sub(1).times(10))) {
+            player.energy.points = new Decimal(layers.energy.passivebase).sub(1).times(10)
         }
       },
     color: "#ebcc34",
@@ -128,13 +134,10 @@ addLayer("energy", {
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
         if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5);
 
-        // decay
-
-        let decay = new Decimal(0.10);
 
         // passive
 
-        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase.sub(new Decimal(Math.max(0,player.energy.points.times(decay))))).sub(1));
+        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase)).sub(1);
 
         this.passivebase = passivebase;
         return passive;
@@ -152,7 +155,7 @@ addLayer("energy", {
             tooltip: function() {
                 return "Formula: Energy ^ 0.9 <br> Effect: x" + format(new Decimal(player.energy.points).pow(0.9).toFixed(2)) + " boost to Energy Points.";
             },
-            cost: new Decimal(95),
+            cost: new Decimal(100),
             unlocked() {
                 return hasUpgrade('energy', 11);
             },
@@ -170,17 +173,17 @@ addLayer("energy", {
                 
 
             },
-            cost: new Decimal(195),
+            cost: new Decimal(200),
             unlocked() {
-                return hasUpgrade('energy', 12);
+                return hasUpgrade('energy', 11);
             },
         },
         14: {
             title: "Something new",
             description: "Unlocks an Energy buyable.",
-            cost: new Decimal(250),
+            cost: new Decimal(240),
             unlocked() {
-                return hasUpgrade('energy', 13);
+                return hasUpgrade('energy', 11);
             },
         },
         21: {
@@ -199,7 +202,7 @@ addLayer("energy", {
             description: "Multiplies Energy Points by 10 and adds a further 10 to the Energy base.",
             cost: new Decimal(500),
             unlocked() {
-                return hasUpgrade('energy', 21);
+                return hasUpgrade('energy', 14);
             },
         },
         23: {
@@ -207,16 +210,16 @@ addLayer("energy", {
             description: "Doubles Energy Points.",
             cost: new Decimal(600),
             unlocked() {
-                return hasUpgrade('energy', 22);
+                return hasUpgrade('energy', 14);
             },
         },
         24: {
-            title: "Overclock",
+            title: "The beginning",
             description: "Adds 5 to Energy base, reveals a new feature.",
             cost: new Decimal(950),
             unlocked() {
                 if (hasUpgrade('battery', 11)) return (hasUpgrade('battery', 11))
-                return (hasUpgrade('energy', 23))
+                return (hasUpgrade('energy', 14))
             },
         },
     },
@@ -230,7 +233,7 @@ addLayer("energy", {
                 let cost2 = new Decimal(0.5).times(new Decimal(tenfactor)) 
                 let fiftyfactor = Math.floor(new Decimal(amt).divide(new Decimal(50)))
                 let cost3 = new Decimal(2).pow(Math.max(0,new Decimal(tenfactor).sub(4)))
-                return new Decimal(250).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2))).times(new Decimal(cost3)).toFixed(2)
+                return new Decimal(240).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2))).times(new Decimal(cost3)).toFixed(2)
 
             },
             effect(x) {
@@ -270,12 +273,6 @@ return true; // Makes sure the layer is visible
     tabFormat: [
         "main-display",
         "resource-display",
-        ["display-text", function() {
-            return "Your Energy base is " + format(layers.energy.passivebase.sub(1));
-        }],
-        ["display-text", function() {
-            return "You are losing " + format(new Decimal(player.energy.points).divide(10)) + " Energy per second.";
-        }],
         "blank",
         "buyables",
         "upgrades",
