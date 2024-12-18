@@ -1,6 +1,6 @@
 addLayer("achievements", {
     name: "Achievements", // The name of the layer
-    symbol: "A", // The symbol for the layer's node
+    symbol() {return options.emojiSymbols ? "🏆" : "A"}, // The symbol for the layer's node
     position: 0, // Position of the layer in the tree
     row: "side", // Row of the layer in the tree
     color: "#ffe921",
@@ -13,10 +13,58 @@ addLayer("achievements", {
         return "Achievements"; // Custom text when you hover over the layer
     },
     layerShown() { return true; }, // Ensures the layer is always visible
+    achievements: {
+        11: {
+            name: "Dawn",
+            tooltip: "Buy the second upgrade.",
+            done() {return hasUpgrade("energy", 12)},
+            unlocked() {return true}
+        },
+        12: {
+            name: "Enhancer",
+            tooltip: "Get 10 levels of Enhanced Energy.",
+            done() {return getBuyableAmount("energy", 11).gte(10)},
+            unlocked() {return true}
+        },
+        13: {
+            name: "Your true start",
+            tooltip: "Buy Energy Upgrade 24.",
+            done() {return hasUpgrade("energy", 24)},
+            unlocked() {return true}
+        },
+        14: {
+            name: "Scaling starter",
+            tooltip: "Buy Battery Upgrade 13.",
+            done() {return hasUpgrade("battery", 13)},
+            unlocked() {return true}
+        },
+        15: {
+            name: "Good luck affording that...",
+            tooltip: "Have Enhanced Energy start superscaling.",
+            done() {return getBuyableAmount("energy", 11).gte(50)},
+            unlocked() {return true}
+        },
+        16: {
+            name: "(softcapped)",
+            tooltip: "Have Energy Upgrade 13 softcap.",
+            done() {
+                if (hasUpgrade('battery', 21)) {
+                    return player.points.pow(0.28).gte(250);
+                } else if (hasUpgrade('battery', 12)) {
+                    return player.points.pow(0.24).gte(250);
+                } else {
+                    return player.points.pow(0.2).gte(250);
+                }
+            },
+            unlocked() {return true}
+        },
+    },
     tabFormat: {
         "Achievements": {
             content: [
-                ["display-text", "coming soon"]
+                ["display-text", "Achievements won't boost anything, they serve mainly as milestones more-or-less."],
+                "blank",
+                "achievements",
             ],
         },
         "Time Control": {
@@ -55,7 +103,7 @@ addLayer("achievements", {
 
 addLayer("energy", {
     name: "Energy", // The name of the layer
-    symbol: "EN", // The symbol for the layer's node
+    symbol() {return options.emojiSymbols ? "⚡" : "EN"}, // The symbol for the layer's node
     position: 0, // Position of the layer in the tree
     row: 0, // Row of the layer in the tree
     style() {
@@ -142,7 +190,7 @@ addLayer("energy", {
         if (hasUpgrade('energy', 21)) passivebase = passivebase.times((new Decimal(0.1).times(new Decimal(player.energy.upgrades.length)).add(1)));
         if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
         if (hasUpgrade('energy', 24)) passivebase = passivebase.add(7);
-        if (hasUpgrade('battery', 13)) passivebase = passivebase.times(new Decimal((Math.floor(Math.max(1,Math.log10(new Decimal(player.energy.points)))))).div(2))
+        if (hasUpgrade('battery', 13)) passivebase = passivebase.times(new Decimal((Math.floor(Math.max(2,Math.log10(new Decimal(player.energy.points)))))).div(2))
         if (hasUpgrade('battery', 22)) {
             passivebase = passivebase.times(new Decimal(Math.max(0, Math.min(new Decimal(1).add(new Decimal(0.10).times(player.battery.points)), new Decimal(player.energy.spentTime).divide(180)))).add(1));
         } else if (hasUpgrade('battery', 14)) {
@@ -157,12 +205,12 @@ addLayer("energy", {
 
         // decay
 
-        let decay = new Decimal(10)
-        decay = passivebase.divide(10)
+        let decay = new Decimal(0.10)
+        this.decay = decay;
 
         // passive
 
-        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase).sub(decay)).sub(1);
+        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase.sub(new Decimal(Math.max(0,player.energy.points.times(decay))))).sub(1));
 
         this.passivebase = passivebase;
         return passive;
@@ -180,7 +228,7 @@ addLayer("energy", {
             tooltip: function() {
                 return "Formula: Energy ^ 0.9 <br> Effect: x" + format(new Decimal(player.energy.points).pow(0.9).toFixed(2)) + " boost to Energy Points.";
             },
-            cost: new Decimal(100),
+            cost: new Decimal(90),
             unlocked() {
                 return hasUpgrade('energy', 11);
             },
@@ -207,7 +255,7 @@ addLayer("energy", {
                 
 
             },
-            cost: new Decimal(200),
+            cost: new Decimal(190),
             unlocked() {
                 return hasUpgrade('energy', 11);
             },
@@ -306,6 +354,12 @@ return true; // Makes sure the layer is visible
     tabFormat: [
         "main-display",
         "resource-display",
+        ["display-text", function() {
+            return "Your Energy Base is " + format(new Decimal(layers.energy.passivebase).toFixed(2));
+        }],
+        ["display-text", function() {
+            return "Currently at " + format(new Decimal(player.energy.points.div(layers.energy.passivebase).times(10)).toFixed(2)) + "% of your Energy cap, losing " + format(new Decimal(player.energy.points.times(new Decimal(layers.energy.decay))).toFixed(2)) + " Energy per second";
+        }],
         "blank",
         "buyables",
         "upgrades",
@@ -317,13 +371,20 @@ return true; // Makes sure the layer is visible
 addLayer("battery", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(0),
+        autobuy1: false,
         auto: false 
     }},
-    symbol: "B",
-    color: "#a3a19b",                       // The color for this layer, which affects many elements.
+    symbol() {return options.emojiSymbols ? "🔋" : "B"},
+    color: "#727180",                       // The color for this layer, which affects many elements.
     resource: "Batteries",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy",
+    style() {
+        return {
+            "background-image": "linear-gradient(to top,rgb(33, 33, 36),rgb(63, 59, 73))",
+            "background-size": "cover"
+        };
+    },
     autoPrestige() {
         if (player.battery.auto === true && hasMilestone('battery', 1))
             return true
@@ -377,7 +438,7 @@ addLayer("battery", {
             title: "A Small Volt",
             description: "Energy is boosted by Energy's magnitude",
             tooltip:function() {
-                return "Formula: ⌊log10(energy)⌋/2 <br> Effect: x" + format(new Decimal((Math.floor(Math.max(1,Math.log10(new Decimal(player.energy.points)))))).div(2)) + " boost to Energy base.";
+                return "Formula: ⌊log10(energy)⌋/2 <br> Effect: x" + format(new Decimal((Math.floor(Math.max(2,Math.log10(new Decimal(player.energy.points)))))).div(2)) + " boost to Energy base.";
             },
             cost: new Decimal(3),
             canAfford() {

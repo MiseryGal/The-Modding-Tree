@@ -12,14 +12,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.1",
+	name: "Release",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>v0.1</h3><br>
+		- Released the game!<br>
+		- Current features include: Energy, Batteries`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -68,7 +68,8 @@ function isEndgame() {
 
 // Style for the background, can be a function
 var backgroundStyle = {
-
+		"background-image": "linear-gradient(to top,rgb(0, 0, 0),rgb(53, 14, 14))",
+		"background-size": "cover"
 }
 
 // You can change this if you have things that can be messed up by long tick lengths

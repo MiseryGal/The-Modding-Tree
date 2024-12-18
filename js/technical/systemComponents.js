@@ -159,7 +159,7 @@ var systemComponents = {
             <tr>
                 <td><button class="opt" onclick="exportSave()">Export to clipboard</button></td>
                 <td><button class="opt" onclick="importSave()">Import</button></td>
-                <td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod: {{ options.offlineProd?"ON":"OFF" }}</button></td>
+                <td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod [this might break stuff pls don't]: {{ options.offlineProd?"ON":"OFF" }}</button></td>
             </tr>
             <tr>
                 <td><button class="opt" onclick="switchTheme()">Theme: {{ getThemeName() }}</button></td>
@@ -173,6 +173,7 @@ var systemComponents = {
 				</tr> 
 			<tr>
                 <td><button class="opt" onclick="toggleOpt('hideMilestonePopups')">Show Milestone Popups: {{ formatOption(!options.hideMilestonePopups) }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('emojiSymbols'); needsCanvasUpdate = true">Emoji Symbols: {{ options.emojiSymbols?"ON":"OFF" }}</button></td>
             </tr>
         </table>`
     },
