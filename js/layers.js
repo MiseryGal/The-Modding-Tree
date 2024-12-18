@@ -78,11 +78,11 @@ addLayer("energy", {
     automate() {
         if (player.energy.autobuy1 === true && hasMilestone('battery', 3)) {
             let amt = getBuyableAmount("energy", 11);
-            let cost1 = (new Decimal(20).times(new Decimal(x)))
+            let cost1 = (new Decimal(20).times(new Decimal(amt)))
             let tenfactor = Math.floor(new Decimal(amt).divide(new Decimal(10)))
             let cost2 = new Decimal(0.5).times(new Decimal(tenfactor)) 
             let cost3 = new Decimal(2).pow(Math.max(0,new Decimal(tenfactor).sub(4)))
-            if (new Decimal(240).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2))).times(new Decimal(cost3)).lt(layers.energy.passivebase.times(5))) {
+            if (new Decimal(new Decimal(240).add(new Decimal(cost1)).times(new Decimal(1).add(new Decimal(cost2))).times(new Decimal(cost3))).lt(layers.energy.passivebase.times(5))) {
                 buyBuyable('energy', 11)
             }
         }
@@ -155,10 +155,14 @@ addLayer("energy", {
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
         if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5);
 
+        // decay
+
+        let decay = new Decimal(10)
+        decay = passivebase.divide(10)
 
         // passive
 
-        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase)).sub(1);
+        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase).sub(decay)).sub(1);
 
         this.passivebase = passivebase;
         return passive;
