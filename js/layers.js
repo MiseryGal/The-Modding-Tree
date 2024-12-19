@@ -58,6 +58,14 @@ addLayer("achievements", {
             },
             unlocked() {return true}
         },
+        21: {
+            name: "Holy s-",
+            tooltip: "Bear witness to the great scaling of 20 Batteries.",
+            done() {
+                return player.battery.points.gte(20)
+            },
+            unlocked() {return true}
+        },
     },
     tabFormat: {
         "Achievements": {
@@ -195,6 +203,9 @@ addLayer("energy", {
             passivebase = passivebase.times(new Decimal(Math.max(0, Math.min(new Decimal(1).add(new Decimal(0.10).times(player.battery.points)), new Decimal(player.energy.spentTime).divide(180)))).add(1));
         } else if (hasUpgrade('battery', 14)) {
             passivebase = passivebase.times(new Decimal(Math.max(0, Math.min(1, new Decimal(player.energy.spentTime).divide(180)))).add(1))
+        }
+        if (hasUpgrade('battery', 24)) {
+            passivebase = passivebase.times(new Decimal(1.04).pow(new Decimal(Math.floor(Math.log10(Math.max(1,player.points))))))
         }
         
         let buyableEffect = layers.energy.buyables[11].effect(getBuyableAmount("energy", 11));
@@ -401,7 +412,7 @@ addLayer("battery", {
     requires: new Decimal(1000),              // The amount of the base needed to  gain 1 of the prestige currency. // Also the amount required to unlock the layer.
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points.max(0)).pow(2).add(Math.floor(Math.log10(player.battery.points.max(1)))))); 
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(player.battery.points.max(0)).pow(new Decimal(2).add(Math.floor(new Decimal(player.battery.points.max(1)).divide(20)))))); 
     },
 
     layerShown() { return hasUpgrade('energy', 24) },          // Returns a bool for if this layer's node should be visible in the tree.
@@ -436,7 +447,7 @@ addLayer("battery", {
         },
         13: {
             title: "A Small Volt",
-            description: "Energy is boosted by Energy's magnitude",
+            description: "Energy is boosted by Energy's magnitude.",
             tooltip:function() {
                 return "Formula: ⌊log10(energy)⌋/2 <br> Effect: x" + format(new Decimal((Math.floor(Math.max(2,Math.log10(new Decimal(player.energy.points)))))).div(2)) + " boost to Energy base.";
             },
@@ -509,7 +520,7 @@ addLayer("battery", {
             title: "Further Enhanced",
             description: "Batteries increase the effect of Enhanced Energy at a reduced rate.",
             tooltip:function() {
-                return "Formula: Batteries ^ 0.1 <br> Effect: +" + format(new Decimal(player.battery.points).pow(0.1).toFixed(2)) + " to Enhanced Energy effect.";
+                return "Formula: Batteries ^ 0.1 <br> Effect: +" + format(new Decimal(player.battery.points).pow(0.1).sub(1).toFixed(2)) + " to Enhanced Energy effect.";
             },
             cost: new Decimal(13),
             canAfford() {
@@ -520,6 +531,23 @@ addLayer("battery", {
             },
             unlocked() {
                 return hasUpgrade('battery', 22);
+            },
+        },
+        24: {
+            title: "Pointy",
+            description: "Energy Points boost Energy Base by magnitude.",
+            tooltip:function() {
+                return "Formula: 1.04 ^ ⌊log10(Energy Points)⌋ Effect: x" + format(new Decimal(1.04).pow(new Decimal(Math.floor(Math.log10(Math.max(1,player.points))))).toFixed(2)) + " to Energy Base.";
+            },
+            cost: new Decimal(16),
+            canAfford() {
+                return player.battery.points.gte(this.cost);
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+            unlocked() {
+                return hasUpgrade('battery', 23);
             },
         },
     },
@@ -566,6 +594,16 @@ addLayer("battery", {
                 return hasUpgrade('battery', 22)
             },
         },
+        4: {
+            requirementDescription: "20 Batteries",
+            effectDescription: "Unlock Compact Energy.",
+            done() {
+                return player.battery.points.gte(20)
+            },
+            unlocked() {
+                return hasMilestone('battery', 3)
+            },
+        },
     },
     tabFormat: [
         "main-display",
@@ -573,7 +611,7 @@ addLayer("battery", {
             return "Your Batteries are boosting Energy Base by x" + format(new Decimal(player.battery.points).pow(0.4).toFixed(2));
         }],
         ["display-text", function() {
-            return "Battery cost scales by +^1 per OoM of Batteries you have! They are currently ^" + format(new Decimal(2).add(Math.floor(Math.log10(player.battery.points.max(1)))));
+            return "Battery cost scales by +^1 per 20 Batteries you have! They are currently ^" + format(new Decimal(2).add(Math.floor(new Decimal(player.battery.points.max(1)).divide(20))));
         }],
         "resource-display",
         "prestige-button",
