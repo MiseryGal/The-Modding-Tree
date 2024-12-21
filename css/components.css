@@ -146,14 +146,15 @@
 }
 
 /* Used for respec button and similar */
+
 .longUpg {
-	height: 50px;
+	min-height: 100px;
 	width: 120px;
-	background: var(--points);
-	border-radius: 50%;
+	border-radius: 25%;
 	border: 2px solid;
 	border-color: rgba(0, 0, 0, 0.125);
 	font-size: 10px;
+	overflow: visible;
 }
 
 .smallUpg {
@@ -163,4 +164,3 @@
 	border: 2px solid;
 	border-color: rgba(0, 0, 0, 0.125);
 }
-

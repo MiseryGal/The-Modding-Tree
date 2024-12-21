@@ -48,6 +48,9 @@ function getPointGen() {
 	if (hasUpgrade('energy', 23)) gain = gain.times(2);
 	if (hasUpgrade('battery', 12)) gain = gain.times(3);
 	if (hasUpgrade('battery', 21)) gain = gain.times(player.battery.points);
+	gain = gain.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11))); 
+	gain = Decimal.max(1,gain)
+
 	return gain
 }
 function addedPlayerData() { return {
@@ -67,9 +70,8 @@ function isEndgame() {
 // Less important things beyond this point!
 
 // Style for the background, can be a function
-var backgroundStyle = {
-		"background-image": "linear-gradient(to top,rgb(0, 0, 0),rgb(53, 14, 14))",
-		"background-size": "cover"
+let backgroundStyle = function(){
+    return {"background-image": "linear-gradient(rgb(53, 14, 14),rgb(0, 0, 0))"}
 }
 
 // You can change this if you have things that can be messed up by long tick lengths
