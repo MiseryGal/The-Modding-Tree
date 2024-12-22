@@ -65,8 +65,6 @@ function isEndgame() {
 	return player.points.gte(new Decimal("e280000000"))
 }
 
-
-
 // Less important things beyond this point!
 
 // Style for the background, can be a function
