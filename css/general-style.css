@@ -35,7 +35,23 @@ h1, h2, h3, b, input {
 	cursor: default;
 }
 
+.darkenergy.bought {
+	background-color: #ffffff !important;
+	cursor: default !important;
+	color: #000000 !important;
+	border-color: #000000 !important;
+	border: 2px solid !important;
+}
+
 #points {
 	color: var(--points);
 	text-shadow: 0 0 10px var(--points);
+}
+
+.darkcore.locked {
+	background-color: #000000 !important;
+	border: 2px solid !important;
+	border-color: #ffffff !important;
+	color: #ffffff !important;
+	cursor: default;
 }

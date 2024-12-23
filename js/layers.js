@@ -1184,7 +1184,9 @@ addLayer("compactenergy", {
 addLayer("darkenergy", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(1),
-        darkenergyexpo: new Decimal(1)
+        darkenergyexpo: new Decimal(1),
+        timemult: new Decimal(1),
+        outofrun: new Decimal(1)
     }},
     symbol() {return options.emojiSymbols ? "⚫" : "dEN"},
     color: "#424242",                       // The color for this layer, which affects many elements.
@@ -1201,15 +1203,30 @@ addLayer("darkenergy", {
         };
     },
     update(diff){
-        player.darkenergy.darkenergyexpo = player.darkenergy.darkenergyexpo.sub(new Decimal(diff).div(120))
+
+        // time stuff
+
+        if (hasUpgrade('darkenergy', 11)) {player.darkenergy.timemult = new Decimal(1.5)}
+        player.darkenergy.darkenergyexpo = player.darkenergy.darkenergyexpo.sub(new Decimal(diff).div(new Decimal(120).div(player.darkenergy.timemult)))
         if (player.darkenergy.darkenergyexpo.lt(0)) player.darkenergy.darkenergyexpo = new Decimal(0)
+        
+        if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {player.darkenergy.outofrun = new Decimal(1)}
     },
     passiveGeneration() {
         let passive = new Decimal(0);
         let passivebase = new Decimal(11);
-        darkenergyexpo = player.darkenergy.darkenergyexpo
+        darkenergyexpo = Decimal.min(1,player.darkenergy.darkenergyexpo)
         let outofrun = new Decimal(1)
 
+        // pasivebase
+
+        if (hasUpgrade('darkenergy', 11)) {passivebase = passivebase.times(3)}
+        if (hasUpgrade('darkenergy', 12)) {passivebase = passivebase.times(1.5)}
+        if (hasUpgrade('darkenergy', 13)) {passivebase = passivebase.times(player.points.pow(0.1))}
+        if (hasUpgrade('darkenergy', 12)) {passivebase = passivebase.times(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1))}
+
+        passivebase = passivebase.times(Decimal.max(1,new Decimal(player.darkcore.points).pow(0.2)))
+    
         passive = passivebase.pow(darkenergyexpo)
         return Decimal.max(0,passive).sub(outofrun)
     },
@@ -1222,9 +1239,9 @@ addLayer("darkenergy", {
             canClick() {return true},
             onClick() {if (new Decimal(player.darkenergy.darkenergyexpo).gt(0)) {player.darkenergy.darkenergyexpo = new Decimal(0)
                 player.darkenergy.outofrun = new Decimal(1)}
-                else if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {player.darkenergy.darkenergyexpo = new Decimal(1)
-                    player.darkenergy.points = new Decimal(0)
-                    player.darkenergy.outofrun = new Decimal(0)}
+                else if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {layerDataReset('darkenergy')
+                    player.darkenergy.outofrun = new Decimal(0)
+                }
             },
             unlocked() {return true},
             style() {
@@ -1239,27 +1256,220 @@ addLayer("darkenergy", {
             
         },
     },
-    canBuyMax() {
-        return true
+    buyables: {
+        11: {
+            title: "Dark Time",
+            cost() {let amt = getBuyableAmount('darkenergy', 11)
+                return new Decimal(10).pow(amt.times(2))               
+            },
+            style() {
+                return {
+                    "background-color": `#000000`,
+                    "color": "#ffffff",
+                    "border": "2px solid",
+	                "border-color": "#ffffff",
+                    "font-weight": "bold",
+                };
+            },
+            canAfford(){if (new Decimal(player.darkenergy.outofrun).eq(1)){return false}
+                let cost = this.cost()
+                return player.darkenergy.points.gte(cost)
+            },
+            buy(){let cost = this.cost()
+                let amt = getBuyableAmount('darkenergy', 11)
+                player.darkenergy.points = player.darkenergy.points.sub(cost)
+                setBuyableAmount('darkenergy', 11, amt.add(1))
+                player.darkenergy.darkenergyexpo = player.darkenergy.darkenergyexpo.add(0.5)
+            },
+            display(){let cost = this.cost()
+                return '<span style="font-size: 13px">Adds 60 seconds to Dark Run time.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkenergy', 11)) + '<br>Cost: ' + format(cost)}
+        }
     },
+    upgrades: {
+        11: {
+            title: "Darkness",
+            description: "Triples Dark Energy, but Dark Run time ticks faster.",
+            tooltip:function(){
+                return "Buying this upgrade will make Upgrade 12 100x more expensive."
+            },
+            cost() {if (hasUpgrade('darkenergy', 12)) {return new Decimal(10000)}
+                else return new Decimal(100)},
+            canAfford() {
+                let cost = this.cost();
+                if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+                    return false; 
+                }
+                else new Decimal(player.darkenergy.points).gte(cost);
+
+        }
+    },
+        12: {
+            title: "Purity",
+            description: "Multiplies Dark Energy by 1.5x",
+            tooltip:function(){
+             return "Buying this upgrade will make Upgrade 11 100x more expensive."
+            },
+            cost() {if (hasUpgrade('darkenergy', 11)) {return new Decimal(10000)}
+                else return new Decimal(100)},
+            canAfford() {
+                let cost = this.cost();
+                if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+                    return false; 
+                }
+                else new Decimal(player.darkenergy.points).gte(cost);
+
+    }
+},13: {
+    title: "Synergy",
+    description: "Energy Points boost Dark Energy Gain at a reduced rate.",
+    tooltip:function(){
+     return "Formula: Energy Points ^ 0.1 <br> Effect: " + format(player.points.pow(0.1)) + "x boost to Dark Energy. <br>Buying this upgrade will make Upgrade 14 100x more expensive."
+    },
+    cost() {if (hasUpgrade('darkenergy', 14)) {return new Decimal(200000)}
+        else return new Decimal(2000)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},14: {
+    title: "Loathing",
+    description: "Dark Energy boosts itself by it's magnitude.",
+    tooltip:function(){
+     return "Formula: 0.20 x ⌊log10(Dark Energy)⌋ <br> Effect: " + format(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1)) + "x boost to Dark Energy. <br>Buying this upgrade will make Upgrade 13 100x more expensive."
+    },
+    cost() {if (hasUpgrade('darkenergy', 13)) {return new Decimal(200000)}
+        else return new Decimal(2000)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},
+    
+},
     baseAmount() {return player.points},  
     unlocked() {
         return (player.achievements.doomsday.eq(1))
     },
     layerShown() {return (player.achievements.doomsday.eq(1))},
 
-    tabFormat: [
-        "main-display",
-        "clickables",
-        "resource-display",
-        ["display-text", function() {
-            return 'Dark Energy Exponent is currently ^' + format(player.darkenergy.darkenergyexpo)}],
-        "blank",
-        "buyables",
-        "upgrades",
-    ],
+    tabFormat: {
+        "Main": {
+            content: [
+                "main-display",
+                "clickables",
+                "blank",
+                ["display-text", function() {
+                    if (new Decimal(player.darkenergy.outofrun).eq(1))
+                        return 'Starting a Dark Run will reset Dark Energy and everything before itself. <br> You cannot buy Dark Energy Upgrades, Buyables, or anything else, outside of Dark Run.';
+                }],
+                "resource-display",
+                ["display-text", function() {
+                    let darkenergyexpo = Decimal.min(1, player.darkenergy.darkenergyexpo);
+                    return 'Dark Energy Exponent is currently ^' + format(darkenergyexpo) + ', capped at ^1.00.';
+                }],
+                ["display-text", function() {
+                    let timeLeft = new Decimal(120).div(player.darkenergy.timemult);
+                    let darkenergyexpo = player.darkenergy.darkenergyexpo;
+                    if (new Decimal(player.darkenergy.outofrun).eq(0)) {
+                        return 'You have ' + format(darkenergyexpo.times(timeLeft)) + ' seconds left in this Dark Run. ' + format(Decimal.max(0, darkenergyexpo.times(timeLeft).sub(new Decimal(1).times(timeLeft)))) + ' seconds until Dark Energy Exponent ticks down.';
+                    }
+                }],
+                "blank",
+                "buyables",
+                "upgrades"
+            ]
+        
+        },
+        "Dark Cores": {
+            embedLayer: 'darkcore',
+            unlocked() {if (new Decimal(player.darkenergy.outofrun).eq(0)) {return false}
+                return (player.achievements.doomsday.eq(1))},
+        },
+    }})
 
+addLayer("darkcore", {
+    startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
+        points: new Decimal(0),
+        rgb1: new Decimal(0),
+        rgb2: new Decimal(255)
+    }},
+    symbol() {return options.emojiSymbols ? "⬛" : "DC"},
+    color() {
+        let rgb1 = player.darkcore.rgb1;
+        return `rgb(${rgb1}, ${rgb1}, ${rgb1})`;
+    },                       // The color for this layer, which affects many elements.
+    resource: "Dark Cores",            // The name of this layer's main prestige resource.
+    row: 0,
+    position: 1,                                 // The row this layer is on (0 is the first row).
+    baseResource: "Dark Energy",
+    type: "custom",
+    requires: new Decimal(10),
+    style() {
+        return {
+            "background-color": "#000000",
+            "background-size": "cover"
+        };
+     },
+    baseAmount() {return player.darkenergy.points},  
+    unlocked() {if (new Decimal(player.darkenergy.outofrun).eq(0)) {return false}
+        return (player.achievements.doomsday.eq(1))
+    },
+    layerShown() {return false},
+    update(diff){
+        if (!player.darkcore.rgb1Direction) player.darkcore.rgb1Direction = 1; // 1 for increasing, -1 for decreasing
+        if (!player.darkcore.rgb2Direction) player.darkcore.rgb2Direction = 1
+        // Update rgb1
+        player.darkcore.rgb1 = player.darkcore.rgb1.add(diff * 50 * player.darkcore.rgb1Direction);
+        if (player.darkcore.rgb1.gt(255)) {
+            player.darkcore.rgb1 = new Decimal(255); // Cap at 255
+            player.darkcore.rgb1Direction = -1; // Reverse direction
+        }
+        if (player.darkcore.rgb1.lt(0)) {
+            player.darkcore.rgb1 = new Decimal(0); // Cap at 0
+            player.darkcore.rgb1Direction = 1; // Reverse direction
+        }
+        player.darkcore.rgb2 = player.darkcore.rgb2.add(diff * 50 * player.darkcore.rgb2Direction);
+        if (player.darkcore.rgb2.gt(255)) {
+            player.darkcore.rgb2 = new Decimal(255); // Cap at 255
+            player.darkcore.rgb2Direction = -1; // Reverse direction
+        }
+        if (player.darkcore.rgb2.lt(0)) {
+            player.darkcore.rgb2 = new Decimal(0); // Cap at 0
+            player.darkcore.rgb2Direction = 1; // Reverse direction
+        }
+    },
+    onPrestige(){player.darkenergy.points = new Decimal(0)},
+    canReset(){
+        return this.getResetGain().gte(1)
+    },
+    getResetGain(){
+        return Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(2)))
+    },
+    getNextAt(){
+        return new Decimal(10)
+    },
+    prestigeButtonText() {
+        return '<span style="font-size: 13px;"> Convert </span><span style="font-size: 15px;">' + format(Decimal.max(10,new Decimal(player.darkenergy.points))) + '</span><span style="font-size: 13px;"> Dark Energy into </span><span style="font-size: 15px;">' + format(this.getResetGain()) + '</span><span style="font-size: 13px;"> Dark Cores'},
 
-
-
+    tabFormat:[
+                "main-display",
+                "prestige-button",
+                "clickables",
+                "blank",
+                ["display-text", function() {
+                        return 'You have ' + format(player.darkcore.points) + ' Dark Cores, boosting Dark Energy by x' + format(new Decimal(player.darkcore.points).pow(0.2)) + '.';
+                }],
+                "resource-display",
+                "blank",
+                "buyables",
+                "upgrades"
+    ]
     })

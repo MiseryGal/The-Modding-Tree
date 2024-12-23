@@ -164,3 +164,11 @@
 	border: 2px solid;
 	border-color: rgba(0, 0, 0, 0.125);
 }
+
+.darkenergy {
+	background-color: #000000 !important;
+	border: 2px solid !important;
+	border-color: #ffffff !important;
+	color: #ffffff !important;
+	cursor: default;
+}
