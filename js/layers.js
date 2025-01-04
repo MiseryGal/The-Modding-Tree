@@ -1215,15 +1215,20 @@ addLayer("darkenergy", {
     passiveGeneration() {
         let passive = new Decimal(0);
         let passivebase = new Decimal(11);
-        darkenergyexpo = Decimal.min(1,player.darkenergy.darkenergyexpo)
+        let darkpower = getBuyableAmount('darkcore', 11).pow(0.5)
+        darkenergyexpo = Decimal.min(darkpower.add(1),player.darkenergy.darkenergyexpo)
         let outofrun = new Decimal(1)
 
-        // pasivebase
+
+        // passivebase
 
         if (hasUpgrade('darkenergy', 11)) {passivebase = passivebase.times(3)}
-        if (hasUpgrade('darkenergy', 12)) {passivebase = passivebase.times(1.5)}
+        if (hasUpgrade('darkenergy', 12)) {passivebase = passivebase.times(2)}
         if (hasUpgrade('darkenergy', 13)) {passivebase = passivebase.times(player.points.pow(0.1))}
-        if (hasUpgrade('darkenergy', 12)) {passivebase = passivebase.times(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1))}
+        if (hasUpgrade('darkenergy', 14)) {passivebase = passivebase.times(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1))}
+        if (hasUpgrade('darkenergy', 21)) {passivebase = passivebase.times(100)}
+        if (hasUpgrade('darkenergy', 22)) {passivebase = passivebase.div(10)}
+        if (hasUpgrade('darkenergy', 24)) {passivebase = passivebase.div(5)}
 
         passivebase = passivebase.times(Decimal.max(1,new Decimal(player.darkcore.points).pow(0.2)))
     
@@ -1290,9 +1295,9 @@ addLayer("darkenergy", {
             title: "Darkness",
             description: "Triples Dark Energy, but Dark Run time ticks faster.",
             tooltip:function(){
-                return "Buying this upgrade will make Upgrade 12 100x more expensive."
+                return "Buying this upgrade will make Upgrade 12 1e4x more expensive."
             },
-            cost() {if (hasUpgrade('darkenergy', 12)) {return new Decimal(10000)}
+            cost() {if (hasUpgrade('darkenergy', 12)) {return new Decimal(1e6)}
                 else return new Decimal(100)},
             canAfford() {
                 let cost = this.cost();
@@ -1305,11 +1310,11 @@ addLayer("darkenergy", {
     },
         12: {
             title: "Purity",
-            description: "Multiplies Dark Energy by 1.5x",
+            description: "Doubles Dark Energy.",
             tooltip:function(){
-             return "Buying this upgrade will make Upgrade 11 100x more expensive."
+             return "Buying this upgrade will make Upgrade 11 1e4x more expensive."
             },
-            cost() {if (hasUpgrade('darkenergy', 11)) {return new Decimal(10000)}
+            cost() {if (hasUpgrade('darkenergy', 11)) {return new Decimal(1e6)}
                 else return new Decimal(100)},
             canAfford() {
                 let cost = this.cost();
@@ -1323,9 +1328,9 @@ addLayer("darkenergy", {
     title: "Synergy",
     description: "Energy Points boost Dark Energy Gain at a reduced rate.",
     tooltip:function(){
-     return "Formula: Energy Points ^ 0.1 <br> Effect: " + format(player.points.pow(0.1)) + "x boost to Dark Energy. <br>Buying this upgrade will make Upgrade 14 100x more expensive."
+     return "Formula: Energy Points ^ 0.1 <br> Effect: " + format(player.points.pow(0.1)) + "x boost to Dark Energy. <br>Buying this upgrade will make Upgrade 14 1e5x more expensive."
     },
-    cost() {if (hasUpgrade('darkenergy', 14)) {return new Decimal(200000)}
+    cost() {if (hasUpgrade('darkenergy', 14)) {return new Decimal(2e10)}
         else return new Decimal(2000)},
     canAfford() {
         let cost = this.cost();
@@ -1336,13 +1341,80 @@ addLayer("darkenergy", {
 
 }
 },14: {
-    title: "Loathing",
+    title: "Basking",
     description: "Dark Energy boosts itself by it's magnitude.",
     tooltip:function(){
-     return "Formula: 0.20 x ⌊log10(Dark Energy)⌋ <br> Effect: " + format(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1)) + "x boost to Dark Energy. <br>Buying this upgrade will make Upgrade 13 100x more expensive."
+     return "Formula: 0.20 x ⌊log10(Dark Energy)⌋ <br> Effect: " + format(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1)) + "x boost to Dark Energy. <br>Buying this upgrade will make Upgrade 13 1e5x more expensive."
     },
-    cost() {if (hasUpgrade('darkenergy', 13)) {return new Decimal(200000)}
+    cost() {if (hasUpgrade('darkenergy', 13)) {return new Decimal(2e10)}
         else return new Decimal(2000)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},21: {
+    title: "Narcissism",
+    description: "100x Dark Energy.",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 22 1e7x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(1)},
+    cost() {if (hasUpgrade('darkenergy', 22)) {return new Decimal(1.5e14)}
+        else return new Decimal(1.5e7)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+}
+},22: {
+    title: "Self-Sacrificing",
+    description: "10x Less Dark Energy, in exchange for a great boost to Dark Cores and 100x Energy Points.",
+    tooltip:function(){
+     return "Formula [Dark Cores]: Dark Cores ^ 0.13 <br>Effect: x" + format (new Decimal(player.darkcore.points).pow(0.13))+ " Boost to Dark Cores. <br>Buying this upgrade will make Upgrade 21 1e7x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(1)},
+    cost() {if (hasUpgrade('darkenergy', 21)) {return new Decimal(1.5e14)}
+        else return new Decimal(1.5e7)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},23: {
+    title: "Blessing",
+    description: "5x more Dark Cores.",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 24 1e8x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(2)},
+    cost() {if (hasUpgrade('darkenergy', 24)) {return new Decimal(2.5e21)}
+        else return new Decimal(2.5e13)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},24: {
+    title: "Curse",
+    description: "5x less Dark Energy, but Dark Cores are multiplied by 6.66x",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 23 1e8x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(2)},
+    cost() {if (hasUpgrade('darkenergy', 23)) {return new Decimal(2.5e21)}
+        else return new Decimal(2.5e13)},
     canAfford() {
         let cost = this.cost();
         if (new Decimal(player.darkenergy.outofrun).eq(1)) {
@@ -1372,14 +1444,16 @@ addLayer("darkenergy", {
                 }],
                 "resource-display",
                 ["display-text", function() {
-                    let darkenergyexpo = Decimal.min(1, player.darkenergy.darkenergyexpo);
-                    return 'Dark Energy Exponent is currently ^' + format(darkenergyexpo) + ', capped at ^1.00.';
+                    let darkpower = new Decimal(1).add(getBuyableAmount('darkcore', 11).pow(0.5))
+                    let darkenergyexpo = Decimal.min(darkpower, player.darkenergy.darkenergyexpo);
+                    return 'Dark Energy Exponent is currently ^' + format(darkenergyexpo) + ', capped at ' + format(darkpower);
                 }],
                 ["display-text", function() {
                     let timeLeft = new Decimal(120).div(player.darkenergy.timemult);
                     let darkenergyexpo = player.darkenergy.darkenergyexpo;
+                    let darkpower = getBuyableAmount('darkcore', 11).pow(0.5)
                     if (new Decimal(player.darkenergy.outofrun).eq(0)) {
-                        return 'You have ' + format(darkenergyexpo.times(timeLeft)) + ' seconds left in this Dark Run. ' + format(Decimal.max(0, darkenergyexpo.times(timeLeft).sub(new Decimal(1).times(timeLeft)))) + ' seconds until Dark Energy Exponent ticks down.';
+                        return 'You have ' + format(darkenergyexpo.times(timeLeft)) + ' seconds left in this Dark Run. ' + format(Decimal.max(0, darkenergyexpo.times(timeLeft).sub(new Decimal(1).add(darkpower).times(timeLeft)))) + ' seconds until Dark Energy Exponent ticks down.';
                     }
                 }],
                 "blank",
@@ -1418,6 +1492,36 @@ addLayer("darkcore", {
             "background-size": "cover"
         };
      },
+     buyables: {
+        11: {
+            title: "Dark Power",
+            cost() {let amt = getBuyableAmount('darkcore', 11)
+                return new Decimal(100).pow(Decimal.max(1,amt.add(1)))               
+            },
+            canAfford(){if (new Decimal(player.darkenergy.outofrun).eq(0)){return false}
+                let cost = this.cost()
+                return player.darkcore.points.gte(cost)
+            },
+            buy(){let cost = this.cost()
+                let amt = getBuyableAmount('darkcore', 11)
+                setBuyableAmount('darkcore', 11, amt.add(1))
+                player.darkcore.points = new Decimal(0)
+                layerDataReset('darkenergy')
+                player.darkenergy.outofrun = new Decimal(1)
+            },
+            display(){let cost = this.cost()
+                return '<span style="font-size: 13px">Resets Dark Cores and everything prior.<br> Each level of Dark Power increases Dark Energy exponent cap by √amt.<br>Also tends to unlock new upgrades or features.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 11)) + '<br>Cost: ' + format(cost)},
+                style() {if (player.darkcore.points.lt(this.cost()))
+                    return {
+                        "background-color": `#000000`,
+                        "color": "#ffffff",
+                        "border": "2px solid",
+                        "border-color": "#ffffff",
+                        "font-weight": "bold",
+                    };
+                },
+        }
+    },
     baseAmount() {return player.darkenergy.points},  
     unlocked() {if (new Decimal(player.darkenergy.outofrun).eq(0)) {return false}
         return (player.achievements.doomsday.eq(1))
@@ -1446,12 +1550,17 @@ addLayer("darkcore", {
             player.darkcore.rgb2Direction = 1; // Reverse direction
         }
     },
+
     onPrestige(){player.darkenergy.points = new Decimal(0)},
     canReset(){
         return this.getResetGain().gte(1)
     },
     getResetGain(){
-        return Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(2)))
+        resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(3)))
+        if (hasUpgrade('darkenergy', 22)) {resetGain = resetGain.times(Decimal.max(1,resetGain.pow(0.13)))}
+        if (hasUpgrade('darkenergy', 23)) {resetGain = resetGain.times(5)}
+        if (hasUpgrade('darkenergy', 24)) {resetGain = resetGain.times(6.66)}
+        return resetGain
     },
     getNextAt(){
         return new Decimal(10)
@@ -1462,14 +1571,14 @@ addLayer("darkcore", {
     tabFormat:[
                 "main-display",
                 "prestige-button",
-                "clickables",
                 "blank",
                 ["display-text", function() {
                         return 'You have ' + format(player.darkcore.points) + ' Dark Cores, boosting Dark Energy by x' + format(new Decimal(player.darkcore.points).pow(0.2)) + '.';
                 }],
                 "resource-display",
                 "blank",
+                "upgrades",
                 "buyables",
-                "upgrades"
+                "clickables"
     ]
     })

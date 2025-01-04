@@ -50,6 +50,7 @@ function getPointGen() {
 	if (hasUpgrade('energy', 31) && hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points.pow(2)); }
 	else if (hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points); }
 	gain = gain.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11))); 
+	if (hasUpgrade('darkenergy', 22)) {gain = gain.times(100)}
 	gain = Decimal.max(1,gain)
 
 	return gain
