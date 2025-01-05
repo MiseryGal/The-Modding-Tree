@@ -19,7 +19,11 @@ let VERSION = {
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.1</h3><br>
 		- Released the game!<br>
-		- Current features include: Energy, Batteries`
+		- Added Energy layer with 17 Upgrades and 1 Buyable.<br>
+		- Added Battery layer with 9 Upgrades and 11 Milestones.<br>
+		- Added Compact Energy layer with 2 Buyables.<br>
+		- Added Dark Energy layer with 12 Upgrades.<br>
+		- Added Dark Cores sub-layer with 3 Upgrades and 2 Buyables.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -51,7 +55,8 @@ function getPointGen() {
 	else if (hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points); }
 	gain = gain.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11))); 
 	if (hasUpgrade('darkenergy', 22)) {gain = gain.times(100)}
-	gain = Decimal.max(1,gain)
+	if (hasUpgrade('darkenergy', 31)) {gain = new Decimal(0)}
+	if (hasUpgrade('darkenergy', 32)) {gain = gain.times(10)}
 
 	return gain
 }

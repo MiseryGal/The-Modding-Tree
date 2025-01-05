@@ -113,7 +113,7 @@ addLayer("achievements", {
         },
         25: {
             name: "Time is a concept",
-            tooltip: "Get Battery Milestone 11",
+            tooltip: "Get Battery Milestone 10",
             done() {
                 return hasMilestone('battery', 10)
             },
@@ -140,6 +140,22 @@ addLayer("achievements", {
             tooltip: "Re-unlock Energy",
             done() {
                 return hasUpgrade('darkcore', 11)
+            },
+            unlocked() {return true}
+        },
+        33: {
+            name: "Rebuilding",
+            tooltip: "Re-unlock Batteries",
+            done() {
+                return hasUpgrade('darkcore', 21)
+            },
+            unlocked() {return true}
+        },
+        34: {
+            name: "Scaling Diminisher",
+            tooltip: "Buy Battery Upgrade 13... again.",
+            done() {
+                return hasUpgrade('darkcore', 21) && hasUpgrade('battery', 13)
             },
             unlocked() {return true}
         },
@@ -326,9 +342,15 @@ addLayer("energy", {
 
         passivebase = passivebase.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11))); 
         if (player.achievements.doomsday.eq(0)){if (passivebase.gte(1.79e307)) passivebase = new Decimal(1.79e307)};
+
+        // post nerf passivebase
+
         if (player.achievements.doomsday.eq(1)){passivebase = Decimal.log10(passivebase.add(1)).pow(2)}
         if (player.achievements.doomsday.eq(1)){passivebase = passivebase.times(Decimal.max(1,Decimal.log10(player.darkenergy.points)))}
         if (player.achievements.doomsday.eq(1)){passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)))};
+        if (hasUpgrade('darkenergy', 32)) {passivebase = passivebase.times(1.5)}
+        if (hasUpgrade('battery', 31)) {passivebase = passivebase.times(new Decimal(0.05).times(player.darkenergy.upgrades.length).add(1))}
+
         // decay
 
         let decay = new Decimal(0.10)
@@ -493,12 +515,31 @@ addLayer("energy", {
             tooltip:function() {
                 return "Formula: Dark Energy * log10(Energy) <br> Effect: x" + format(Decimal.max(1,Decimal.log10(player.energy.points)).toFixed(2)) + " to Dark Energy.";
             },
-            cost: new Decimal(600),
+            cost: new Decimal(750),
             unlocked() {
                 return (hasUpgrade('darkcore', 11))
             },
            style() {
             if (player[this.layer].upgrades.includes(41)) {return {"background-color": "#ffffff !important",
+                "border": "2px solid !important",
+                "border-color": "#000000 !important",
+                "color": "#000000 !important",
+                "cursor": "default"}}
+                else return {"background-color": "#000000 !important",
+                "border": "2px solid !important",
+                "border-color": "#ffffff !important",
+                "color": "#ffffff !important",
+                "cursor": "default"}
+            }
+        },42: {
+            title: "More Cores",
+            description: "Doubles your Dark Cores.",
+            cost: new Decimal(2150),
+            unlocked() {
+                return (hasUpgrade('darkcore', 11))
+            },
+           style() {
+            if (player[this.layer].upgrades.includes(42)) {return {"background-color": "#ffffff !important",
                 "border": "2px solid !important",
                 "border-color": "#000000 !important",
                 "color": "#000000 !important",
@@ -574,7 +615,7 @@ return true; // Makes sure the layer is visible
         "blank",
         ["display-text", function() 
             { if (player.achievements.doomsday.eq(1))
-                return "Due to recent events, Energy Base is nerfed to log10(energybase+1)^2. <br>Thankfully, Energy Base is now boosted by x" + format(Decimal.max(1,Decimal.log10(player.darkenergy.points))) + " due to Dark Energy."
+                return "Due to Doomsday, Energy Base is nerfed to log10(energybase+1)^2. <br>Thankfully, Energy Base is now boosted by x" + format(Decimal.max(1,Decimal.log10(player.darkenergy.points))) + " due to Dark Energy."
             else return "";
         }],
         "blank",
@@ -657,8 +698,8 @@ addLayer("battery", {
     resetsNothing(){if (hasMilestone('battery', 8))
         return true},
     baseAmount() {return player.energy.points},  
-    unlocked() {
-        return hasUpgrade('energy', 24) && player.energy.points.gte(1000);
+    unlocked() {if (player.achievements.doomsday.eq(1)) {return hasUpgrade('darkcore', 21) && hasUpgrade('energy', 24) && player.energy.points.gte(1000)}
+        else return hasUpgrade('energy', 24) && player.energy.points.gte(1000);
     },
     onPrestige() {
     },
@@ -667,11 +708,17 @@ addLayer("battery", {
     type: "static",                        // Determines the formula used for calculating prestige currency.
     getNextAt() {
         let amt = getBuyableAmount('compactenergy', 12);
-        let b = player.battery.points
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(b).sub(amt).max(0).pow(new Decimal(2).add(Decimal.floor(new Decimal(b.sub(amt).max()).divide(20)))))); 
+        let b;
+        if (player.achievements.doomsday.eq(1)) {
+            b = Decimal.floor(player.battery.points.times(1.5));
+        } else {
+            b = player.battery.points;
+        }
+        let darkscaling = new Decimal(0.94).pow(getBuyableAmount('darkcore', 12))
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(b).sub(amt).max(0).pow(new Decimal(2).add(Decimal.floor(new Decimal(b.sub(amt).max()).divide(20)))))).times(darkscaling); 
     },
 
-    layerShown() {if (player.achievements.doomsday.eq(1)) {return false}
+    layerShown() {if (player.achievements.doomsday.eq(1)) {return hasUpgrade('darkcore', 21)}
         else return hasUpgrade('energy', 24) },          // Returns a bool for if this layer's node should be visible in the tree.
     hotkeys: [
         {
@@ -861,6 +908,31 @@ addLayer("battery", {
             unlocked() {
                 return hasUpgrade('battery', 23);
             },
+        },31: {
+            title: "Never again",
+            description: "Reduce Dark Scaling's scaling by 0.03. Dark Energy Upgrades boost both Energy and Dark Energy. Also doubles Dark Cores.",
+            tooltip:function() {
+                return "Formula: 0.05 x Dark Energy Upgrades <br> Effect: x" + format(new Decimal(0.05).times(player.darkenergy.upgrades.length).add(1).toFixed(2)) + " boost to Energy and Dark Energy.";
+            },
+            cost: new Decimal(3),
+            unlocked() {
+                return (hasUpgrade('darkcore', 11))
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+           style() {
+            if (player[this.layer].upgrades.includes(31)) {return {"background-color": "#ffffff !important",
+                "border": "2px solid !important",
+                "border-color": "#000000 !important",
+                "color": "#000000 !important",
+                "cursor": "default"}}
+                else return {"background-color": "#000000 !important",
+                "border": "2px solid !important",
+                "border-color": "#ffffff !important",
+                "color": "#ffffff !important",
+                "cursor": "default"}
+            }
         },
     },
     milestones: {
@@ -987,6 +1059,12 @@ addLayer("battery", {
             return "Battery cost scales by +^1 per 20 Batteries you have! They are currently ^" + format(new Decimal(2).add(Decimal.floor(new Decimal(new Decimal(player.battery.points.max(1)).sub(amt)).divide(20))));
         }],
         "resource-display",
+        ["display-text", function() 
+            { if (player.achievements.doomsday.eq(1))
+                return "Due to Doomsday, Batteries scale at x1.5 speed. Effective scaled Batteries is " + format(Decimal.floor(player.battery.points.times(1.5).toFixed(1))) + "."
+            else return "";
+        }],
+        "blank",
         "prestige-button",
         "blank",
         "clickables",
@@ -1242,13 +1320,29 @@ addLayer("darkenergy", {
     row: 0,
     position: 1,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy Points",
-    branches: ["energy"],
+    branches: ["energy", "battery", "compact energy"],
     type: "static",
     style() {
         return {
             "background-color": "#000000",
             "background-size": "cover"
         };
+    },
+    doReset(layer) {
+        if (layer !== this.layer) {
+            let savedCurrency = player[this.layer].points; // Save the currency amount
+            layerDataReset(this.layer, ["upgrades", "buyables", "points"]);
+            player[this.layer].points = savedCurrency; // Restore the currency amount
+
+            let upgradesToKeep = [11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34];
+            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upgradesToKeep.includes(upg));
+
+            const buyableID = 11;
+            if (player[this.layer].buyables[buyableID]) {
+                let currentAmount = new Decimal(player[this.layer].buyables[buyableID]);
+                player[this.layer].buyables[buyableID] = currentAmount;
+            }
+        }  
     },
     update(diff){
 
@@ -1278,6 +1372,8 @@ addLayer("darkenergy", {
         if (hasUpgrade('darkenergy', 22)) {passivebase = passivebase.div(10)}
         if (hasUpgrade('darkenergy', 24)) {passivebase = passivebase.div(5)}
         if (hasUpgrade('energy', 41)) {passivebase = passivebase.times(Decimal.max(1,Decimal.log10(player.energy.points)))}
+        if (hasUpgrade('darkenergy', 31)) {passivebase = passivebase.times(10)}
+        if (hasUpgrade('battery', 31)) {passivebase = passivebase.times(new Decimal(0.05).times(player.darkenergy.upgrades.length).add(1))}
 
         passivebase = passivebase.times(Decimal.max(1,new Decimal(player.darkcore.points).pow(0.2)))
     
@@ -1473,6 +1569,40 @@ addLayer("darkenergy", {
         else new Decimal(player.darkenergy.points).gte(cost);
 
 }
+},31: {
+    title: "Void",
+    description: "Stop generating Energy Points until this upgrade is reset, but you recieve 10x more Dark Energy, and the Dark Core formula is improved.",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 31 1e9x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(2)},
+    cost() {if (hasUpgrade('darkenergy', 32)) {return new Decimal(1.5e26)}
+        else return new Decimal(1.5e17)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},32: {
+    title: "Calling",
+    description: "You can't reset for Dark Cores until this upgrade is reset, but 1.5x Energy Base, and 10x Energy Points.",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 32 1e9x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(2)},
+    cost() {if (hasUpgrade('darkenergy', 31)) {return new Decimal(1.5e26)}
+        else return new Decimal(1.5e17)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
 },
     
 },
@@ -1488,10 +1618,6 @@ addLayer("darkenergy", {
                 "main-display",
                 "clickables",
                 "blank",
-                ["display-text", function() {
-                    if (new Decimal(player.darkenergy.outofrun).eq(1))
-                        return 'Starting a Dark Run will reset Dark Energy and everything before itself. <br> You cannot buy Dark Energy Upgrades, Buyables, or anything else, outside of Dark Run.';
-                }],
                 "resource-display",
                 ["display-text", function() {
                     let darkpower = new Decimal(1).add(getBuyableAmount('darkcore', 11).pow(0.5))
@@ -1542,6 +1668,22 @@ addLayer("darkcore", {
             "background-size": "cover"
         };
      },
+     doReset(layer) {
+        if (layer !== this.layer) {
+            let savedCurrency = player[this.layer].points; // Save the currency amount
+            layerDataReset(this.layer, ["upgrades", "buyables", "points"]);
+            player[this.layer].points = savedCurrency; // Restore the currency amount
+
+            let upgradesToKeep = [11, 21, 22];
+            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upgradesToKeep.includes(upg));
+
+            const buyableID = 11;
+            if (player[this.layer].buyables[buyableID]) {
+                let currentAmount = new Decimal(player[this.layer].buyables[buyableID]);
+                player[this.layer].buyables[buyableID] = currentAmount;
+            }
+        }  
+    },
      buyables: {
         11: {
             title: "Dark Power",
@@ -1550,6 +1692,7 @@ addLayer("darkcore", {
             },
             canAfford(){if (new Decimal(player.darkenergy.outofrun).eq(0)){return false}
                 let cost = this.cost()
+                if (getBuyableAmount('darkcore', 11).eq(3)) {return player.darkcore.points.gte(cost) && hasUpgrade('battery', 31)}
                 return player.darkcore.points.gte(cost)
             },
             buy(){let cost = this.cost()
@@ -1561,7 +1704,33 @@ addLayer("darkcore", {
                 player.darkenergy.darkenergyexpo = new Decimal(0)
             },
             display(){let cost = this.cost()
-                return '<span style="font-size: 13px">Resets Dark Cores and everything prior.<br> Each level of Dark Power increases Dark Energy exponent cap by √amt.<br>Also tends to unlock new upgrades or features.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 11)) + '<br>Cost: ' + format(cost)},
+                return '<span style="font-size: 13px">Resets Dark Cores, Dark Energy, and side nodes.<br> Each level of Dark Power increases Dark Energy exponent cap by √amt.<br>Also tends to unlock new upgrades or features.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 11)) + '<br>Cost: ' + format(cost)},
+                style() {if (player.darkcore.points.lt(this.cost()))
+                    return {
+                        "background-color": `#000000`,
+                        "color": "#ffffff",
+                        "border": "2px solid",
+                        "border-color": "#ffffff",
+                        "font-weight": "bold",
+                    };
+                },
+        },12: {
+            title: "Dark Scaling",
+            cost() {let amt = getBuyableAmount('darkcore', 12)
+                if (hasUpgrade('battery', 31)) {return new Decimal(1e6).times(new Decimal(1.17).pow(amt))}
+                return new Decimal(1e6).times(new Decimal(1.2).pow(amt))              
+            },
+            canAfford(){if (new Decimal(player.darkenergy.outofrun).eq(0)){return false}
+                let cost = this.cost()
+                return player.darkcore.points.gte(cost)
+            },
+            buy(){let cost = this.cost()
+                let amt = getBuyableAmount('darkcore', 12)
+                setBuyableAmount('darkcore', 12, amt.add(1))
+                player.darkcore.points = player.darkcore.points.sub(cost)
+            },
+            display(){let cost = this.cost()
+                return '<span style="font-size: 13px">Multiplies the cost of Batteries by 0.94x per level.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 12)) + '<br>Cost: ' + format(cost) + '<br>Effect: ' + format(new Decimal(0.94).pow(getBuyableAmount('darkcore', 12)).toFixed(2)) + 'x to Battery cost.'},
                 style() {if (player.darkcore.points.lt(this.cost()))
                     return {
                         "background-color": `#000000`,
@@ -1606,27 +1775,36 @@ addLayer("darkcore", {
     canReset(){
         return this.getResetGain().gte(1)
     },
-    getResetGain(){
-        resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(3)))
+    getResetGain(){if (hasUpgrade('darkenergy', 31)) {resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(3.5)))}
+        else resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(3)))
         if (hasUpgrade('darkenergy', 22)) {resetGain = resetGain.times(Decimal.max(1,resetGain.pow(0.13)))}
         if (hasUpgrade('darkenergy', 23)) {resetGain = resetGain.times(5)}
         if (hasUpgrade('darkenergy', 24)) {resetGain = resetGain.times(6.66)}
+        if (hasUpgrade('darkenergy', 32)) {resetGain = new Decimal(0)}
+        if (hasUpgrade('energy', 42)) {resetGain = resetGain.times(2)}
+        if (hasUpgrade('battery', 31)) {resetGain = resetGain.times(2)}
         return resetGain
     },
     upgrades: {
         11: {
             title: "Re-energized",
             description: "Re-unlocks Energy. Energy is now reduced.",
-            tooltip:function(){
-                return "A little FYI? This upgrade and any corresponding will be reset when Dark Power is bought."
-            },
             cost(){return new Decimal(1.5e5)},
             canAfford() {
                 let cost = this.cost();
                 return new Decimal(player.darkcore.points).gte(cost);
             },
             unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(2)},
-    },
+    }, 21: {
+        title: "Revitalized Batteries",
+        description: "Re-unlocks Batteries. Batteries scale faster.",
+        cost(){return new Decimal(4e7)},
+        canAfford() {
+            let cost = this.cost();
+            return new Decimal(player.darkcore.points).gte(cost);
+        },
+        unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(3)},
+}, 
     },
     getNextAt(){
         return new Decimal(10)
@@ -1642,6 +1820,9 @@ addLayer("darkcore", {
                         return 'You have ' + format(player.darkcore.points) + ' Dark Cores, boosting Dark Energy by x' + format(new Decimal(player.darkcore.points).pow(0.2)) + '.';
                 }],
                 "resource-display",
+                ["display-text", function() {
+                        return 'Doing a Dark Core reset will reset same-row nodes.';
+                }],
                 "blank",
                 "upgrades",
                 "buyables",
