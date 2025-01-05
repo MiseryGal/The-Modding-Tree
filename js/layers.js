@@ -319,21 +319,23 @@ addLayer("energy", {
             passivebase = passivebase.times(new Decimal(1.04).pow(Decimal.floor(Decimal.log10(Decimal.max(1,player.points)))))
         }
         
-        passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11))); 
+        if (player.achievements.doomsday.eq(0)){passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)))}; 
 
         if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
         if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5);
 
         passivebase = passivebase.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11))); 
-        if (player.achievements.doomsday.eq(0)){if (passivebase.gte(1.79e308)) passivebase = new Decimal(1.79e307)};
+        if (player.achievements.doomsday.eq(0)){if (passivebase.gte(1.79e307)) passivebase = new Decimal(1.79e307)};
         if (player.achievements.doomsday.eq(1)){passivebase = Decimal.log10(passivebase.add(1)).pow(2)}
         if (player.achievements.doomsday.eq(1)){passivebase = passivebase.times(Decimal.max(1,Decimal.log10(player.darkenergy.points)))}
+        if (player.achievements.doomsday.eq(1)){passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)))};
         // decay
 
         let decay = new Decimal(0.10)
         this.decay = decay;
         if (player.battery.overclocktimer.gt(0))
             decay = new Decimal(0)
+        if (player.achievements.doomsday.eq(0)){if (passivebase.gte(1.79e307)) decay = new Decimal(0)};
 
         // passive
 
@@ -676,8 +678,8 @@ addLayer("battery", {
             key: "o", // What the hotkey button is. Use uppercase if it's combined with shift, or "ctrl+x" for holding down ctrl.
             description: "O: Use Overclock", // The description of the hotkey that is displayed in the game's How To Play tab
             onPress() {if (player.battery.overclockcooldown.lte(0) && (player.battery.overclocktimer.lte(0)))
-                player.battery.overclocktimer = new Decimal(10)
-                player.battery.overclockcooldown = player.battery.overclocktimer.times(2)
+                player.battery.overclocktimer = new Decimal(20)
+                player.battery.overclockcooldown = player.battery.overclocktimer.times(1.5)
             },
             unlocked() {return hasUpgrade('energy', 35)} // Determines if you can use the hotkey, optional
         }
@@ -691,8 +693,8 @@ addLayer("battery", {
             onClick() {if (layers.energy.passivebase.gte(1.79e307)) {
                 player.achievements.doomsday = new Decimal(1)
             }
-                else {player.battery.overclocktimer = new Decimal(10)
-                player.battery.overclockcooldown = player.battery.overclocktimer.times(2)}
+                else {player.battery.overclocktimer = new Decimal(20)
+                player.battery.overclockcooldown = player.battery.overclocktimer.times(1.5)}
             },
             unlocked() {return hasUpgrade('energy', 35)},
             style() {
@@ -966,7 +968,7 @@ addLayer("battery", {
         },
         10: {
             requirementDescription: "1e6 Batteries",
-            effectDescription: "Battery Upgrade 14 is instantaneous.",
+            effectDescription: "Battery Upgrade 14 is instantaneous. Now, you must get to infinite Energy.",
             done() {
                 return player.battery.points.gte(1e6)
             },
@@ -1176,7 +1178,7 @@ addLayer("compactenergy", {
             },
             display() { 
                 let amt = getBuyableAmount("compactenergy", 12);
-                    return 'Batteries scale +1.00 later.,br.<span style="font-size: 15px;">Current Effect: Batteries scale ' + format(new Decimal(1).times(amt).toFixed(2)) + ' later. <br>Cost: ' + format(this.cost()) + ' Compact Energy </span><br>Bought: ' + format(amt);
+                    return 'Batteries scale +1.00 later.<br><span style="font-size: 15px;">Current Effect: Batteries scale ' + format(new Decimal(1).times(amt).toFixed(2)) + ' later. <br>Cost: ' + format(this.cost()) + ' Compact Energy </span><br>Bought: ' + format(amt);
             },
             unlocked() {
                 return true
@@ -1280,7 +1282,8 @@ addLayer("darkenergy", {
         passivebase = passivebase.times(Decimal.max(1,new Decimal(player.darkcore.points).pow(0.2)))
     
         passive = passivebase.pow(darkenergyexpo)
-        return Decimal.max(0,passive).sub(outofrun)
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {return new Decimal(0)}
+        return Decimal.max(0,passive)
     },
     clickables: {
         11: {
@@ -1293,7 +1296,6 @@ addLayer("darkenergy", {
                 player.darkenergy.outofrun = new Decimal(1)}
                 else if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {layerDataReset('darkenergy')
                     player.darkenergy.outofrun = new Decimal(0)
-                    doReset('energy')
                 }
             },
             unlocked() {return true},
@@ -1556,6 +1558,7 @@ addLayer("darkcore", {
                 player.darkcore.points = new Decimal(0)
                 layerDataReset('darkenergy')
                 player.darkenergy.outofrun = new Decimal(1)
+                player.darkenergy.darkenergyexpo = new Decimal(0)
             },
             display(){let cost = this.cost()
                 return '<span style="font-size: 13px">Resets Dark Cores and everything prior.<br> Each level of Dark Power increases Dark Energy exponent cap by √amt.<br>Also tends to unlock new upgrades or features.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 11)) + '<br>Cost: ' + format(cost)},
