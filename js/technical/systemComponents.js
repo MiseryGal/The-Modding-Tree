@@ -173,7 +173,7 @@ var systemComponents = {
 				</tr> 
 			<tr>
                 <td><button class="opt" onclick="toggleOpt('hideMilestonePopups')">Show Milestone Popups: {{ formatOption(!options.hideMilestonePopups) }}</button></td>
-				<td><button class="opt" onclick="toggleOpt('emojiSymbols'); needsCanvasUpdate = true">Emoji Symbols: {{ options.emojiSymbols?"ON":"OFF" }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('imageSymbols'); needsCanvasUpdate = true">Image Symbols: {{ options.imageSymbols?"ON":"OFF" }}</button></td>
             </tr>
         </table>`
     },

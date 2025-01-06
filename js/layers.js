@@ -1,6 +1,8 @@
 addLayer("achievements", {
-    name: "Achievements and Settings", // The name of the layer
-    symbol() {return options.emojiSymbols ? "🏆" : "A"}, // The symbol for the layer's node
+    name: "Achievements and Other Stuff", // The name of the layer
+    symbol() {
+        return options.imageSymbols ? '<img src="resources/achievements.png" alt="EN" style="width: 40px; height: 40px;">' : "A";
+    }, // The symbol for the layer's node
     position: 0, // Position of the layer in the tree
     row: "side", // Row of the layer in the tree
     color: "#ffe921",
@@ -31,42 +33,48 @@ addLayer("achievements", {
         }
     },
     tooltip() {
-        return "Achievements and Settings"; // Custom text when you hover over the layer
+        return "Achievements and Other Stuff"; // Custom text when you hover over the layer
     },
     layerShown() { return true; }, // Ensures the layer is always visible
     achievements: {
         11: {
             name: "Dawn",
             tooltip: "Buy the second upgrade.",
+            image: "energy.png",
             done() {return hasUpgrade("energy", 12)},
             unlocked() {return true}
         },
         12: {
             name: "Enhancer",
             tooltip: "Get 10 levels of Enhanced Energy.",
+            image: "energy.png",
             done() {return getBuyableAmount("energy", 11).gte(10)},
             unlocked() {return true}
         },
         13: {
             name: "Your true start",
             tooltip: "Buy Energy Upgrade 24.",
+            image: "energy.png",
             done() {return hasUpgrade("energy", 24)},
             unlocked() {return true}
         },
         14: {
             name: "Scaling starter",
             tooltip: "Buy Battery Upgrade 13.",
+            image: "battery.png",
             done() {return hasUpgrade("battery", 13)},
             unlocked() {return true}
         },
         15: {
             name: "Good luck affording that...",
+            image: "energy.png",
             tooltip: "Have Enhanced Energy start superscaling.",
             done() {return getBuyableAmount("energy", 11).gte(50)},
             unlocked() {return true}
         },
         16: {
             name: "(softcapped)",
+            image: "energy.png",
             tooltip: "Have Energy Upgrade 13 softcap.",
             done() {
                 if (hasUpgrade('battery', 21)) {
@@ -81,6 +89,7 @@ addLayer("achievements", {
         },
         21: {
             name: "Holy s-",
+            image: "battery.png",
             tooltip: "Bear witness to the great scaling of 20 Batteries.",
             done() {
                 return player.battery.points.gte(20)
@@ -89,6 +98,7 @@ addLayer("achievements", {
         },
         22: {
             name: "Compressor",
+            image: "compactenergy.png",
             tooltip: "Acquire 10 Compact Energy.",
             done() {
                 return player.compactenergy.points.gte(10)
@@ -97,6 +107,7 @@ addLayer("achievements", {
         },
         23: {
             name: "Boosted",
+            image: "energy.png",
             tooltip: "Buy Energy Upgrade 34.",
             done() {
                 return hasUpgrade('energy', 34)
@@ -105,6 +116,7 @@ addLayer("achievements", {
         },
         24: {
             name: "The Fifth Row.",
+            image: "energy.png",
             tooltip: "Buy Energy Upgrade 35...",
             done() {
                 return hasUpgrade('energy', 35)
@@ -113,6 +125,7 @@ addLayer("achievements", {
         },
         25: {
             name: "Time is a concept",
+            image: "battery.png",
             tooltip: "Get Battery Milestone 10",
             done() {
                 return hasMilestone('battery', 10)
@@ -121,6 +134,7 @@ addLayer("achievements", {
         },
         26: {
             name: "Doomsday.",
+            image: "darkenergy.png",
             tooltip: "Erase everything.",
             done() {
                 return player.achievements.doomsday.eq(1)
@@ -129,6 +143,7 @@ addLayer("achievements", {
         },
         31: {
             name: "Building in darkness",
+            image: "darkcore.png",
             tooltip: "Buy your first Dark Power",
             done() {
                 return new Decimal(getBuyableAmount('darkcore', 11)).gte(1)
@@ -137,6 +152,7 @@ addLayer("achievements", {
         },
         32: {
             name: "See the light",
+            image: "darkcore.png",
             tooltip: "Re-unlock Energy",
             done() {
                 return hasUpgrade('darkcore', 11)
@@ -145,6 +161,7 @@ addLayer("achievements", {
         },
         33: {
             name: "Rebuilding",
+            image: "darkcore.png",
             tooltip: "Re-unlock Batteries",
             done() {
                 return hasUpgrade('darkcore', 21)
@@ -153,6 +170,7 @@ addLayer("achievements", {
         },
         34: {
             name: "Scaling Diminisher",
+            image: "battery.png",
             tooltip: "Buy Battery Upgrade 13... again.",
             done() {
                 return hasUpgrade('darkcore', 21) && hasUpgrade('battery', 13)
@@ -210,7 +228,9 @@ addLayer("achievements", {
 
 addLayer("energy", {
     name: "Energy", // The name of the layer
-    symbol() {return options.emojiSymbols ? "⚡" : "EN"}, // The symbol for the layer's node
+    symbol() {
+        return options.imageSymbols ? '<img src="resources/energyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "EN";
+    }, // The symbol for the layer's node
     position: 0, // Position of the layer in the tree
     row: 0, // Row of the layer in the tree
     branches: ["battery", "compactenergy"],
@@ -636,7 +656,9 @@ addLayer("battery", {
         overclocktimer: new Decimal(0),
         overclockcooldown: new Decimal(10)
     }},
-    symbol() {return options.emojiSymbols ? "🔋" : "B"},
+    symbol() {
+        return options.imageSymbols ? '<img src="resources/batteryfull.png" alt="EN" style="width: 80px; height: 80px;">' : "EN";
+    },
     color: "#727180",                       // The color for this layer, which affects many elements.
     resource: "Batteries",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
@@ -1095,7 +1117,9 @@ addLayer("compactenergy", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(0),
     }},
-    symbol() {return options.emojiSymbols ? "📦" : "cEN"},
+    symbol() {
+        return options.imageSymbols ? '<img src="resources/compactenergyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "dEN";
+    },
     color: "#e8a22a",                       // The color for this layer, which affects many elements.
     resource: "Compact Energy",            // The name of this layer's main prestige resource.
     row: 1,                                 // The row this layer is on (0 is the first row).
@@ -1314,7 +1338,9 @@ addLayer("darkenergy", {
         timemult: new Decimal(1),
         outofrun: new Decimal(1)
     }},
-    symbol() {return options.emojiSymbols ? "⚫" : "dEN"},
+    symbol() {
+        return options.imageSymbols ? '<img src="resources/darkenergyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "dEN";
+    },
     color: "#424242",                       // The color for this layer, which affects many elements.
     resource: "Dark Energy",            // The name of this layer's main prestige resource.
     row: 0,
@@ -1571,7 +1597,7 @@ addLayer("darkenergy", {
 }
 },31: {
     title: "Void",
-    description: "Stop generating Energy Points until this upgrade is reset, but you recieve 10x more Dark Energy, and the Dark Core formula is improved.",
+    description: "Stop generating Energy Points until reset, but receive 10x more Dark Energy, and improve Dark Core formula.",
     tooltip:function(){
      return "Buying this upgrade will make Upgrade 31 1e9x more expensive."
     },
@@ -1651,7 +1677,9 @@ addLayer("darkcore", {
         rgb1: new Decimal(0),
         rgb2: new Decimal(255)
     }},
-    symbol() {return options.emojiSymbols ? "⬛" : "DC"},
+    symbol() {
+        return options.imageSymbols ? '<img src="resources/darkcorefull.png" alt="EN" style="width: 80px; height: 80px;">' : "dEN";
+    },
     color() {
         let rgb1 = player.darkcore.rgb1;
         return `rgb(${rgb1}, ${rgb1}, ${rgb1})`;

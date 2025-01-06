@@ -170,23 +170,22 @@ function loadVue() {
 
 	// data = id
 	Vue.component('upgrade', {
-		props: ['layer', 'data'],
-		template: `
-		<button v-if="tmp[layer].upgrades && tmp[layer].upgrades[data]!== undefined && tmp[layer].upgrades[data].unlocked" :id='"upgrade-" + layer + "-" + data' v-on:click="buyUpg(layer, data)" v-bind:class="{ [layer]: true, tooltipBox: true, upg: true, bought: hasUpgrade(layer, data), locked: (!(canAffordUpgrade(layer, data))&&!hasUpgrade(layer, data)), can: (canAffordUpgrade(layer, data)&&!hasUpgrade(layer, data))}"
-			v-bind:style="[((!hasUpgrade(layer, data) && canAffordUpgrade(layer, data)) ? {'background-color': tmp[layer].color} : {}), tmp[layer].upgrades[data].style]">
-			<div class="upgrade-id">{{ data }}</div>
-			<span v-if="layers[layer].upgrades[data].fullDisplay" v-html="run(layers[layer].upgrades[data].fullDisplay, layers[layer].upgrades[data])"></span>
-			<span v-else>
-				<span v-if= "tmp[layer].upgrades[data].title"><h3 v-html="tmp[layer].upgrades[data].title"></h3><br></span>
-				<span v-html="tmp[layer].upgrades[data].description"></span>
-				<span v-if="layers[layer].upgrades[data].effectDisplay"><br>Currently: <span v-html="run(layers[layer].upgrades[data].effectDisplay, layers[layer].upgrades[data])"></span></span>
-				<br><br>Cost: {{ formatWhole(tmp[layer].upgrades[data].cost) }} {{(tmp[layer].upgrades[data].currencyDisplayName ? tmp[layer].upgrades[data].currencyDisplayName : tmp[layer].resource)}}
-			</span>
-			<tooltip v-if="tmp[layer].upgrades[data].tooltip" :text="tmp[layer].upgrades[data].tooltip"></tooltip>
-		</button>
-		`
-	});
-
+    props: ['layer', 'data'],
+    template: `
+    <button v-if="tmp[layer].upgrades && tmp[layer].upgrades[data]!== undefined && tmp[layer].upgrades[data].unlocked" :id='"upgrade-" + layer + "-" + data' v-on:click="buyUpg(layer, data)" v-bind:class="{ [layer]: true, tooltipBox: true, upg: true, bought: hasUpgrade(layer, data), locked: (!(canAffordUpgrade(layer, data))&&!hasUpgrade(layer, data)), can: (canAffordUpgrade(layer, data)&&!hasUpgrade(layer, data)), 'transparent-background': true }"
+        v-bind:style="[((!hasUpgrade(layer, data) && canAffordUpgrade(layer, data)) ? {'background-color': tmp[layer].color} : {}), tmp[layer].upgrades[data].style, { 'background-image': 'url(resources/' + layer + '.png)' }]">
+        <div class="upgrade-id">{{ data }}</div>
+        <span v-if="layers[layer].upgrades[data].fullDisplay" v-html="run(layers[layer].upgrades[data].fullDisplay, layers[layer].upgrades[data])"></span>
+        <span v-else>
+            <span v-if= "tmp[layer].upgrades[data].title"><h3 v-html="tmp[layer].upgrades[data].title"></h3><br></span>
+            <span v-html="tmp[layer].upgrades[data].description"></span>
+            <span v-if="layers[layer].upgrades[data].effectDisplay"><br>Currently: <span v-html="run(layers[layer].upgrades[data].effectDisplay, layers[layer].upgrades[data])"></span></span>
+            <br><br>Cost: {{ formatWhole(tmp[layer].upgrades[data].cost) }} {{(tmp[layer].upgrades[data].currencyDisplayName ? tmp[layer].upgrades[data].currencyDisplayName : tmp[layer].resource)}}
+        </span>
+        <tooltip v-if="tmp[layer].upgrades[data].tooltip" :text="tmp[layer].upgrades[data].tooltip"></tooltip>
+    </button>
+    `
+});
 	Vue.component('milestones', {
 		props: ['layer', 'data'],
 		template: `
@@ -258,6 +257,7 @@ function loadVue() {
 	Vue.component('buyables', {
 		props: ['layer', 'data'],
 		template: `
+		console.log('Image URL:', 'url(images/' + layer + '.png)');
 		<div v-if="tmp[layer].buyables" class="upgTable">
 			<respec-button v-if="tmp[layer].buyables.respec && !(tmp[layer].buyables.showRespec !== undefined && tmp[layer].buyables.showRespec == false)" :layer = "layer" v-bind:style="[{'margin-bottom': '12px'}, tmp[layer].componentStyles['respec-button']]"></respec-button>
 			<div v-for="row in (data === undefined ? tmp[layer].buyables.rows : data)" class="upgRow">
@@ -274,10 +274,10 @@ function loadVue() {
 		props: ['layer', 'data'],
 		template: `
 		<div v-if="tmp[layer].buyables && tmp[layer].buyables[data]!== undefined && tmp[layer].buyables[data].unlocked" style="display: grid">
-			<button v-bind:class="{ buyable: true, tooltipBox: true, can: tmp[layer].buyables[data].canBuy, locked: !tmp[layer].buyables[data].canBuy, bought: player[layer].buyables[data].gte(tmp[layer].buyables[data].purchaseLimit)}"
-			v-bind:style="[tmp[layer].buyables[data].canBuy ? {'background-color': tmp[layer].color} : {}, tmp[layer].componentStyles.buyable, tmp[layer].buyables[data].style]"
+			<button v-bind:class="{ buyable: true, tooltipBox: true, can: tmp[layer].buyables[data].canBuy, locked: !tmp[layer].buyables[data].canBuy, bought: player[layer].buyables[data].gte(tmp[layer].buyables[data].purchaseLimit), 'transparent-background': true }"
+			v-bind:style="[tmp[layer].buyables[data].canBuy ? {'background-color': tmp[layer].color} : {}, tmp[layer].componentStyles.buyable, tmp[layer].buyables[data].style, { 'background-image': 'url(resources/' + layer + '.png)' }]"
 			v-on:click="if(!interval) buyBuyable(layer, data)" :id='"buyable-" + layer + "-" + data' @mousedown="start" @mouseleave="stop" @mouseup="stop" @touchstart="start" @touchend="stop" @touchcancel="stop">
-				<div class="buyable-id">{{ data }}</div> <!-- This is the section where the little number is added -->
+				<div class="buyable-id">{{ data }}</div>
 				<span v-if= "tmp[layer].buyables[data].title"><h2 v-html="tmp[layer].buyables[data].title"></h2><br></span>
 				<span v-bind:style="{'white-space': 'pre-line'}" v-html="run(layers[layer].buyables[data].display, layers[layer].buyables[data])"></span>
 				<node-mark :layer='layer' :data='tmp[layer].buyables[data].marked'></node-mark>
@@ -288,23 +288,25 @@ function loadVue() {
 			<sell-all :layer="layer" :data="data" v-bind:style="tmp[layer].componentStyles['sell-all']" v-if="(tmp[layer].buyables[data].sellAll)&& !(tmp[layer].buyables[data].canSellAll !== undefined && tmp[layer].buyables[data].canSellAll == false)"></sell-all>
 		</div>
 		`,
-		data() { return { interval: false, time: 0,}},
+		data() { return { interval: false, time: 0, }},
 		methods: {
 			start() {
 				if (!this.interval) {
 					this.interval = setInterval((function() {
-						if(this.time >= 5)
-							buyBuyable(this.layer, this.data)
+						if(this.time >= 5 && gridRun(this.layer, 'getCanClick', player[this.layer].grid[this.data], this.data)) {
+							gridRun(this.layer, 'onHold', player[this.layer].grid[this.data], this.data)
+						}    
 						this.time = this.time+1
-					}).bind(this), 50)}
+					}).bind(this), 50)
+				}
 			},
 			stop() {
 				clearInterval(this.interval)
 				this.interval = false
-			  	this.time = 0
+				this.time = 0
 			}
-		},
-	})
+		}
+	});
 
 	Vue.component('respec-button', {
 		props: ['layer', 'data'],
@@ -484,8 +486,9 @@ function loadVue() {
 	Vue.component('achievement', {
 		props: ['layer', 'data'],
 		template: `
-		<div v-if="tmp[layer].achievements && tmp[layer].achievements[data]!== undefined && tmp[layer].achievements[data].unlocked" v-bind:class="{ [layer]: true, achievement: true, tooltipBox:true, locked: !hasAchievement(layer, data), bought: hasAchievement(layer, data)}"
-			v-bind:style="achievementStyle(layer, data)">
+		<div v-if="tmp[layer].achievements && tmp[layer].achievements[data]!== undefined && tmp[layer].achievements[data].unlocked" 
+			 v-bind:class="{ [layer]: true, achievement: true, tooltipBox:true, locked: !hasAchievement(layer, data), bought: hasAchievement(layer, data)}"
+			 v-bind:style="[achievementStyle(layer, data), { 'background-image': 'url(resources/' + tmp[layer].achievements[data].image + ')' }]">
 			<tooltip :text="
 			(tmp[layer].achievements[data].tooltip == '') ? false : hasAchievement(layer, data) ? (tmp[layer].achievements[data].doneTooltip ? tmp[layer].achievements[data].doneTooltip : (tmp[layer].achievements[data].tooltip ? tmp[layer].achievements[data].tooltip : 'You did it!'))
 			: (tmp[layer].achievements[data].goalTooltip ? tmp[layer].achievements[data].goalTooltip : (tmp[layer].achievements[data].tooltip ? tmp[layer].achievements[data].tooltip : 'LOCKED'))
@@ -493,8 +496,7 @@ function loadVue() {
 			<span v-if= "tmp[layer].achievements[data].name"><br><h3 v-bind:style="tmp[layer].achievements[data].textStyle" v-html="tmp[layer].achievements[data].name"></h3><br></span>
 		</div>
 		`
-	})
-
+	});
 	// Data is an array with the structure of the tree
 	Vue.component('tree', {
 		props: ['layer', 'data'],

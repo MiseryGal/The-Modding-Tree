@@ -15,8 +15,13 @@
 }
 
 .nodeLabel {
-	font: inherit;
-	font-family: inherit;
+    font: inherit;
+    font-family: inherit;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 .treeButton {
