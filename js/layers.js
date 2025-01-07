@@ -657,7 +657,7 @@ addLayer("battery", {
         overclockcooldown: new Decimal(10)
     }},
     symbol() {
-        return options.imageSymbols ? '<img src="resources/batteryfull.png" alt="EN" style="width: 80px; height: 80px;">' : "EN";
+        return options.imageSymbols ? '<img src="resources/batteryfull.png" alt="EN" style="width: 80px; height: 80px;">' : "B";
     },
     color: "#727180",                       // The color for this layer, which affects many elements.
     resource: "Batteries",            // The name of this layer's main prestige resource.
@@ -736,7 +736,9 @@ addLayer("battery", {
         } else {
             b = player.battery.points;
         }
-        let darkscaling = new Decimal(0.94).pow(getBuyableAmount('darkcore', 12))
+        let effectivelevels = new Decimal(0)
+                if (hasUpgrade('darkenergy', 33)) {effectivelevels = effectivelevels.add(7)}
+        let darkscaling = new Decimal(0.94).pow(getBuyableAmount('darkcore', 12).add(effectivelevels))
         return new Decimal(1000).add(new Decimal(800).times(new Decimal(b).sub(amt).max(0).pow(new Decimal(2).add(Decimal.floor(new Decimal(b.sub(amt).max()).divide(20)))))).times(darkscaling); 
     },
 
@@ -1118,7 +1120,7 @@ addLayer("compactenergy", {
         points: new Decimal(0),
     }},
     symbol() {
-        return options.imageSymbols ? '<img src="resources/compactenergyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "dEN";
+        return options.imageSymbols ? '<img src="resources/compactenergyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "cEN";
     },
     color: "#e8a22a",                       // The color for this layer, which affects many elements.
     resource: "Compact Energy",            // The name of this layer's main prestige resource.
@@ -1545,7 +1547,7 @@ addLayer("darkenergy", {
         else new Decimal(player.darkenergy.points).gte(cost);
 }
 },22: {
-    title: "Self-Sacrificing",
+    title: "Sacrifice",
     description: "10x Less Dark Energy, in exchange for a great boost to Dark Cores and 100x Energy Points.",
     tooltip:function(){
      return "Formula [Dark Cores]: Dark Cores ^ 0.13 <br>Effect: x" + format (new Decimal(player.darkcore.points).pow(0.13))+ " Boost to Dark Cores. <br>Buying this upgrade will make Upgrade 21 1e7x more expensive."
@@ -1629,6 +1631,40 @@ addLayer("darkenergy", {
         else new Decimal(player.darkenergy.points).gte(cost);
 
 }
+},33: {
+    title: "Poverty",
+    description: "Adds 7 effective levels to Dark Scaling.",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 34 1e10x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(4)},
+    cost() {if (hasUpgrade('darkenergy', 34)) {return new Decimal(3e38)}
+        else return new Decimal(3e28)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
+},34: {
+    title: "Capitalism",
+    description: "Dark Core formula is boosted.",
+    tooltip:function(){
+     return "Buying this upgrade will make Upgrade 33 1e10x more expensive."
+    },
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(4)},
+    cost() {if (hasUpgrade('darkenergy', 33)) {return new Decimal(3e38)}
+        else return new Decimal(3e28)},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+
+}
 },
     
 },
@@ -1675,10 +1711,10 @@ addLayer("darkcore", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(0),
         rgb1: new Decimal(0),
-        rgb2: new Decimal(255)
+        rgb2: new Decimal(255),
     }},
     symbol() {
-        return options.imageSymbols ? '<img src="resources/darkcorefull.png" alt="EN" style="width: 80px; height: 80px;">' : "dEN";
+        return options.imageSymbols ? '<img src="resources/darkcorefull.png" alt="EN" style="width: 80px; height: 80px;">' : "DC";
     },
     color() {
         let rgb1 = player.darkcore.rgb1;
@@ -1758,7 +1794,9 @@ addLayer("darkcore", {
                 player.darkcore.points = player.darkcore.points.sub(cost)
             },
             display(){let cost = this.cost()
-                return '<span style="font-size: 13px">Multiplies the cost of Batteries by 0.94x per level.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 12)) + '<br>Cost: ' + format(cost) + '<br>Effect: ' + format(new Decimal(0.94).pow(getBuyableAmount('darkcore', 12)).toFixed(2)) + 'x to Battery cost.'},
+                let effectivelevels = new Decimal(0)
+                if (hasUpgrade('darkenergy', 33)) {effectivelevels = effectivelevels.add(7)}
+                return '<span style="font-size: 13px">Multiplies the cost of Batteries by 0.94x per level.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 12)) + ' (+' + format(effectivelevels) + ')<br>Cost: ' + format(cost) + '<br>Effect: ' + format(new Decimal(0.94).pow(getBuyableAmount('darkcore', 12).add(effectivelevels)).toFixed(2)) + 'x to Battery cost.'},
                 style() {if (player.darkcore.points.lt(this.cost()))
                     return {
                         "background-color": `#000000`,
@@ -1803,8 +1841,10 @@ addLayer("darkcore", {
     canReset(){
         return this.getResetGain().gte(1)
     },
-    getResetGain(){if (hasUpgrade('darkenergy', 31)) {resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(3.5)))}
-        else resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(3)))
+    getResetGain(){let bonuspow = new Decimal(0)
+        if (hasUpgrade('darkenergy', 31)) {bonuspow = bonuspow.add(0.5)}
+        if (hasUpgrade('darkenergy', 34)) {bonuspow = bonuspow.add(0.2)}
+        resetGain = Decimal.max(0,Decimal.floor(Decimal.log10(player.darkenergy.points).pow(new Decimal(3).add(bonuspow))))
         if (hasUpgrade('darkenergy', 22)) {resetGain = resetGain.times(Decimal.max(1,resetGain.pow(0.13)))}
         if (hasUpgrade('darkenergy', 23)) {resetGain = resetGain.times(5)}
         if (hasUpgrade('darkenergy', 24)) {resetGain = resetGain.times(6.66)}

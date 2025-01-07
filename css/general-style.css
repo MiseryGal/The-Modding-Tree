@@ -71,3 +71,43 @@ h1, h2, h3, b, input {
 	color: #000000 !important;
 	cursor: default;
 }
+
+.energy.locked {
+	background-color: #a58f3e;
+	cursor: not-allowed;
+}
+
+.energy.bought {
+	background-color: #ebe162;
+	cursor: default;
+}
+
+.battery.locked {
+	background-color: #47454d;
+	cursor: not-allowed;
+}
+
+.battery.bought {
+	background-color: #787597;
+	cursor: default;
+}
+
+.compactenergy.locked {
+	background-color: #ae7a1f;
+	cursor: not-allowed;
+}
+
+.compactenergy.bought {
+	background-color: #f7be5c;
+	cursor: default;
+}
+
+.achievements.locked {
+	background-color: #3d3c3b;
+	cursor: not-allowed;
+}
+
+.achievements.bought {
+	background-color: #f7db26;
+	cursor: default;
+}

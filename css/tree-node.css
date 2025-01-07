@@ -4,7 +4,7 @@
 	width: 100px;
 	border: var(--hqProperty1);
 	border-color: rgba(0, 0, 0, 0.125);
-	border-radius: 50%;
+	border-radius: 0%;
 	box-shadow: var(--hqProperty2a), var(--hqProperty2b);
 	font-size: 40px;
 	font-family: "Lucida Console", "Courier New", monospace;
@@ -12,16 +12,22 @@
 	text-shadow: var(--hqProperty3);
 	padding: 0;
 	margin: 0 10px 0 10px;
+	transform: rotate(45deg);
+}
+
+.treeNode:not(.smallNode) {
+	margin: 0 35px 0 35px;
 }
 
 .nodeLabel {
-    font: inherit;
-    font-family: inherit;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+	font: inherit;
+	font-family: inherit;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	transform: rotate(-45deg);
 }
 
 .treeButton {
@@ -43,13 +49,16 @@
 	width: 60px;
 	font-size: 30px;
 }
-
+.treeNode:hover .nodeLabel {
+    transform: rotate(0deg); /* Counter-rotate to cancel out the parent rotation */
+}
 .resetNotify {
 	box-shadow: var(--hqProperty2a), 0 0 8px #ffffff;
 }
 
 .treeNode.can:hover {
 	transform: scale(1.15, 1.15);
+	transform: rotate(-360deg);
 	box-shadow: var(--hqProperty2a), 0 0 20px var(--points);
 }
 

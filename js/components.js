@@ -274,7 +274,7 @@ function loadVue() {
 		props: ['layer', 'data'],
 		template: `
 		<div v-if="tmp[layer].buyables && tmp[layer].buyables[data]!== undefined && tmp[layer].buyables[data].unlocked" style="display: grid">
-			<button v-bind:class="{ buyable: true, tooltipBox: true, can: tmp[layer].buyables[data].canBuy, locked: !tmp[layer].buyables[data].canBuy, bought: player[layer].buyables[data].gte(tmp[layer].buyables[data].purchaseLimit), 'transparent-background': true }"
+			<button v-bind:class="{ buyable: true, tooltipBox: true, can: tmp[layer].buyables[data].canBuy, locked: !tmp[layer].buyables[data].canBuy, bought: player[layer].buyables[data].gte(tmp[layer].buyables[data].purchaseLimit), 'transparent-background': true, [layer]: true }"
 			v-bind:style="[tmp[layer].buyables[data].canBuy ? {'background-color': tmp[layer].color} : {}, tmp[layer].componentStyles.buyable, tmp[layer].buyables[data].style, { 'background-image': 'url(resources/' + layer + '.png)' }]"
 			v-on:click="if(!interval) buyBuyable(layer, data)" :id='"buyable-" + layer + "-" + data' @mousedown="start" @mouseleave="stop" @mouseup="stop" @touchstart="start" @touchend="stop" @touchcancel="stop">
 				<div class="buyable-id">{{ data }}</div>
@@ -288,25 +288,23 @@ function loadVue() {
 			<sell-all :layer="layer" :data="data" v-bind:style="tmp[layer].componentStyles['sell-all']" v-if="(tmp[layer].buyables[data].sellAll)&& !(tmp[layer].buyables[data].canSellAll !== undefined && tmp[layer].buyables[data].canSellAll == false)"></sell-all>
 		</div>
 		`,
-		data() { return { interval: false, time: 0, }},
+		data() { return { interval: false, time: 0,}},
 		methods: {
 			start() {
 				if (!this.interval) {
 					this.interval = setInterval((function() {
-						if(this.time >= 5 && gridRun(this.layer, 'getCanClick', player[this.layer].grid[this.data], this.data)) {
-							gridRun(this.layer, 'onHold', player[this.layer].grid[this.data], this.data)
-						}    
+						if(this.time >= 5)
+							buyBuyable(this.layer, this.data)
 						this.time = this.time+1
-					}).bind(this), 50)
-				}
+					}).bind(this), 50)}
 			},
 			stop() {
 				clearInterval(this.interval)
 				this.interval = false
-				this.time = 0
+			  	this.time = 0
 			}
-		}
-	});
+		},
+	})
 
 	Vue.component('respec-button', {
 		props: ['layer', 'data'],
