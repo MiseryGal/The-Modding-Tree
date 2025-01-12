@@ -51,12 +51,17 @@ function getPointGen() {
 	if (hasUpgrade('energy', 22)) gain = gain.times(10)
 	if (hasUpgrade('energy', 23)) gain = gain.times(2);
 	if (hasUpgrade('battery', 12)) gain = gain.times(3);
-	if (hasUpgrade('energy', 31) && hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points.pow(2)); }
+
+	if (hasUpgrade('battery', 32) && hasUpgrade('battery', 21) && hasUpgrade('energy', 31)) {gain = gain.times(player.battery.points.times(Decimal.max(1,player.battery.points.div(5))).pow(2))}
+	else if (hasUpgrade('battery', 32) && hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points.times(Decimal.max(1,player.battery.points.div(5))))}
+	else if (hasUpgrade('energy', 31) && hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points.pow(2)); }
 	else if (hasUpgrade('battery', 21)) {gain = gain.times(player.battery.points); }
+
 	gain = gain.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11))); 
 	if (hasUpgrade('darkenergy', 22)) {gain = gain.times(100)}
 	if (hasUpgrade('darkenergy', 31)) {gain = new Decimal(0)}
 	if (hasUpgrade('darkenergy', 32)) {gain = gain.times(10)}
+	if (hasUpgrade('darkenergy', 42)) {gain = gain.times(10)}
 
 	return gain
 }
@@ -75,8 +80,9 @@ function isEndgame() {
 // Less important things beyond this point!
 
 // Style for the background, can be a function
-let backgroundStyle = function(){ if (player.achievements.doomsday.eq(1)) {
-	return {"background-color": "#000000"}}
+let backgroundStyle = function(){ 
+	if (player.achievements.doomsday.eq(1) && hasUpgrade('darkcore', 22)) {return {"background-image": "linear-gradient(rgb(53, 14, 14),rgb(0, 0, 0))"}}
+	else if (player.achievements.doomsday.eq(1)) {return {"background-color": "#000000"}}
     else return {"background-image": "linear-gradient(rgb(53, 14, 14),rgb(0, 0, 0))"}
 }
 

@@ -16,7 +16,7 @@
 }
 
 .treeNode:not(.smallNode) {
-	margin: 0 35px 0 35px;
+	margin: 03px 35px 03px 35px;
 }
 
 .nodeLabel {
@@ -61,14 +61,6 @@
 	transform: rotate(-360deg);
 	box-shadow: var(--hqProperty2a), 0 0 20px var(--points);
 }
-
-.notify {
-	transform: scale(1.05, 1.05);
-	border-color: rgba(0, 0, 0, 0.125);
-	box-shadow: var(--hqProperty2a), 0 0 20px #ff0000;
-}
-
-
 
 .mark {
 	position: relative;
