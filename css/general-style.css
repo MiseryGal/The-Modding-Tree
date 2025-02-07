@@ -111,3 +111,25 @@ h1, h2, h3, b, input {
 	background-color: #f7db26;
 	cursor: default;
 }
+
+.light.locked {
+	background-color: #3b4a60;
+	cursor: not-allowed;
+}
+
+.light.bought {
+	background-color: #8cbbe7;
+	cursor: default;
+}
+
+.bomb.locked {
+	background-image: radial-gradient(rgb(156, 122, 21), rgb(136, 44, 19)) !important;
+	border-color: rgb(136, 44, 19) !important;
+	cursor: not-allowed;
+}
+
+.bomb.bought {
+	background-image: radial-gradient(rgb(255, 255, 121), rgb(241, 95, 95)) !important;
+	border-color:rgb(241, 95, 95) !important;
+	cursor: not-allowed;
+}

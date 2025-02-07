@@ -205,9 +205,108 @@ addLayer("achievements", {
         41: {
             name: "Reflourish",
             image: "darkcore.png",
-            tooltip: "Re-umlock Compact Energy.",
+            tooltip: "Re-unlock Compact Energy.",
             done() {
                 return hasUpgrade('darkcore', 22)
+            },
+            unlocked() {return true}
+        },
+        42: {
+            name: "Short Lived",
+            image: "compactenergy.png",
+            tooltip: "Get over 100 Compact Energy within Doomsday.",
+            done() {
+                return player.achievements.doomsday.eq(1) && player.compactenergy.total.gte(100)
+            },
+            unlocked() {return true}
+        },
+        43: {
+            name: "Encroaching Darkness",
+            image: "darkenergy.png",
+            tooltip: "Amass over 1e100 Dark Energy...",
+            done() {
+                return player.darkenergy.points.gte(1e100)
+            },
+            unlocked() {return true}
+        },
+        44: {
+            name: "Long Life",
+            image: "compactenergy.png",
+            tooltip: "Get over 1e7 Compact Energy within Doomsday.",
+            done() {
+                return player.achievements.doomsday.eq(1) && player.compactenergy.total.gte(1e7)
+            },
+            unlocked() {return true}
+        },
+        45: {
+            name: "An Epiphany..?",
+            image: "light.png",
+            tooltip: "Unlock new content, finally.",
+            done() {
+                return hasUpgrade('darkenergy', 51)
+            },
+            unlocked() {return true}
+        },
+        46: {
+            name: "See the light!!",
+            image: "light.png",
+            tooltip: "Max out one Blessing.",
+            done() {
+                return (getBuyableAmount('light', 11).eq(30) || getBuyableAmount('light', 12).eq(30) || getBuyableAmount('light', 13).eq(30) || getBuyableAmount('light', 14).eq(30))
+            },
+            unlocked() {return true}
+        },
+        51: {
+            name: "Softcap^2",
+            image: "darkenergy.png",
+            tooltip: "Discover another only mildly impeding softcap.",
+            done() {
+                return (player.darkenergy.points.gte(new Decimal("1e3202")))
+            },
+            unlocked() {return true}
+        },
+        52: {
+            name: "Infinity^2",
+            image: "energy.png",
+            tooltip: "Reach infinite Energy again.",
+            done() {
+                return (player.energy.points.gte(new Decimal("1.79e308")) && player.achievements.doomsday.eq(1))
+            },
+            unlocked() {return true}
+        },
+        53: {
+            name: "Wasn't once enough?",
+            image: "bomb.png",
+            tooltip: "You've really gotta stop destroying the world.",
+            done() {
+                return (player.bomb.points.gte(1))
+            },
+            unlocked() {return true}
+        },
+        54: {
+            name: "Baby's first Warhead",
+            image: "bomb.png",
+            tooltip: "Have a bomb with a radius over 150km².",
+            done() {
+                return (layers.bomb.topradius.gte(150))
+            },
+            unlocked() {return true}
+        },
+        55: {
+            name: "TSAR Bomba",
+            image: "bomb.png",
+            tooltip: "Have a bomb with a radius over 3850km².",
+            done() {
+                return (layers.bomb.topradius.gte(3580))
+            },
+            unlocked() {return true}
+        },
+        56: {
+            name: "Galaxy Destroyer",
+            image: "bomb.png",
+            tooltip: "Have a bomb with a radius about equivalent to a galaxy in size [8.95e30km²].",
+            done() {
+                return (layers.bomb.topradius.gte(3580))
             },
             unlocked() {return true}
         },
@@ -254,7 +353,7 @@ addLayer("achievements", {
             onClick() { player.devSpeed = new Decimal(0); },
         },
     },
-    },
+},
     
 );
 
@@ -310,7 +409,7 @@ addLayer("energy", {
         }
         },
     color: "#ebcc34",
-    type: "static", // No prestige based on this layer
+    type: "custom", // No prestige based on this layer
     resource: "Energy", // The resource produced by this layer
     baseResource: "Energy Points", // What this is based on (could be points or any other resource)
     baseAmount() { return player.points }, // Uses player's points as base amount
@@ -338,94 +437,146 @@ addLayer("energy", {
         }
         }  
     },
-    passiveGeneration() {
-        let passive = new Decimal(0);
+    prestigeButtonText(){return "You are getting " + format(layers.energy.getResetGain()) + " Energy."},
+    canReset(){return this.getResetGain().gt(0)},
+    getResetGain() {let passive = new Decimal(0);
         let passivebase = new Decimal(10);
 
         // passive base
 
         if (hasUpgrade('energy', 12)) passivebase = passivebase.add(10);
-        if (hasUpgrade('energy', 13)) {
-            if(player.points.pow(0.2).gte(250)) {
-                passivebase = passivebase.add(Decimal.min(250,player.points.pow(0.2))).add(player.points.pow(0.16));
-            };
-            passivebase = passivebase.add(player.points.pow(0.2));
-        } else if (hasUpgrade('battery', 21)) {
-            if(player.points.pow(0.28).gte(250)) {
-                passivebase = passivebase.add(Decimal.min(250,player.points.pow(0.28))).add(player.points.pow(0.16));
-            };
-            passivebase = passivebase.add(player.points.pow(0.28));
-        } else if (hasUpgrade('battery', 12)) {
-            if(player.points.pow(0.24).gte(250)) {
-                passivebase = passivebase.add(Decimal.min(250,player.points.pow(0.24))).add(player.points.pow(0.16));
-            };
-            passivebase = passivebase.add(player.points.pow(0.24));
-        }
-        if (hasUpgrade('energy', 21)) {
-            passivebase = passivebase.times((new Decimal(0.1).times(new Decimal(player.energy.upgrades.length)).add(1))); 
+if (hasUpgrade('energy', 13)) {
+    if(player.points.pow(0.2).gte(250)) {
+        passivebase = passivebase.add(Decimal.min(250, player.points.pow(0.2))).add(player.points.pow(0.16));
+    };
+    passivebase = passivebase.add(player.points.pow(0.2));
+} else if (hasUpgrade('battery', 21)) {
+    if(player.points.pow(0.28).gte(250)) {
+        passivebase = passivebase.add(Decimal.min(250, player.points.pow(0.28))).add(player.points.pow(0.16));
+    };
+    passivebase = passivebase.add(player.points.pow(0.28));
+} else if (hasUpgrade('battery', 12)) {
+    if(player.points.pow(0.24).gte(250)) {
+        passivebase = passivebase.add(Decimal.min(250, player.points.pow(0.24))).add(player.points.pow(0.16));
+    };
+    passivebase = passivebase.add(player.points.pow(0.24));
+}
+if (hasUpgrade('energy', 21)) {
+    passivebase = passivebase.times(new Decimal(0.1).times(new Decimal(player.energy.upgrades.length)).add(1)); 
+} else if (hasUpgrade('energy', 21)) {
+    passivebase = passivebase.times(new Decimal(1).times(new Decimal(player.energy.upgrades.length)).add(1)); 
+}
+if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
+if (hasUpgrade('energy', 24)) passivebase = passivebase.add(7);
+if (hasUpgrade('battery', 13)) passivebase = passivebase.times(new Decimal(1).times(Decimal.floor(Decimal.max(0, Decimal.log10(Decimal.max(1, player.energy.points))))).div(2).add(1));
 
-        } else if (hasUpgrade('energy', 21)) {
-            passivebase = passivebase.times((new Decimal(1).times(new Decimal(player.energy.upgrades.length)).add(1))); 
-        }
-        if (hasUpgrade('energy', 22)) passivebase = passivebase.add(10);
-        if (hasUpgrade('energy', 24)) passivebase = passivebase.add(7);
-        if (hasUpgrade('battery', 13)) passivebase = passivebase.times(new Decimal(1).times(Decimal.floor(Decimal.max(0,Decimal.log10(new Decimal(player.energy.points))))).div(2).add(1))
-            let bonuscap = new Decimal(0.10).times(player.battery.points)
-                if (hasUpgrade('energy', 32)) {bonuscap = new Decimal(0.50).times(player.battery.points)}
-        if (hasMilestone('battery', 10)) {
-            passivebase = passivebase.times(new Decimal(Decimal.max(0, bonuscap)));
-        } else if (hasMilestone('battery', 9)) {
-            passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(new Decimal(1).add(bonuscap), new Decimal(player.energy.spentTime)))).add(1));
-        } else if (hasMilestone('battery', 6)) {
-            passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(new Decimal(1).add(bonuscap), new Decimal(player.energy.spentTime).divide(30)))).add(1));
-        } else if (hasUpgrade('battery', 22)) {
-            passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(new Decimal(1).add(bonuscap), new Decimal(player.energy.spentTime).divide(90)))).add(1));
-        } else if (hasUpgrade('battery', 14)) {
-            passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(1, new Decimal(player.energy.spentTime).divide(180)))).add(1))
-        }
-        if (hasUpgrade('energy', 34) && (hasUpgrade('battery', 24))) {
-            passivebase = passivebase.times(new Decimal(1.13).pow(Decimal.floor(Decimal.log10(Decimal.max(1,player.points)))))
-        } else if (hasUpgrade('battery', 24)) {
-            passivebase = passivebase.times(new Decimal(1.04).pow(Decimal.floor(Decimal.log10(Decimal.max(1,player.points)))))
-        }
-        
-        if (player.achievements.doomsday.eq(0)){passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)))}; 
+let bonuscap = new Decimal(0.10).times(player.battery.points);
+if (hasUpgrade('energy', 32)) {bonuscap = new Decimal(0.50).times(player.battery.points)}
 
-        if (hasUpgrade('battery', 32)) {passivebase = passivebase.times(player.battery.points.times(Decimal.max(1,player.battery.points.div(5))))}
-        else if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points));
+if (hasMilestone('battery', 10)) {
+    passivebase = passivebase.times(new Decimal(Decimal.max(0, bonuscap)));
+} else if (hasMilestone('battery', 9)) {
+    passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(new Decimal(1).add(bonuscap), new Decimal(player.energy.spentTime)))).add(1));
+} else if (hasMilestone('battery', 6)) {
+    passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(new Decimal(1).add(bonuscap), new Decimal(player.energy.spentTime).divide(30)))).add(1));
+} else if (hasUpgrade('battery', 22)) {
+    passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(new Decimal(1).add(bonuscap), new Decimal(player.energy.spentTime).divide(90)))).add(1));
+} else if (hasUpgrade('battery', 14)) {
+    passivebase = passivebase.times(new Decimal(Decimal.max(0, Decimal.min(1, new Decimal(player.energy.spentTime).divide(180)))).add(1));
+}
 
-        if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5);
+if (hasUpgrade('energy', 34) && hasUpgrade('battery', 24)) {
+    passivebase = passivebase.times(new Decimal(1.13).pow(Decimal.floor(Decimal.max(1, Decimal.log10(Decimal.max(1, player.points))))));
+} else if (hasUpgrade('battery', 24)) {
+    passivebase = passivebase.times(new Decimal(1.04).pow(Decimal.floor(Decimal.max(1, Decimal.log10(Decimal.max(1, player.points))))));
+}
 
-        if (player.achievements.doomsday.eq(0)){passivebase = passivebase.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11)))}; 
-        if (player.achievements.doomsday.eq(0)){if (passivebase.gte(1.79e307)) passivebase = new Decimal(1.79e307)};
+if (player.achievements.doomsday.eq(0)){
+    passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)));
+}
 
-        // post nerf passivebase
+if (hasUpgrade('battery', 32)) {
+    passivebase = passivebase.times(player.battery.points.times(Decimal.max(1, player.battery.points.div(5))));
+} else if (player.battery.points.gte(1)) {
+    passivebase = passivebase.times(new Decimal(player.battery.points));
+}
 
-        if (player.achievements.doomsday.eq(1)){passivebase = Decimal.log10(passivebase.add(1)).pow(2)}
-        if (player.achievements.doomsday.eq(1)){passivebase = passivebase.times(Decimal.max(1,Decimal.log10(player.darkenergy.points)))}
-        if (player.achievements.doomsday.eq(1)){passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)))};
-        if (hasUpgrade('darkenergy', 32)) {passivebase = passivebase.times(1.5)}
-        if (hasUpgrade('battery', 31)) {passivebase = passivebase.times(new Decimal(0.05).times(player.darkenergy.upgrades.length).add(1))}
-        if (hasUpgrade('darkenergy', 41)) {passivebase = passivebase.times(1.5)}
-        if (hasUpgrade('darkenergy', 42)) {passivebase = passivebase.times(1.35)}
-        if (player.achievements.doomsday.eq(1)){passivebase = passivebase.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11)))}
-        
+if (hasUpgrade('battery', 11)) passivebase = passivebase.times(1.5);
 
-        // decay
+if (player.achievements.doomsday.eq(0)){
+    passivebase = passivebase.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11)));
+}
 
-        let decay = new Decimal(0.10)
-        this.decay = decay;
-        if (player.battery.overclocktimer.gt(0))
-            decay = new Decimal(0)
-        if (player.achievements.doomsday.eq(0)){if (passivebase.gte(1.79e307)) decay = new Decimal(0)};
+if (player.achievements.doomsday.eq(0) && passivebase.gte(1.79e307)) {
+    passivebase = new Decimal(1.79e307);
+}
 
-        // passive
+// post nerf passivebase
 
-        if (hasUpgrade('energy', 11)) passive = new Decimal(passive.add(passivebase.sub(new Decimal(Decimal.max(0,player.energy.points.times(decay))))).sub(1));
+if (player.achievements.doomsday.eq(1)){
+    passivebase = Decimal.max(1, Decimal.log10(passivebase.add(1))).pow(2);
+}
 
-        this.passivebase = passivebase;
-        return passive;
-    },
+if (player.achievements.doomsday.eq(1)){
+    passivebase = passivebase.times(Decimal.max(1, Decimal.log10(Decimal.max(1, player.darkenergy.points))));
+}
+
+if (player.achievements.doomsday.eq(1)){
+    passivebase = passivebase.add(layers.energy.buyables[11].effect(getBuyableAmount("energy", 11)));
+}
+
+if (hasUpgrade('darkenergy', 32)) {
+    passivebase = passivebase.times(1.5);
+}
+if (hasUpgrade('battery', 31)) {
+    passivebase = passivebase.times(new Decimal(0.05).times(player.darkenergy.upgrades.length).add(1));
+}
+if (hasUpgrade('darkenergy', 41)) {
+    passivebase = passivebase.times(1.5);
+}
+if (hasUpgrade('darkenergy', 42)) {
+    passivebase = passivebase.times(1.35);
+}
+
+if (player.achievements.doomsday.eq(1)){
+    passivebase = passivebase.times(layers.compactenergy.buyables[11].effect(getBuyableAmount("compactenergy", 11)));
+}
+
+if (hasUpgrade('battery', 34)) {
+    passivebase = passivebase.times(new Decimal(1).add(player.compactenergy.total.div(100)));
+}
+if (hasUpgrade('energy', 44)) {
+    passivebase = passivebase.times(10);
+}
+
+passivebase = passivebase.times(Decimal.max(1, player.light.points.pow(0.25)));
+passivebase = passivebase.times(new Decimal(2).pow(getBuyableAmount('light', 11)));
+passivebase = passivebase.times(new Decimal(1.5).pow(getBuyableAmount('bomb', 11)));
+
+// decay
+
+let decay = new Decimal(0.10);
+this.decay = decay;
+if (player.battery.overclocktimer.gt(0)) {
+    decay = new Decimal(0);
+}
+if (player.achievements.doomsday.eq(0) && passivebase.gte(1.79e307)) {
+    decay = new Decimal(0);
+}
+
+// passive
+
+if (hasUpgrade('energy', 11)) {
+    passive = new Decimal(passive.add(passivebase.sub(new Decimal(Decimal.max(0, player.energy.points.times(decay))))).sub(1));
+}
+
+this.passivebase = passivebase;
+return passive.div(10);
+
+},
+    autoPrestige() {return true},
+    getNextAt() {return new Decimal(0)},
+    resetsNothing(){return true},
     upgrades: {
         11: {
             title: "Energy",
@@ -629,6 +780,25 @@ addLayer("energy", {
                 "color": "#ffffff !important",
                 "cursor": "default"}
             }
+        },44: {
+            title: "Overpower",
+            description: "10x Energy Base.",
+            cost: new Decimal(2.1e6),
+            unlocked() {
+                return (hasUpgrade('darkcore', 11)) && getBuyableAmount(`darkcore`,11).gte(5)
+            },
+           style() {
+            if (player[this.layer].upgrades.includes(44)) {return {"background-color": "#ffffff !important",
+                "border": "2px solid !important",
+                "border-color": "#000000 !important",
+                "color": "#000000 !important",
+                "cursor": "default"}}
+                else return {"background-color": "#000000 !important",
+                "border": "2px solid !important",
+                "border-color": "#ffffff !important",
+                "color": "#ffffff !important",
+                "cursor": "default"}
+            }
     },
 },
     buyables: {
@@ -677,7 +847,7 @@ addLayer("energy", {
         },
     },
     layerShown() {
-        if (player.achievements.doomsday.eq(1)) {return hasUpgrade('darkcore', 11)}
+        if (player.achievements.doomsday.eq(1)) {return hasUpgrade('darkcore', 11) || player.bomb.total.gte(1)}
 return true; // Makes sure the layer is visible
     },
     tabFormat: [
@@ -706,21 +876,24 @@ return true; // Makes sure the layer is visible
 // Battery Layer
 
 addLayer("battery", {
-    startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
-        points: new Decimal(0),
-        autobuy1: false,
-        auto: false,
-        rgb1: new Decimal(0),
-        rgb2: new Decimal(255),
-        overclocktimer: new Decimal(0),
-        overclockcooldown: new Decimal(10)
-    }},
+    startData() { 
+        return {                  
+            points: new Decimal(0),
+            autobuy1: (player?.bomb?.upgrades?.includes(21)) || false, 
+            auto: (player?.bomb?.upgrades?.includes(42)) || false,
+            rgb1: new Decimal(0),
+            rgb2: new Decimal(255),
+            overclocktimer: new Decimal(0),
+            overclockcooldown: new Decimal(10)
+        };
+    },
     symbol() {
         return options.imageSymbols ? '<img src="resources/batteryfull.png" alt="EN" style="width: 80px; height: 80px;">' : "B";
     },
     color: "#727180",                       // The color for this layer, which affects many elements.
     resource: "Batteries",            // The name of this layer's main prestige resource.
-    row: 1,                                 // The row this layer is on (0 is the first row).
+    row: 1,
+    position: 0,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy",
     branches: ["energy"],
     style() {
@@ -799,7 +972,8 @@ addLayer("battery", {
                 if (hasUpgrade('darkenergy', 33)) {effectivelevels = effectivelevels.add(7)}
                 if (hasUpgrade('darkenergy', 42)) {effectivelevels = effectivelevels.add(4)}
         let darkscaling = new Decimal(0.94).pow(getBuyableAmount('darkcore', 12).add(effectivelevels))
-        return new Decimal(1000).add(new Decimal(800).times(new Decimal(b).sub(amt).max(0).pow(new Decimal(2).add(Decimal.floor(new Decimal(b.sub(amt).max()).divide(20)))))).times(darkscaling); 
+        let bombscaling = new Decimal(1.3).pow(getBuyableAmount('bomb', 21))
+        return new Decimal(1000).add(new Decimal(800).times(new Decimal(b).sub(amt).max(0).pow(new Decimal(2).add(Decimal.floor(new Decimal(b.sub(amt).max()).divide(20)))))).times(darkscaling).div(bombscaling); 
     },
 
     layerShown() {if (player.achievements.doomsday.eq(1)) {return hasUpgrade('darkcore', 21)}
@@ -817,11 +991,11 @@ addLayer("battery", {
     ],
     clickables: {
         11: {
-            display() {if (layers.energy.passivebase.gte(1.79e307)) return '<span style="font-size: 20px;">Overclock</span><br><span style="font-size: 13px;">Overclocking now may prove dangerous. Beware.</span>'
+            display() {if (layers.energy.passivebase.gte(1.79e307) && player.achievements.doomsday.eq(0)) return '<span style="font-size: 20px;">Overclock</span><br><span style="font-size: 13px;">Overclocking now may prove dangerous. Beware.</span>'
                 else return '<span style="font-size: 20px;">Overclock</span><br><span style="font-size: 13px;">Temporarily gets rid of decay and Energy hardcap.</span>'},
-            canClick() { if (layers.energy.passivebase.gte(1.79e307)) return player.energy.points.gte(1.79e308)
+            canClick() { if (layers.energy.passivebase.gte(1.79e307) && player.achievements.doomsday.eq(0)) return player.energy.points.gte(1.79e308)
                 else return player.battery.overclockcooldown.lte(0)},
-            onClick() {if (layers.energy.passivebase.gte(1.79e307)) {
+            onClick() {if (layers.energy.passivebase.gte(1.79e307) && player.achievements.doomsday.eq(0)) {
                 player.achievements.doomsday = new Decimal(1)
             }
                 else {player.battery.overclocktimer = new Decimal(20)
@@ -831,13 +1005,14 @@ addLayer("battery", {
             style() {
                 let rgb1 = player.battery.rgb1; // Example: fluctuating value
                 let rgb2 = player.battery.rgb2; // Example: fluctuating value
-                if (layers.energy.passivebase.gte(1.79e307)) return {
+                if (layers.energy.passivebase.gte(1.79e307) && player.achievements.doomsday.eq(0)) return {
                     "height": "120px !important",
                     "width": "120px !important",
                     "background-image": `radial-gradient(rgb(255, ${rgb1}, ${rgb1}), rgb(255, ${rgb2}, ${rgb2}))`,
                     "color": "#751d19",
                     "font-weight": "bold",
                     "class": "upgBig",
+                    "background-size": "cover"
                 };
                 else return {
                     "height": "120px !important",
@@ -846,6 +1021,7 @@ addLayer("battery", {
                     "color": "#ffffff",
                     "font-weight": "bold",
                     "class": "upgBig",
+                    "background-size": "cover"
                 };
             },
             
@@ -1052,7 +1228,7 @@ addLayer("battery", {
             },
             cost: new Decimal(14),
             unlocked() {
-                return (hasUpgrade('darkcore', 21))
+                return (hasUpgrade('darkcore', 21)) && getBuyableAmount(`darkcore`,11).gte(4)
             },
             onPurchase() {
                 return player.battery.points = player.battery.points.add(this.cost)
@@ -1069,8 +1245,78 @@ addLayer("battery", {
                 "color": "#ffffff !important",
                 "cursor": "default"}
             }
-        },
+        },34: {
+            title: "Milestone 4 is useless",
+            description: "Compact Emergy total boosts Energy Base, Energy Points, Dark Energy, and Dark Cores.",
+            tooltip:function() {
+                return "Formula: Compact Energy / 100 <br> Effect: x" + format(new Decimal(1).add(player.compactenergy.total.div(100)).toFixed(2)) + " to Energy Base, Energy Points, Dark Energy, and Dark Cores.";
+            },
+            cost: new Decimal(20),
+            unlocked() {
+                return (hasUpgrade('darkcore', 21)) && getBuyableAmount(`darkcore`,11).gte(5)
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+           style() {
+            if (player[this.layer].upgrades.includes(34)) {return {"background-color": "#ffffff !important",
+                "border": "2px solid !important",
+                "border-color": "#000000 !important",
+                "color": "#000000 !important",
+                "cursor": "default"}}
+                else return {"background-color": "#000000 !important",
+                "border": "2px solid !important",
+                "border-color": "#ffffff !important",
+                "color": "#ffffff !important",
+                "cursor": "default"}
+            }
+    },35: {
+            title: "Meaning of life",
+            description: "Compact Energy's price is divided based on Batteries.",
+            tooltip:function() {
+                return "Formula: Compact Energy Price / √Batteries <br> Effect: /" + format(Decimal.sqrt(player.battery.points).toFixed(2)) + " to Compact Energy price.";
+            },
+            cost: new Decimal(42),
+            unlocked() {
+                return (hasUpgrade('darkcore', 21)) && getBuyableAmount(`darkcore`,11).gte(5)
+            },
+            onPurchase() {
+                return player.battery.points = player.battery.points.add(this.cost)
+            },
+           style() {
+            if (player[this.layer].upgrades.includes(35)) {return {"background-color": "#ffffff !important",
+                "border": "2px solid !important",
+                "border-color": "#000000 !important",
+                "color": "#000000 !important",
+                "cursor": "default"}}
+                else return {"background-color": "#000000 !important",
+                "border": "2px solid !important",
+                "border-color": "#ffffff !important",
+                "color": "#ffffff !important",
+                "cursor": "default"}
+            }
     },
+    41: {
+        title: "The Plan",
+        description: "???",
+        unlocked(){return hasUpgrade('battery', 35)},
+        style() {
+            let rgb1 = player.battery.rgb1;
+            let rgb2 = player.battery.rgb2;
+            return {
+                "height": "200px",
+                "width": "200px",
+                "background-color": `rgb(255, ${rgb1}, ${rgb1})`,
+                "font-size": "15px"
+            }},
+        cost() {return new Decimal(1e126)},
+        canAfford() {
+            let cost = this.cost();
+            return new Decimal(player.darkenergy.points).gte(cost);
+        
+    }
+    },
+},
     milestones: {
         0: {
             requirementDescription: "11 Batteries",
@@ -1184,6 +1430,7 @@ addLayer("battery", {
                 return hasMilestone('battery', 9)
             },
         },
+        
     },
     tabFormat: [
         "main-display",
@@ -1194,7 +1441,13 @@ addLayer("battery", {
         }],
         ["display-text", function() {
             let amt = getBuyableAmount('compactenergy', 12);
-            return "Battery cost scales by +^1 per 20 Batteries you have! They are currently ^" + format(new Decimal(2).add(Decimal.floor(new Decimal(new Decimal(player.battery.points.max(1)).sub(amt)).divide(20))));
+            let b;
+        if (player.achievements.doomsday.eq(1)) {
+            b = Decimal.floor(player.battery.points.times(1.5));
+        } else {
+            b = player.battery.points;
+        }
+            return "Battery cost scales by +^1 per 20 Batteries you have! They are currently ^" + format(new Decimal(2).add(Decimal.floor(new Decimal(new Decimal(b.max(1)).sub(amt)).divide(20))));
         }],
         "resource-display",
         ["display-text", function() 
@@ -1227,18 +1480,20 @@ addLayer("battery", {
     ],
 })
 
-// compact energy
+// Compact Energy Layer
 
 addLayer("compactenergy", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(0),
+        triggeredOnce: new Decimal(0)
     }},
     symbol() {
         return options.imageSymbols ? '<img src="resources/compactenergyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "cEN";
     },
     color: "#e8a22a",                       // The color for this layer, which affects many elements.
     resource: "Compact Energy",            // The name of this layer's main prestige resource.
-    row: 1,                                 // The row this layer is on (0 is the first row).
+    row: 1,
+    position: 1,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy",
     branches: ["energy"],
     style() {
@@ -1264,35 +1519,57 @@ addLayer("compactenergy", {
     onPrestige() {
             let amt1 = getBuyableAmount('compactenergy', 11);
             let amt2 = getBuyableAmount('compactenergy', 12);
-            player.compactenergy.points = player.compactenergy.total
+            if (!hasUpgrade('bomb', 14)) {player.compactenergy.points = player.compactenergy.total
             setBuyableAmount("compactenergy", 11, new Decimal(0));
             setBuyableAmount("compactenergy", 12, new Decimal(0));
-            doReset("energy");
+            doReset("energy")};
     },
-    requires() {if (player.achievements.doomsday.eq(1)) return new Decimal(10000)
+    requires() {if (player.achievements.doomsday.eq(1)) return new Decimal(5000)
         else return new Decimal(500000)},
     getResetGain() {
-        if (player.achievements.doomsday.eq(1)) {totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(5000))).sub(player.compactenergy.total)}
+        let b = player.battery.points
+        let divisor = new Decimal(1)
+        let blessingamt = Decimal.max(1,new Decimal(2).pow(getBuyableAmount('light', 13)))
+        blessingamt = blessingamt.times(new Decimal(1.5).pow(getBuyableAmount('bomb', 13)))
+        if (hasUpgrade('bomb', 24)) {blessingamt = blessingamt.times(5)}
+        if (hasUpgrade('bomb', 34)) {blessingamt = blessingamt.times(5)}
+        if (hasUpgrade('battery', 35)) {divisor = Decimal.sqrt(b)}
+        if (player.achievements.doomsday.eq(1) && player.compactenergy.total.gte(100)) {totalResetGain = new Decimal(Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(new Decimal(500000).divide(divisor)))).sub(player.compactenergy.total.sub(100)))}
+        else if (player.achievements.doomsday.eq(1)) {totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(5000))).sub(player.compactenergy.total)}
         else totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(500000))).sub(player.compactenergy.total)
         let softcapGain = Decimal.floor(Decimal.log10(new Decimal(totalResetGain)).div(2))
         let segmentedGain = Decimal.max(1,new Decimal(10).times(new Decimal(10).pow(softcapGain)))
         let finalGain = Decimal.max(0,totalResetGain).divide(Decimal.max(1,new Decimal(10).pow(softcapGain)))
         if (segmentedGain.eq(10)) {return finalGain}
         else if (segmentedGain.eq(1)) {return finalGain}
-        return new Decimal(finalGain).add(segmentedGain)
+        if (player.achievements.doomsday.eq(1) && new Decimal(finalGain).add(segmentedGain).add(player.compactenergy.total).gt(100)) {
+            if (player.compactenergy.triggeredOnce.eq(0)) {
+            player.compactenergy.triggeredOnce = new Decimal(1);
+            return new Decimal(100).sub(player.compactenergy.total);
+            }
+        }
+        return new Decimal(finalGain).add(segmentedGain).times(blessingamt)
     },  
     getNextAt(x) {
-        if (player.achievements.doomsday.eq(1)) {totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(5000)))}
+        let b = player.battery.points
+        let divisor = new Decimal(1)
+        let blessingamt = Decimal.max(1,new Decimal(2).pow(getBuyableAmount('light', 13)))
+        if (hasUpgrade('battery', 35)) {divisor = Decimal.sqrt(b)}
+        if (player.achievements.doomsday.eq(1) && player.compactenergy.total.gte(100)) {totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(500000)))}
+        else if (player.achievements.doomsday.eq(1)) {totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(5000)))}
         else totalResetGain = Decimal.max(0,Decimal.floor(new Decimal(player.energy.points).div(500000)))
-        let cap = Decimal.floor(new Decimal(player.compactenergy.total))
+        if (player.achievements.doomsday.eq(1) && player.compactenergy.total.gte(100)) cap = Decimal.floor(new Decimal(player.compactenergy.total).sub(100))
+        else cap = Decimal.floor(new Decimal(player.compactenergy.total))
         let softcapGain = Decimal.floor(Decimal.log10(new Decimal(player.compactenergy.total).add(totalResetGain)).div(2))
-        if (player.achievements.doomsday.eq(1)) {return new Decimal(5000).times(new Decimal(1).add(Decimal.max(cap,totalResetGain).sub(x)))}
+        if (player.achievements.doomsday.eq(1) && player.compactenergy.total.gte(100)) {return new Decimal(500000).divide(divisor).times(new Decimal(1).add(Decimal.max(cap,totalResetGain).sub(x)))}
+        else if (player.achievements.doomsday.eq(1)) {return new Decimal(5000).times(new Decimal(1).add(Decimal.max(cap,totalResetGain).sub(x)))}
         return new Decimal(500000).times(new Decimal(1).add(Decimal.max(cap,totalResetGain).sub(x)))
     },
-    
+    resetsNothing() {return hasUpgrade('bomb', 14)},
+    autoPrestige() {return hasUpgrade('bomb', 14)},
     type: "custom",
     prestigeButtonText() {
-        return '<span style="font-size: 13px;"> Convert </span><span style="font-size: 15px;">' + format(player.energy.points) + '</span><span style="font-size: 13px;"> Energy into </span><span style="font-size: 15px;">' + format(this.getResetGain()) + '</span><span style="font-size: 13px;"> Compact Energy </span><br><span style="font-size: 13px;"> Next: </span><span style="font-size: 15px;">' + format(new Decimal(this.getNextAt())) + '</span><span style="font-size: 13px;"> Energy'
+        return '<span style="font-size: 13px;"> Convert </span><span style="font-size: 15px;">' + format(player.energy.points) + '</span><span style="font-size: 13px;"> Energy into </span><span style="font-size: 15px;">' + format(this.getResetGain()) + '</span><span style="font-size: 13px;"> Compact Energy </span><br><span style="font-size: 13px;"> Next: </span><span style="font-size: 15px;">' + format(new Decimal(this.getNextAt())) + '</span><span style="font-size: 13px;"> Energy</span>';
     },
     buyables: {
         respec() {
@@ -1326,20 +1603,20 @@ addLayer("compactenergy", {
             },
             buyMax() { // i didnt indent the rest cuz im lazy
                 let cost = this.cost()
-                do {
-                    let x = getBuyableAmount("compactenergy", 11)
-                
-                    let digits = x.lte(99) ? decimalZero : x.log10().div(2).floor()
-                    let nextPower100 = digits.pow_base(100).mul(100)
-                
-                    let amtToBuy = player.compactenergy.points.div(cost).floor()
-                    amtToBuy = amtToBuy.min(nextPower100.sub(x))
+                    do {
+                        let x = getBuyableAmount("compactenergy", 11)
                     
-                    player.compactenergy.points = player.compactenergy.points.sub(amtToBuy.mul(cost))
-                    addBuyables("compactenergy", 11, amtToBuy)
-                
-                    cost = layers.compactenergy.buyables[11].cost(getBuyableAmount("compactenergy", 11))
-                } while (player.compactenergy.points.gte(cost))
+                        let digits = x.lte(99) ? decimalZero : x.log10().div(2).floor()
+                        let nextPower100 = digits.pow_base(100).mul(100)
+                    
+                        let amtToBuy = player.compactenergy.points.div(cost).floor()
+                        amtToBuy = amtToBuy.min(nextPower100.sub(x))
+                        
+                        player.compactenergy.points = player.compactenergy.points.sub(amtToBuy.mul(cost))
+                        addBuyables("compactenergy", 11, amtToBuy)
+                    
+                        cost = layers.compactenergy.buyables[11].cost(getBuyableAmount("compactenergy", 11))
+                    } while (player.compactenergy.points.gte(cost))
                 },
             canAfford() { 
                 let cost = this.cost();
@@ -1437,7 +1714,7 @@ addLayer("compactenergy", {
         ["display-text", function() {
             return 'You have ' + format(player.compactenergy.total) + ' total Compact Energy.'}],
         ["display-text", function() {
-            if (player.achievements.doomsday.eq(1))return 'Due to Doomsday, Compact Energy Requirement is /100.'
+            if (player.achievements.doomsday.eq(1))return 'Due to Doomsday, Compact Energy Requirement is /100 until you get 100.'
         else return ""}],
         "resource-display",
         "blank",
@@ -1452,14 +1729,14 @@ addLayer("compactenergy", {
 }
 )   
 
-// dark energy
+// Dark Energy Layer
 
 addLayer("darkenergy", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
         points: new Decimal(1),
         darkenergyexpo: new Decimal(1),
         timemult: new Decimal(1),
-        outofrun: new Decimal(1)
+        outofrun: new Decimal(1),
     }},
     symbol() {
         return options.imageSymbols ? '<img src="resources/darkenergyfull.png" alt="EN" style="width: 80px; height: 80px;">' : "dEN";
@@ -1469,8 +1746,9 @@ addLayer("darkenergy", {
     row: 0,
     position: 1,                                 // The row this layer is on (0 is the first row).
     baseResource: "Energy Points",
-    branches: ["energy", "battery", "compact energy"],
-    type: "static",
+    branches: ["energy", "battery", "compact energy", "light"],
+    type: "custom",
+    canBuyMax(){return true},
     style() {
         return {
             "background-color": "#000000",
@@ -1482,10 +1760,15 @@ addLayer("darkenergy", {
             let savedCurrency = player[this.layer].points; // Save the currency amount
             layerDataReset(this.layer, ["upgrades", "buyables", "points"]);
             player[this.layer].points = savedCurrency; // Restore the currency amount
-
-            let upgradesToKeep = [11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34];
-            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => upgradesToKeep.includes(upg));
-
+    
+            // Save all existing upgrades
+            player[this.layer].upgrades = player[this.layer].upgrades.filter(upg => true);
+    
+            // Ensure upgrade 51 stays bought
+            if (!player[this.layer].upgrades.includes(51) && hasUpgrade(this.layer, 51)) {
+                player[this.layer].upgrades.push(51);
+            }
+    
             const buyableID = 11;
             if (player[this.layer].buyables[buyableID]) {
                 let currentAmount = new Decimal(player[this.layer].buyables[buyableID]);
@@ -1493,25 +1776,24 @@ addLayer("darkenergy", {
             }
         }  
     },
+    prestigeButtonText(){return "You are getting " + format(layers.darkenergy.getResetGain()) + " Dark Energy."},
+    canReset(){return this.getResetGain().gt(0)},
     update(diff){
-
         // time stuff
-
+        if (!hasUpgrade('bomb', 53)) {
         let timemult = new Decimal(1);
         if (hasUpgrade('darkenergy', 11)) {timemult = timemult.times(1.5);}
         if (hasUpgrade('darkenergy', 41)) {timemult = timemult.times(10);}
         player.darkenergy.timemult = timemult;
         player.darkenergy.darkenergyexpo = player.darkenergy.darkenergyexpo.sub(new Decimal(diff).div(new Decimal(120).div(player.darkenergy.timemult)))
-        if (player.darkenergy.darkenergyexpo.lt(0)) player.darkenergy.darkenergyexpo = new Decimal(0)
+        if (player.darkenergy.darkenergyexpo.lt(0)) player.darkenergy.darkenergyexpo = new Decimal(0) 
         
-        if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {player.darkenergy.outofrun = new Decimal(1)}
+        if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {player.darkenergy.outofrun = new Decimal(1)}}
+
     },
-    passiveGeneration() {
-        let passive = new Decimal(0);
-        let passivebase = new Decimal(11);
+    getResetGain() {let passivebase = new Decimal(11);
         let darkpower = getBuyableAmount('darkcore', 11).pow(0.5)
         darkenergyexpo = Decimal.min(darkpower.add(1),player.darkenergy.darkenergyexpo)
-        let outofrun = new Decimal(1)
 
 
         // passivebase
@@ -1519,10 +1801,12 @@ addLayer("darkenergy", {
         if (hasUpgrade('darkenergy', 11)) {passivebase = passivebase.times(3)}
         if (hasUpgrade('darkenergy', 12)) {passivebase = passivebase.times(2)}
         if (hasUpgrade('darkenergy', 13)) {passivebase = passivebase.times(player.points.pow(0.1))}
-        if (hasUpgrade('darkenergy', 14)) {passivebase = passivebase.times(new Decimal(0.2).times(Decimal.floor(Decimal.log10(player.darkenergy.points))).add(1))}
+        if (hasUpgrade('darkenergy', 14)) {passivebase = passivebase.times(new Decimal(0.2).times(Decimal.floor(Decimal.log10(Decimal.max(1, player.darkenergy.points)))).add(1))}
         if (hasUpgrade('darkenergy', 21)) {passivebase = passivebase.times(100)}
-        if (hasUpgrade('darkenergy', 22)) {passivebase = passivebase.div(10)}
-        if (hasUpgrade('darkenergy', 24)) {passivebase = passivebase.div(5)}
+        if (hasUpgrade('bomb', 23)) {}
+        else if (hasUpgrade('darkenergy', 22)) {passivebase = passivebase.div(10)}
+        if (hasUpgrade('bomb', 23)) {}
+        else if (hasUpgrade('darkenergy', 24)) {passivebase = passivebase.div(5)}
         if (hasUpgrade('energy', 41)) {passivebase = passivebase.times(Decimal.max(1,Decimal.log10(player.energy.points)))}
         if (hasUpgrade('darkenergy', 31)) {passivebase = passivebase.times(10)}
         if (hasUpgrade('battery', 31)) {passivebase = passivebase.times(new Decimal(0.05).times(player.darkenergy.upgrades.length).add(1))}
@@ -1531,13 +1815,22 @@ addLayer("darkenergy", {
         else if (hasUpgrade('energy', 43)) {if (player.battery.points.gte(1)) passivebase = passivebase.times(new Decimal(player.battery.points))};
 
         if (hasUpgrade('darkenergy', 41)) {passivebase = passivebase.times(4)}
+        if (hasUpgrade('battery', 34)) {passivebase = passivebase.times(new Decimal(1).add(player.compactenergy.total.div(100)))}
 
         passivebase = passivebase.times(Decimal.max(1,new Decimal(player.darkcore.points).pow(0.2)))
-    
-        passive = passivebase.pow(darkenergyexpo)
-        if (new Decimal(player.darkenergy.outofrun).eq(1)) {return new Decimal(0)}
-        return Decimal.max(0,passive)
+
+        passivebase = passivebase.times(Decimal.max(1, player.light.points.pow(0.25)))
+        passivebase = passivebase.times(new Decimal(10).pow(getBuyableAmount('light', 12)))
+        passivebase = passivebase.times(new Decimal(1.5).pow(getBuyableAmount('bomb', 12)))
+
+        passivebase = Decimal.max(0,passivebase.pow(darkenergyexpo))
+        if (passivebase.gte(new Decimal("1e3200"))) {passivebase = new Decimal("1e3200").add(passivebase.sub(new Decimal("1e3200")).pow(0.85))}
+        return passivebase.div(100)},
+    autoPrestige() {if (player.darkenergy.outofrun.eq(1)) return false
+        else return true
     },
+    getNextAt() {return new Decimal(0)},
+    resetsNothing(){return true},
     clickables: {
         11: {
             display() {if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {
@@ -1547,8 +1840,12 @@ addLayer("darkenergy", {
             canClick() {return true},
             onClick() {if (new Decimal(player.darkenergy.darkenergyexpo).gt(0)) {player.darkenergy.darkenergyexpo = new Decimal(0)
                 player.darkenergy.outofrun = new Decimal(1)}
-                else if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {layerDataReset('darkenergy')
+                else if (new Decimal(player.darkenergy.darkenergyexpo).lte(0)) {player.darkenergy.upgrades = player.darkenergy.upgrades.filter(upgrade => upgrade === 51);
+                    player.darkenergy.points = new Decimal(0)
                     player.darkenergy.outofrun = new Decimal(0)
+                    player.darkenergy.darkenergyexpo = new Decimal(1)
+                    player.darkenergy.timemult = new Decimal(1)
+                    setBuyableAmount('darkenergy', 11, new Decimal(0))
                 }
             },
             unlocked() {return true},
@@ -1828,9 +2125,37 @@ addLayer("darkenergy", {
         else new Decimal(player.darkenergy.points).gte(cost);
 
 }
+},51: {
+    title: "Revelation",
+    description: "Unlocks something.",
+    unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(10)},
+    style() {return {
+        "height": "200px",
+        "width": "200px",
+        "font-size": "15px"}},
+    cost() {return new Decimal(1e136)},
+    onPurchase() {player.darkenergy.persistentFlag = true},
+    canAfford() {
+        let cost = this.cost();
+        if (new Decimal(player.darkenergy.outofrun).eq(1)) {
+            return false; 
+        }
+        else new Decimal(player.darkenergy.points).gte(cost);
+    
+}
 },
     
 },
+hotkeys: [
+    {
+        key: "d", // What the hotkey button is. Use uppercase if it's combined with shift, or "ctrl+x" for holding down ctrl.
+        description: "D: Dark Core Reset", // The description of the hotkey that is displayed in the game's How To Play tab
+        onPress() {if (player.darkenergy.outofrun.eq(1)) {
+            doReset('darkcore')}
+        },
+        unlocked() {return player.achievements.doomsday.eq} // Determines if you can use the hotkey, optional
+    }
+],
     baseAmount() {return player.points},  
     unlocked() {
         return (player.achievements.doomsday.eq(1))
@@ -1857,6 +2182,11 @@ addLayer("darkenergy", {
                         return 'You have ' + format(darkenergyexpo.times(timeLeft)) + ' seconds left in this Dark Run. ' + format(Decimal.max(0, darkenergyexpo.times(timeLeft).sub(new Decimal(1).add(darkpower).times(timeLeft)))) + ' seconds until Dark Energy Exponent ticks down.';
                     }
                 }],
+                ["display-text", function() {
+                    if (layers.darkenergy.getResetGain().gte(new Decimal("1e3200"))) {
+                        return "Past 1e3200, Dark Energy is softcapped by ^0.85!"
+                    }
+                }],
                 "blank",
                 "buyables",
                 "upgrades"
@@ -1865,10 +2195,11 @@ addLayer("darkenergy", {
         },
         "Dark Cores": {
             embedLayer: 'darkcore',
-            unlocked() {if (new Decimal(player.darkenergy.outofrun).eq(0)) {return false}
-                return (player.achievements.doomsday.eq(1))},
         },
     }})
+
+
+// Dark Core Layer //
 
 addLayer("darkcore", {
     startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
@@ -1914,10 +2245,11 @@ addLayer("darkcore", {
      buyables: {
         11: {
             title: "Dark Power",
+            purchaseLimit() {return new Decimal(81)},
             cost() {let amt = getBuyableAmount('darkcore', 11)
                 return new Decimal(100).pow(Decimal.max(1,amt.add(1)))               
             },
-            canAfford(){if (new Decimal(player.darkenergy.outofrun).eq(0)){return false}
+            canAfford(){
                 let cost = this.cost()
                 if (getBuyableAmount('darkcore', 11).eq(3)) {return player.darkcore.points.gte(cost) && hasUpgrade('battery', 31)}
                 return player.darkcore.points.gte(cost)
@@ -1925,10 +2257,15 @@ addLayer("darkcore", {
             buy(){let cost = this.cost()
                 let amt = getBuyableAmount('darkcore', 11)
                 setBuyableAmount('darkcore', 11, amt.add(1))
+                if (!player.bomb.total.gte(1)) {
                 player.darkcore.points = new Decimal(0)
-                layerDataReset('darkenergy')
+                player.darkenergy.upgrades = player.darkenergy.upgrades.filter(upgrade => upgrade === 51);
+                player.darkenergy.points = new Decimal(0)
                 player.darkenergy.outofrun = new Decimal(1)
                 player.darkenergy.darkenergyexpo = new Decimal(0)
+                player.darkenergy.timemult = new Decimal(1)
+                setBuyableAmount('darkenergy', 11, new Decimal(0))}
+                else player.darkcore.points = player.darkcore.points.sub(cost)
             },
             display(){let cost = this.cost()
                 return '<span style="font-size: 13px">Resets Dark Cores, Dark Energy, and side nodes.<br> Each level of Dark Power increases Dark Energy exponent cap by √amt.<br>Also tends to unlock new upgrades or features.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 11)) + '<br>Cost: ' + format(cost)},
@@ -1943,6 +2280,7 @@ addLayer("darkcore", {
                 },
         },12: {
             title: "Dark Scaling",
+            purchaseLimit() {return new Decimal(1000)},
             cost() {let amt = getBuyableAmount('darkcore', 12)
                 if (hasUpgrade('battery', 31)) {return new Decimal(1e6).times(new Decimal(1.17).pow(amt))}
                 return new Decimal(1e6).times(new Decimal(1.2).pow(amt))              
@@ -1956,11 +2294,21 @@ addLayer("darkcore", {
                 setBuyableAmount('darkcore', 12, amt.add(1))
                 player.darkcore.points = player.darkcore.points.sub(cost)
             },
+            tooltip() {
+                let effectivelevels = new Decimal(0);
+                if (hasUpgrade('darkenergy', 33)) {
+                    effectivelevels = effectivelevels.add(7);
+                }
+                if (hasUpgrade('darkenergy', 42)) {
+                    effectivelevels = effectivelevels.add(4);
+                }
+                return "True reduced amount is x" + new Decimal(0.94).pow(getBuyableAmount('darkcore', 12).add(effectivelevels)).toString() + "<br> to Battery cost.";
+            },
             display(){let cost = this.cost()
                 let effectivelevels = new Decimal(0)
                 if (hasUpgrade('darkenergy', 33)) {effectivelevels = effectivelevels.add(7)}
                 if (hasUpgrade('darkenergy', 42)) {effectivelevels = effectivelevels.add(4)}
-                return '<span style="font-size: 13px">Multiplies the cost of Batteries by 0.94x per level.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 12)) + ' (+' + format(effectivelevels) + ')<br>Cost: ' + format(cost) + '<br>Effect: ' + format(new Decimal(0.94).pow(getBuyableAmount('darkcore', 12).add(effectivelevels)).toFixed(2)) + 'x to Battery cost.'},
+                return '<span style="font-size: 13px">Multiplies the cost of Batteries by 0.94x per level.</span><br><span style="font-size: 20px">Bought: ' + format(getBuyableAmount('darkcore', 12)) + ' (+' + format(effectivelevels) + ')<br>Cost: ' + format(cost) + '<br>Effect: ' + format(new Decimal(0.94).pow(getBuyableAmount('darkcore', 12).add(effectivelevels))) + 'x to Battery cost.'},
                 style() {if (player.darkcore.points.lt(this.cost()))
                     return {
                         "background-color": `#000000`,
@@ -1973,9 +2321,6 @@ addLayer("darkcore", {
         }
     },
     baseAmount() {return player.darkenergy.points},  
-    unlocked() {if (new Decimal(player.darkenergy.outofrun).eq(0)) {return false}
-        return (player.achievements.doomsday.eq(1))
-    },
     layerShown() {return false},
     update(diff){
         if (!player.darkcore.rgb1Direction) player.darkcore.rgb1Direction = 1; // 1 for increasing, -1 for decreasing
@@ -2002,6 +2347,8 @@ addLayer("darkcore", {
     },
 
     onPrestige(){player.darkenergy.points = new Decimal(0)},
+    autoPrestige() {return hasUpgrade('bomb', 33)},
+    resetsNothing() {return hasUpgrade('bomb', 33)},
     canReset(){
         return this.getResetGain().gte(1)
     },
@@ -2012,12 +2359,16 @@ addLayer("darkcore", {
         if (hasUpgrade('darkenergy', 22)) {resetGain = resetGain.times(Decimal.max(1,resetGain.pow(0.13)))}
         if (hasUpgrade('darkenergy', 23)) {resetGain = resetGain.times(5)}
         if (hasUpgrade('darkenergy', 24)) {resetGain = resetGain.times(6.66)}
-        if (hasUpgrade('darkenergy', 32)) {resetGain = new Decimal(0)}
+        if (hasUpgrade('bomb', 43)) {}
+        else if (hasUpgrade('darkenergy', 32)) {resetGain = new Decimal(0)}
         if (hasUpgrade('energy', 42)) {resetGain = resetGain.times(2)}
         if (hasUpgrade('battery', 31)) {resetGain = resetGain.times(2)}
         if (hasUpgrade('battery', 32)) {resetGain = resetGain.times(Decimal.max(1,player.battery.points.div(5)))}
         if (hasUpgrade('darkenergy', 41)) {resetGain = resetGain.times(3)}
         if (hasUpgrade('battery', 33)) {resetGain = resetGain.times(1.5)}
+        if (hasUpgrade('battery', 34)) {resetGain = resetGain.times(new Decimal(1).add(player.compactenergy.total.div(100)))}
+        resetGain = resetGain.times(new Decimal(10).pow(getBuyableAmount('light', 12)))
+        resetGain = resetGain.times(new Decimal(1.5).pow(getBuyableAmount('bomb', 12)))
 
         return resetGain
     },
@@ -2042,7 +2393,7 @@ addLayer("darkcore", {
             unlocked(){return new Decimal(getBuyableAmount('darkcore', 11)).gte(3)},
         }, 22: {
             title: "Recompressed Compact Energy",
-            description: "Re-unlocks Compact Energy. There's not really anything up with this one.",
+            description: "Re-unlocks Compact Energy. It starts off a bit easier.",
             cost(){return new Decimal(7.5e9)},
             canAfford() {
                 let cost = this.cost();
@@ -2074,3 +2425,700 @@ addLayer("darkcore", {
                 "clickables"
     ]
     })
+
+    // Light Layer // 
+
+    addLayer("light", {
+        startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
+            points: new Decimal(0),
+        }},
+        symbol() {
+            return options.imageSymbols ? '<img src="resources/lightfull.png" alt="EN" style="width: 80px; height: 80px;">' : "L";
+        },
+        color: "#80d9ed",
+        branches: ["energy", "compactenergy", "darkenergy"],
+        resource: "Light",            // The name of this layer's main prestige resource.
+        row: 1,
+        position: 2,                                 // The row this layer is on (0 is the first row).
+        baseResource: "Energy",
+        baseAmount() {return player.energy.points},
+        type: "custom",
+        requires: new Decimal(10),
+        unlocked() {return hasUpgrade('darkenergy', 51)},
+        layerShown() {return hasUpgrade('darkenergy', 51)},
+        autoPrestige() {return hasUpgrade('darkenergy', 51)},
+        resetsNothing() {return true},
+        style() {
+            return {
+                "background-image": "linear-gradient(to top,rgb(71, 93, 110),rgb(99, 142, 159))",
+                "background-size": "cover"
+            };
+        },
+        getNextAt(){return new Decimal(10)},
+        canReset(){return this.getResetGain().gt(0)},
+        prestigeButtonText() {'blah'},
+        getResetGain() {
+            let passive = new Decimal(0);
+            let passivebase = new Decimal(10);
+    
+            // passive base
+
+            passivebase = Decimal.max(0,player.energy.points.pow(0.05)).add(Decimal.max(0,player.darkenergy.points.pow(0.008))).add(Decimal.max(0,player.compactenergy.total.pow(0.05)))
+            passivebase = passivebase.times(new Decimal(3).pow(getBuyableAmount('light', 14)))
+            passivebase = passivebase.times(new Decimal(1.7).pow(getBuyableAmount('bomb', 22)))
+    
+            // passive
+            console.log(passivebase)
+            passive = passivebase
+            return passive;
+        },
+        buyables: {
+            respec() {
+                setBuyableAmount("light", 11, new Decimal(0));
+                setBuyableAmount("light", 12, new Decimal(0));
+                setBuyableAmount("light", 13, new Decimal(0));
+                setBuyableAmount("light", 14, new Decimal(0));
+            },
+            respecText() {
+                return 'Respec Blessings for no return.'
+            },
+            showRespec() {
+                return true
+                
+            },
+            respecMessage: ".",
+            11: {
+                title: "Blessing of Life",
+                cost() {let amt = getBuyableAmount('light', 11).add(getBuyableAmount('light', 12).add(getBuyableAmount('light', 13).add(getBuyableAmount('light', 14))))
+                    if (!hasUpgrade('bomb', 44)) {return new Decimal(10).pow(Decimal.max(0,amt))}
+                    return new Decimal(10).pow(Decimal.max(0,amt)).div(2)
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.light.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 11)
+                    setBuyableAmount('light', 11, amt.add(1))
+                    if (!hasUpgrade('bomb', 44)) {player.light.points = player.light.points.sub(cost)}
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 11)
+                    return '<span style="font-size: 15px">Multiplies Energy by 2x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(2).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                purchaseLimit() {return new Decimal(30)}
+                },
+            12: {
+                title: "Blessing of Death",
+                cost() {let amt = getBuyableAmount('light', 11).add(getBuyableAmount('light', 12).add(getBuyableAmount('light', 13).add(getBuyableAmount('light', 14))))
+                    if (!hasUpgrade('bomb', 44)) {return new Decimal(10).pow(Decimal.max(0,amt))}
+                    return new Decimal(10).pow(Decimal.max(0,amt)).div(2)           
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.light.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 12)
+                    setBuyableAmount('light', 12, amt.add(1))
+                    if (!hasUpgrade('bomb', 44)) {player.light.points = player.light.points.sub(cost)}
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 12)
+                    return '<span style="font-size: 15px">Multiplies Dark Energy and Dark Cores by 10x compounding. </span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(10).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                purchaseLimit() {return new Decimal(30)}
+                },
+            13: {
+                title: "Blessing of Fortitude",
+                cost() {let amt = getBuyableAmount('light', 11).add(getBuyableAmount('light', 12).add(getBuyableAmount('light', 13).add(getBuyableAmount('light', 14))))
+                    if (!hasUpgrade('bomb', 44)) {return new Decimal(10).pow(Decimal.max(0,amt))}
+                    return new Decimal(10).pow(Decimal.max(0,amt)).div(2)            
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.light.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 13)
+                    setBuyableAmount('light', 13, amt.add(1))
+                    if (!hasUpgrade('bomb', 44)) {player.light.points = player.light.points.sub(cost)}
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 13)
+                    return '<span style="font-size: 15px">Multiplies Compact Energy by 2x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(2).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                purchaseLimit() {return new Decimal(30)}
+                },
+            14: {
+                title: "Blessing of Purity",
+                cost() {let amt = getBuyableAmount('light', 11).add(getBuyableAmount('light', 12).add(getBuyableAmount('light', 13).add(getBuyableAmount('light', 14))))
+                    if (!hasUpgrade('bomb', 44)) {return new Decimal(10).pow(Decimal.max(0,amt))}
+                    return new Decimal(10).pow(Decimal.max(0,amt)).div(2)             
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.light.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 14)
+                    setBuyableAmount('light', 14, amt.add(1))
+                    if (!hasUpgrade('bomb', 44)) {player.light.points = player.light.points.sub(cost)}
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('light', 14)
+                    return '<span style="font-size: 15px">Multiplies Light by 3x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(3).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                purchaseLimit() {return new Decimal(30)}
+                },
+            },
+            
+        tabFormat: [
+            "main-display",
+            "resource-display",
+            ["display-text", function() {
+                return 'Light formula is (energy^0.05) + (darkenergy^0.008) + (compactenergy^0.05)';}],
+            ["display-text", function() {
+                return 'Light is boosting Energy Base and Dark Energy by x' + format(player.light.points.pow(0.25));}], 
+            "blank",
+            "blank",
+            "buyables",
+            "upgrades",
+            "blank",
+        ],
+    }),
+
+    // Bomb Layer
+    addLayer("bomb", {
+        startData() { return {                  // startData is a function that returns default data for a layer.               // You can add more variables here to add them to your layer.
+            points: new Decimal(0),
+            radius: new Decimal(0),
+            topradius: new Decimal(0)
+        }},
+        symbol() {
+            return options.imageSymbols ? '<img src="resources/bombfull.png" alt="EN" style="width: 80px; height: 80px;">' : "L";
+        },
+        color: "#d95b07",
+        branches: ["energy", "battery", "darkenergy", "light", "compactenergy"],
+        resource: "Deaths",            // The name of this layer's main prestige resource.
+        row: 2,
+        position: 0,                                 // The row this layer is on (0 is the first row).
+        baseResource: "Batteries",
+        baseAmount() {return player.battery.points},
+        type: "custom",
+        requires: new Decimal(1e126),
+        unlocked() {return hasUpgrade('battery', 41) || player.bomb.total.gte(1)},
+        layerShown() {return hasUpgrade('battery', 41) || player.bomb.total.gte(1)},
+        onPrestige() {layerDataReset('energy')
+            layerDataReset('darkcore')
+            layerDataReset('darkenergy')
+            layerDataReset('battery')
+            layerDataReset('compactenergy')
+            layerDataReset('light')
+        },
+        style() {
+            return {
+                "background-image": "linear-gradient(to top,rgb(119, 28, 28),rgb(206, 183, 30))",
+                "background-size": "cover"
+            };
+        },
+        prestigeButtonText(){if (player.battery.points.gte(1e126) && player.energy.points.gte(new Decimal("1e430"))) {return "Combine " + format(player.battery.points) + " Batteries and " + format(player.energy.total) + " Energy into a bomb with a radius of " + format(layers.bomb.radius) + "km², giving " + format(this.getResetGain()) + " Deaths."}
+            return "You need 1e126 Batteries and 1e430 Energy to combine into a bomb."
+        },
+        canReset(){return player.battery.points.gte(1e126) && player.energy.points.gte(new Decimal("1e430"))},
+        getResetGain() {let base = new Decimal(7)
+        let batteries = player.battery.points
+        let energy = player.energy.points
+        let radiusb = Decimal.max(0,Decimal.log10(batteries.div(1e126)))
+        let radiuse = Decimal.max(0,Decimal.log10(energy.div(new Decimal("1e430"))))
+        let radius = base.pow(Decimal.max(0,new Decimal(1).add(radiusb.div(100)))).pow(Decimal.max(0,new Decimal(1).add(radiuse.div(100))))
+        gain = radius.times(100)
+        layers.bomb.radius = radius
+        if (radius.gt(layers.bomb.topradius)) {layers.bomb.topradius = radius}
+        gain = gain.times(new Decimal(1.3).pow(getBuyableAmount('bomb', 23)))
+        return Decimal.floor(gain)
+        },
+        getNextAt() {return new Decimal(0)},
+        update(diff) {
+            // upgrade handling stuff
+
+            // energy
+
+            if (hasUpgrade('bomb', 11)) {
+                if (!player.energy.upgrades.includes(11)) player.energy.upgrades.push(11);
+                if (!player.energy.upgrades.includes(12)) player.energy.upgrades.push(12);
+                if (!player.energy.upgrades.includes(13)) player.energy.upgrades.push(13);
+                if (!player.energy.upgrades.includes(14)) player.energy.upgrades.push(14);
+                if (!player.energy.upgrades.includes(21)) player.energy.upgrades.push(21);
+                if (!player.energy.upgrades.includes(22)) player.energy.upgrades.push(22);
+                if (!player.energy.upgrades.includes(23)) player.energy.upgrades.push(23);
+                if (!player.energy.upgrades.includes(24)) player.energy.upgrades.push(24);
+                if (!player.battery.milestones.includes(0)) player.battery.milestones.push(0);
+                if (!player.darkcore.upgrades.includes(11)) player.darkcore.upgrades.push(11);
+            }
+            if (hasUpgrade('bomb', 21)) {
+                if (!player.battery.milestones.includes(3)) player.battery.milestones.push(3);
+                if (!player.battery.milestones.includes(7)) player.battery.milestones.push(7);
+            }
+            if (hasUpgrade('bomb', 31)) {
+                if (!player.energy.upgrades.includes(31)) player.energy.upgrades.push(31);
+                if (!player.energy.upgrades.includes(32)) player.energy.upgrades.push(32);
+                if (!player.energy.upgrades.includes(33)) player.energy.upgrades.push(33);
+                if (!player.energy.upgrades.includes(34)) player.energy.upgrades.push(34);
+                if (!player.energy.upgrades.includes(35)) player.energy.upgrades.push(35);
+            }
+            if (hasUpgrade('bomb', 41)) {
+                if (!player.energy.upgrades.includes(41)) player.energy.upgrades.push(41);
+                if (!player.energy.upgrades.includes(42)) player.energy.upgrades.push(42);
+                if (!player.energy.upgrades.includes(43)) player.energy.upgrades.push(43);
+                if (!player.energy.upgrades.includes(44)) player.energy.upgrades.push(44);
+            }
+            if (hasUpgrade('bomb', 51)) {
+                player.battery.overclocktimer = new Decimal(1)
+            }
+
+            // battery
+
+            if (hasUpgrade('bomb', 12)) {
+                if (!player.battery.upgrades.includes(11)) player.battery.upgrades.push(11);
+                if (!player.battery.upgrades.includes(12)) player.battery.upgrades.push(12);
+                if (!player.battery.upgrades.includes(13)) player.battery.upgrades.push(13);
+                if (!player.battery.upgrades.includes(14)) player.battery.upgrades.push(14);
+                if (!player.battery.upgrades.includes(21)) player.battery.upgrades.push(21);
+                if (!player.battery.upgrades.includes(22)) player.battery.upgrades.push(22);
+                if (!player.battery.upgrades.includes(23)) player.battery.upgrades.push(23);
+                if (!player.battery.upgrades.includes(24)) player.battery.upgrades.push(24);
+            }
+            if (hasUpgrade('bomb', 22)) {
+                if (!player.battery.milestones.includes(1)) player.battery.milestones.push(1);
+                if (!player.battery.milestones.includes(6)) player.battery.milestones.push(6);
+                if (!player.battery.milestones.includes(9)) player.battery.milestones.push(9);
+                if (!player.darkcore.upgrades.includes(21)) player.darkcore.upgrades.push(21);
+            }
+            if (hasUpgrade('bomb', 32)) {
+                if (!player.battery.milestones.includes(4)) player.battery.milestones.push(4);
+                if (!player.battery.milestones.includes(5)) player.battery.milestones.push(5);
+                if (!player.battery.milestones.includes(10)) player.battery.milestones.push(10);
+            }
+            if (hasUpgrade('bomb', 42)) {
+                if (!player.battery.milestones.includes(2)) player.battery.milestones.push(2);
+                if (!player.battery.milestones.includes(8)) player.battery.milestones.push(8);
+            }
+            if (hasUpgrade('bomb', 52)) {
+                if (!player.battery.upgrades.includes(31)) player.battery.upgrades.push(31);
+                if (!player.battery.upgrades.includes(32)) player.battery.upgrades.push(32);
+                if (!player.battery.upgrades.includes(33)) player.battery.upgrades.push(33);
+                if (!player.battery.upgrades.includes(34)) player.battery.upgrades.push(34);
+                if (!player.battery.upgrades.includes(35)) player.battery.upgrades.push(35);
+            }
+
+            // dark energy
+
+            if (hasUpgrade('bomb', 13)) {
+                if (!player.darkenergy.upgrades.includes(11)) player.darkenergy.upgrades.push(11);
+                if (!player.darkenergy.upgrades.includes(12)) player.darkenergy.upgrades.push(12);
+                if (!player.darkenergy.upgrades.includes(13)) player.darkenergy.upgrades.push(13);
+                if (!player.darkenergy.upgrades.includes(14)) player.darkenergy.upgrades.push(14);
+            }
+            if (hasUpgrade('bomb', 23)) {
+                if (!player.darkenergy.upgrades.includes(21)) player.darkenergy.upgrades.push(21);
+                if (!player.darkenergy.upgrades.includes(22)) player.darkenergy.upgrades.push(22);
+                if (!player.darkenergy.upgrades.includes(23)) player.darkenergy.upgrades.push(23);
+                if (!player.darkenergy.upgrades.includes(24)) player.darkenergy.upgrades.push(24);
+            }
+            if (hasUpgrade('bomb', 33)) {
+                let darkpower = getBuyableAmount('darkcore', 11).pow(0.5)
+                if (player.darkenergy.outofrun.eq(0)) {player.darkenergy.darkenergyexpo = new Decimal(1e100)}
+            }
+            if (hasUpgrade('bomb', 43)) {
+                if (!player.darkenergy.upgrades.includes(31)) player.darkenergy.upgrades.push(31);
+                if (!player.darkenergy.upgrades.includes(32)) player.darkenergy.upgrades.push(32);
+                if (!player.darkenergy.upgrades.includes(33)) player.darkenergy.upgrades.push(33);
+                if (!player.darkenergy.upgrades.includes(34)) player.darkenergy.upgrades.push(34);
+                if (!player.darkenergy.upgrades.includes(41)) player.darkenergy.upgrades.push(41);
+                if (!player.darkenergy.upgrades.includes(42)) player.darkenergy.upgrades.push(42);
+            }
+            if (hasUpgrade('bomb', 53)) {
+                player.darkenergy.outofrun = new Decimal(0)
+                let amt = getBuyableAmount('darkcore', 12)
+                let cost = new Decimal(0)
+                if (hasUpgrade('battery', 31)) {cost = new Decimal(1e6).times(new Decimal(1.17).pow(amt))}
+                else cost = new Decimal(1e6).times(new Decimal(1.2).pow(amt))
+                if (player.darkcore.points.gte(cost)) {
+                    setBuyableAmount('darkcore', 12, amt.add(1))
+                }
+            }
+
+            // miscellanious
+            if (hasUpgrade('bomb', 24)) {
+                if (!player.darkcore.upgrades.includes(22)) player.darkcore.upgrades.push(22);
+            }
+            if (hasUpgrade('bomb', 34)) {
+                if (player.compactenergy.points.lte(new Decimal("1e600"))) {
+                if (!player.lastMaxBuy || Date.now() - player.lastMaxBuy > 500) {
+                    if ((player.lastMaxBuyOrder || 0) % 2 === 0) {
+                        buyMaxBuyable('compactenergy', 11);
+                        buyMaxBuyable('compactenergy', 12);
+                    } else {
+                        buyMaxBuyable('compactenergy', 12);
+                        buyMaxBuyable('compactenergy', 11);
+                    }
+                    player.lastMaxBuyOrder = (player.lastMaxBuyOrder || 0) + 1;
+                    player.lastMaxBuy = Date.now();
+                }
+                }
+                else {setBuyableAmount('compactenergy', 11, player.compactenergy.total.pow(0.487))
+                    setBuyableAmount('compactenergy', 12, player.compactenergy.total.pow(0.487).div(100))
+                }
+            }
+            
+            if (hasUpgrade('bomb', 54)) {
+                if (getBuyableAmount('light', 11).lt(30)) {setBuyableAmount('light', 11, new Decimal(30))}
+                if (getBuyableAmount('light', 12).lt(30)) {setBuyableAmount('light', 12, new Decimal(30))}
+                if (getBuyableAmount('light', 13).lt(30)) {setBuyableAmount('light', 13, new Decimal(30))}
+                if (getBuyableAmount('light', 14).lt(30)) {setBuyableAmount('light', 14, new Decimal(30))}
+                if (!player.darkenergy.upgrades.includes(51)) player.darkenergy.upgrades.push(51);
+            }
+            
+        },
+        buyables: {
+            11: {
+                title: "Deadly Energy",
+                cost() {let amt = getBuyableAmount('bomb', 11)
+                    return new Decimal(10).times(new Decimal(1.4).pow(amt))               
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.bomb.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 11)
+                    setBuyableAmount('bomb', 11, amt.add(1))
+                    player.bomb.points = player.bomb.points.sub(cost)
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 11)
+                    return '<span style="font-size: 15px">Multiplies Energy by 1.5x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.5).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                },
+            12: {
+                title: "Deadly Dark Energy",
+                cost() {let amt = getBuyableAmount('bomb', 12)
+                    return new Decimal(10).times(new Decimal(1.4).pow(amt))               
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.bomb.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 12)
+                    setBuyableAmount('bomb', 12, amt.add(1))
+                    player.bomb.points = player.bomb.points.sub(cost)
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 12)
+                    return '<span style="font-size: 15px">Multiplies Dark Energy and Dark Cores by 1.5x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.5).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                },
+            13: {
+                title: "Deadly Compact Energy",
+                cost() {let amt = getBuyableAmount('bomb', 13)
+                    return new Decimal(10).times(new Decimal(1.4).pow(amt))               
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.bomb.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 13)
+                    setBuyableAmount('bomb', 13, amt.add(1))
+                    player.bomb.points = player.bomb.points.sub(cost)
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 13)
+                    return '<span style="font-size: 15px">Multiplies Compact Energy by 1.5x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.5).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                },
+            21: {
+                title: "Deadly Batteries",
+                cost() {let amt = getBuyableAmount('bomb', 21)
+                    return new Decimal(10).times(new Decimal(1.4).pow(amt))               
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.bomb.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 21)
+                    setBuyableAmount('bomb', 21, amt.add(1))
+                    player.bomb.points = player.bomb.points.sub(cost)
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 21)
+                    return '<span style="font-size: 15px">Batteries scale 1.3x compounding later.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.3).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                },
+            22: {
+                title: "Deadly Light",
+                cost() {let amt = getBuyableAmount('bomb', 22)
+                    return new Decimal(10).times(new Decimal(1.4).pow(amt))               
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.bomb.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 22)
+                    setBuyableAmount('bomb', 22, amt.add(1))
+                    player.bomb.points = player.bomb.points.sub(cost)
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 22)
+                    return '<span style="font-size: 15px">Multiplies Light by 1.7x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.7).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                },
+            23: {
+                title: "Even Deadlier Deaths",
+                cost() {let amt = getBuyableAmount('bomb', 23)
+                    return new Decimal(10).times(new Decimal(3).pow(amt))               
+                },
+                canAfford(){
+                    let cost = this.cost()
+                    return player.bomb.points.gte(cost)
+                },
+                buy(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 23)
+                    setBuyableAmount('bomb', 23, amt.add(1))
+                    player.bomb.points = player.bomb.points.sub(cost)
+                },
+                display(){let cost = this.cost()
+                    let amt = getBuyableAmount('bomb', 23)
+                    return '<span style="font-size: 15px">Multiplies Deaths by 1.3x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.3).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                },
+        },
+        upgrades: {
+            // energy
+            11: {
+                title: "Energy Keeper I",
+                description: "Keeps rows 1 and 2 of Energy Upgrades forever.",
+                cost(){return new Decimal(1000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return true},
+        },
+            21: {
+                title: "Energy Auto I",
+                description: "Automatically buys levels of Enhanced Energy without spending.",
+                cost(){return new Decimal(10000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 11)},
+                onPurchase() {player.energy.autobuy1 = true}
+        },
+            31: {
+                title: "Energy Keeper II",
+                description: "Keeps row 3 of Energy Upgrades forever.",
+                cost(){return new Decimal(1e5)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 21)},
+        },
+            41: {
+                title: "Energy Keeper III",
+                description: "Keeps 'dark' Energy Upgrades forever.'",
+                cost(){return new Decimal(1e7)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 31)},
+        },
+            51: {
+                title: "Energy Auto II",
+                description: "Overclock is permanently on.",
+                cost(){return new Decimal(1e10)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 41)},
+        },
+        // battery
+            12: {
+                title: "Battery Keeper I",
+                description: "Keeps rows 1 and 2 of Battery Upgrades forever.",
+                cost(){return new Decimal(1000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return true},
+        },
+            22: {
+                title: "Battery Keeper II",
+                description: "Keeps Battery Milestones 1, 6, and 9 forever. Battery layer stays unlocked.",
+                cost(){return new Decimal(10000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 12)},
+        },
+            32: {
+                title: "Battery Keeper III",
+                description: "Keeps every Battery Milestone except 2 and 8.",
+                cost(){return new Decimal(1e5)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 22)},
+        },
+            42: {
+                title: "Battery Auto",
+                description: "Automatically buy Batteries without resetting anything.",
+                cost(){return new Decimal(1e7)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 32)},
+                onPurchase() {player.battery.auto = true}
+        },
+            52: {
+                title: "Battery Keeper IV",
+                description: "Keeps 'dark' Battery Upgrades forever.",
+                cost(){return new Decimal(1e10)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 42)},
+        },
+        // dark energy
+            13: {
+                title: "Dark Energy Keeper I",
+                description: "Row 1 Dark Energy Upgrades are always enabled.",
+                cost(){return new Decimal(1000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return true},
+        },
+            23: {
+                title: "Dark Energy Keeper II",
+                description: "Row 2 Dark Energy Upgrades are always enabled, without downsides.",
+                cost(){return new Decimal(10000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 13)},
+        },
+            33: {
+                title: "Dark Energy Auto I",
+                description: "Removes the Dark Run timer. Passively generate 1% of Dark Cores you'd normally earn.",
+                cost(){return new Decimal(1e5)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 23)},
+        },
+            43: {
+                title: "Dark Energy Keeper III",
+                description: "Rows 3 and 4 Dark Energy Upgrades are always enabled, without downsides.",
+                cost(){return new Decimal(1e7)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 33)},
+        },
+            53: {
+                title: "Dark Energy Auto II",
+                description: "Dark Energy generates always. Automatically buys levels of Dark Scaling without spending.",
+                cost(){return new Decimal(1e10)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 43)},
+        },
+        // miscellanious
+            14: {
+                title: "Compact Energy Auto I",
+                description: "Passively generate 1% of Compact Energy you'd normally earn.",
+                cost(){return new Decimal(1000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return true},
+        },
+            24: {
+                title: "Compact Energy Auto II",
+                description: "Earn 5x more Compact Energy. Compact Energy layer stays unlocked.",
+                cost(){return new Decimal(10000)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 14)},
+        },
+            34: {
+                title: "Compact Energy Auto III",
+                description: "Earn 5x more Compact Energy again. Automatically buy max buyables without spending.",
+                cost(){return new Decimal(1e5)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 24)},
+        },
+            44: {
+                title: "Something About Light",
+                description: "Blessings no longer spend, and they scale 50% slower.",
+                cost(){return new Decimal(1e7)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 34)},
+        },
+            54: {
+                title: "Light Keeper",
+                description: "Blessings are always maxed. Light layer stays unlocked.",
+                cost(){return new Decimal(1e10)},
+                canAfford() {
+                    let cost = this.cost();
+                    return new Decimal(player.bomb.points).gte(cost);
+                },
+                unlocked(){return hasUpgrade('bomb', 44)},
+        },
+    },
+        tabFormat:[
+            "main-display",
+            "prestige-button",
+            "blank",
+            ["display-text", function() {
+                    return 'Making a bomb will reset everything prior. Beware. <br> First Bomb will make Dark Power no longer reset everything.';
+            }],
+            "blank",
+            "h-line",
+            "blank",
+            ["display-text", function() {
+                    return '<span style="font-size: 50px">Basic';
+            }],
+            "blank",
+            "buyables",
+            "blank",
+            "h-line",
+            "blank",
+            ["display-text", function() {
+                    return '<span style="font-size: 50px">Upgrades';
+            }],
+            "blank",
+            "upgrades",
+            "blank",
+            "h-line",
+]       
+})

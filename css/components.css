@@ -223,3 +223,9 @@
 	color: #ffffff !important;
 	cursor: default;
 }
+
+.bomb {
+    background-image: radial-gradient(rgb(227, 199, 16), rgb(227, 54, 20)) !important;
+    background-size: 100% 100%;
+    border-color:rgb(227, 54, 20) !important;
+}
