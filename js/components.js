@@ -124,35 +124,47 @@ function loadVue() {
 		props: ['layer', 'data'],
 		template: `
 		<div v-if="tmp[layer].challenges" class="upgTable">
-		<div v-for="row in (data === undefined ? tmp[layer].challenges.rows : data)" class="upgRow">
-		<div v-for="col in tmp[layer].challenges.cols">
-					<challenge v-if="tmp[layer].challenges[row*10+col]!== undefined && tmp[layer].challenges[row*10+col].unlocked" :layer = "layer" :data = "row*10+col" v-bind:style="tmp[layer].componentStyles.challenge"></challenge>
+			<div v-for="row in (data === undefined ? tmp[layer].challenges.rows : data)" class="upgRow">
+				<div v-for="col in tmp[layer].challenges.cols">
+					<challenge v-if="tmp[layer].challenges[row*10+col]!== undefined && tmp[layer].challenges[row*10+col].unlocked" 
+						:layer="layer" :data="row*10+col" v-bind:style="tmp[layer].componentStyles.challenge"></challenge>
 				</div>
 			</div>
 		</div>
 		`
-	})
-
+	});
+	
 	// data = id
 	Vue.component('challenge', {
 		props: ['layer', 'data'],
 		template: `
 		<div v-if="tmp[layer].challenges && tmp[layer].challenges[data]!== undefined && tmp[layer].challenges[data].unlocked && !(options.hideChallenges && maxedChallenge(layer, [data]) && !inChallenge(layer, [data]))"
-			v-bind:class="['challenge', challengeStyle(layer, data), player[layer].activeChallenge === data ? 'resetNotify' : '']" v-bind:style="tmp[layer].challenges[data].style">
+			v-bind:class="['challenge', challengeStyle(layer, data), layer]" 
+			v-bind:style="tmp[layer].challenges[data].style">
 			<br><h3 v-html="tmp[layer].challenges[data].name"></h3><br><br>
-			<button v-bind:class="{ longUpg: true, can: true, [layer]: true }" v-bind:style="{'background-color': tmp[layer].color}" v-on:click="startChallenge(layer, data)">{{challengeButtonText(layer, data)}}</button><br><br>
-			<span v-if="layers[layer].challenges[data].fullDisplay" v-html="run(layers[layer].challenges[data].fullDisplay, layers[layer].challenges[data])"></span>
+			<button v-bind:class="{ longUpg: true, can: true, [layer]: true }" 
+				v-bind:style="{'background-color': tmp[layer].color}" 
+				v-on:click="startChallenge(layer, data)">
+				{{challengeButtonText(layer, data)}}
+			</button><br><br>
+			<span v-if="layers[layer].challenges[data].fullDisplay" 
+				v-html="run(layers[layer].challenges[data].fullDisplay, layers[layer].challenges[data])">
+			</span>
 			<span v-else>
 				<span v-html="tmp[layer].challenges[data].challengeDescription"></span><br>
-				Goal:  <span v-if="tmp[layer].challenges[data].goalDescription" v-html="tmp[layer].challenges[data].goalDescription"></span><span v-else>{{format(tmp[layer].challenges[data].goal)}} {{tmp[layer].challenges[data].currencyDisplayName ? tmp[layer].challenges[data].currencyDisplayName : modInfo.pointsName}}</span><br>
+				Goal:  
+				<span v-if="tmp[layer].challenges[data].goalDescription" v-html="tmp[layer].challenges[data].goalDescription"></span>
+				<span v-else>{{format(tmp[layer].challenges[data].goal)}} {{tmp[layer].challenges[data].currencyDisplayName ? tmp[layer].challenges[data].currencyDisplayName : modInfo.pointsName}}</span><br>
 				Reward: <span v-html="tmp[layer].challenges[data].rewardDescription"></span><br>
-				<span v-if="layers[layer].challenges[data].rewardDisplay!==undefined">Currently: <span v-html="(tmp[layer].challenges[data].rewardDisplay) ? (run(layers[layer].challenges[data].rewardDisplay, layers[layer].challenges[data])) : format(tmp[layer].challenges[data].rewardEffect)"></span></span>
+				<span v-if="layers[layer].challenges[data].rewardDisplay!==undefined">
+					Currently: <span v-html="(tmp[layer].challenges[data].rewardDisplay) ? (run(layers[layer].challenges[data].rewardDisplay, layers[layer].challenges[data])) : format(tmp[layer].challenges[data].rewardEffect)"></span>
+				</span>
 			</span>
-			<node-mark :layer='layer' :data='tmp[layer].challenges[data].marked' :offset="20" :scale="1.5"></node-mark></span>
-
+			<node-mark :layer="layer" :data="tmp[layer].challenges[data].marked" :offset="20" :scale="1.5"></node-mark>
 		</div>
 		`
-	})
+	});
+	
 
 	Vue.component('upgrades', {
 		props: ['layer', 'data'],
@@ -186,33 +198,42 @@ function loadVue() {
     </button>
     `
 });
-	Vue.component('milestones', {
-		props: ['layer', 'data'],
-		template: `
-		<div v-if="tmp[layer].milestones">
-			<table>
-				<tr v-for="id in (data === undefined ? Object.keys(tmp[layer].milestones) : data)" v-if="tmp[layer].milestones[id]!== undefined && tmp[layer].milestones[id].unlocked && milestoneShown(layer, id)">
-					<milestone :layer = "layer" :data = "id" v-bind:style="tmp[layer].componentStyles.milestone"></milestone>
-				</tr>
-			</table>
-			<br>
-		</div>
-		`
-	})
+Vue.component('milestones', {
+    props: ['layer', 'data'],
+    template: `
+    <div v-if="tmp[layer].milestones">
+        <table>
+            <tr v-for="id in (data === undefined ? Object.keys(tmp[layer].milestones) : data)" 
+                v-if="tmp[layer].milestones[id]!== undefined && tmp[layer].milestones[id].unlocked && milestoneShown(layer, id)">
+                <milestone :layer="layer" :data="id" v-bind:style="tmp[layer].componentStyles.milestone"></milestone>
+            </tr>
+        </table>
+        <br>
+    </div>
+    `
+})
 
-	// data = id
-	Vue.component('milestone', {
-		props: ['layer', 'data'],
-		template: `
-		<td v-if="tmp[layer].milestones && tmp[layer].milestones[data]!== undefined && milestoneShown(layer, data) && tmp[layer].milestones[data].unlocked" v-bind:style="[tmp[layer].milestones[data].style]" v-bind:class="{milestone: !hasMilestone(layer, data), tooltipBox: true, milestoneDone: hasMilestone(layer, data)}">
-			<div class="milestone-id">{{ data }}</div> <!-- This is the section where the little number is added -->
-			<h3 v-html="tmp[layer].milestones[data].requirementDescription"></h3><br>
-			<span v-html="run(layers[layer].milestones[data].effectDescription, layers[layer].milestones[data])"></span><br>
-			<tooltip v-if="tmp[layer].milestones[data].tooltip" :text="tmp[layer].milestones[data].tooltip"></tooltip>
-			<span v-if="(tmp[layer].milestones[data].toggles)&&(hasMilestone(layer, data))" v-for="toggle in tmp[layer].milestones[data].toggles"><toggle :layer= "layer" :data= "toggle" v-bind:style="tmp[layer].componentStyles.toggle"></toggle>&nbsp;</span>
-		</td>
-		`
-	});
+// data = id
+Vue.component('milestone', {
+    props: ['layer', 'data'],
+    template: `
+    <td v-if="tmp[layer].milestones && tmp[layer].milestones[data]!== undefined && milestoneShown(layer, data) && tmp[layer].milestones[data].unlocked"
+        v-bind:style="[tmp[layer].milestones[data].style]" 
+        v-bind:class="[
+            layer, // Adds the layer as a class (e.g., 'bomb-milestone')
+            { milestone: !hasMilestone(layer, data), tooltipBox: true, milestoneDone: hasMilestone(layer, data) }
+        ]">
+        <div class="milestone-id">{{ data }}</div> <!-- This is the section where the little number is added -->
+        <h3 v-html="tmp[layer].milestones[data].requirementDescription"></h3><br>
+        <span v-html="run(layers[layer].milestones[data].effectDescription, layers[layer].milestones[data])"></span><br>
+        <tooltip v-if="tmp[layer].milestones[data].tooltip" :text="tmp[layer].milestones[data].tooltip"></tooltip>
+        <span v-if="(tmp[layer].milestones[data].toggles)&&(hasMilestone(layer, data))" 
+            v-for="toggle in tmp[layer].milestones[data].toggles">
+            <toggle :layer="layer" :data="toggle" v-bind:style="tmp[layer].componentStyles.toggle"></toggle>&nbsp;
+        </span>
+    </td>
+    `
+})
 
 	Vue.component('toggle', {
 		props: ['layer', 'data'],

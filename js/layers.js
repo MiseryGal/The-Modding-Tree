@@ -248,7 +248,7 @@ addLayer("achievements", {
             unlocked() {return true}
         },
         46: {
-            name: "See the light!!",
+            name: "The Divines Above",
             image: "light.png",
             tooltip: "Max out one Blessing.",
             done() {
@@ -286,30 +286,13 @@ addLayer("achievements", {
         54: {
             name: "Baby's first Warhead",
             image: "bomb.png",
-            tooltip: "Have a bomb with a radius over 150km².",
+            tooltip: "Have a bomb with a radius over 10km².",
             done() {
-                return (layers.bomb.topradius.gte(150))
+                return (layers.bomb.topradius.gte(10))
             },
             unlocked() {return true}
         },
-        55: {
-            name: "TSAR Bomba",
-            image: "bomb.png",
-            tooltip: "Have a bomb with a radius over 3850km².",
-            done() {
-                return (layers.bomb.topradius.gte(3580))
-            },
-            unlocked() {return true}
-        },
-        56: {
-            name: "Galaxy Destroyer",
-            image: "bomb.png",
-            tooltip: "Have a bomb with a radius about equivalent to a galaxy in size [8.95e30km²].",
-            done() {
-                return (layers.bomb.topradius.gte(3580))
-            },
-            unlocked() {return true}
-        },
+
     },
     tabFormat: {
         "Achievements": {
@@ -319,11 +302,12 @@ addLayer("achievements", {
                 "achievements",
             ],
         },
-        "Time Control": {
+        "Save Editing": {
             content: [
                 ["display-text", '<span style="font-size: 20px;"> DISCLAIMER! </span> <br> These tools are very powerful and should be used only for save recovery!'],
                 "blank",
-                "clickables"
+                "clickables",
+                "blank",
             ],
         },
     },
@@ -351,6 +335,155 @@ addLayer("achievements", {
             title: "0x",
             canClick() { return true; },
             onClick() { player.devSpeed = new Decimal(0); },
+        },
+        21: {
+            display() { return "Start of Battery Layer"; },
+            title: "Battery",
+            canClick() { return true; },
+            onClick() {
+                const layersToReset = ['energy', 'battery', 'achievements', 'darkenergy', 'darkcore', 'compactenergy', 'light', 'bomb'];
+                layersToReset.forEach(layer => layerDataReset(layer));
+                player.energy.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24]);
+                player.points = new Decimal(0)
+                setBuyableAmount('energy', 11, new Decimal(30));
+            },
+            style() {
+                return {
+                    "background-color": "#727180"
+                }
+            }
+        },
+        22: {
+            display() { return "Start of Compact Energy Layer"; },
+            title: "Compact Energy",
+            canClick() { return true; },
+            onClick() {
+                const layersToReset = ['energy', 'battery', 'achievements', 'darkenergy', 'darkcore', 'compactenergy', 'light', 'bomb'];
+                layersToReset.forEach(layer => layerDataReset(layer));
+                player.energy.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24]);
+                player.battery.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24])
+                player.battery.milestones.push(...[0, 1, 2, 3, 4])
+                player.battery.points = new Decimal(20)
+                player.points = new Decimal(0);
+                setBuyableAmount('energy', 11, new Decimal(70))
+            },
+            style() {
+                return {
+                    "background-color": "#e8a22a"
+                }
+            }
+        },
+        23: {
+            display() { return "Start of Dark Energy Layer"; },
+            title: "Dark Energy",
+            canClick() { return true; },
+            onClick() {
+                const layersToReset = ['energy', 'battery', 'achievements', 'darkenergy', 'darkcore', 'compactenergy', 'light', 'bomb'];
+                layersToReset.forEach(layer => layerDataReset(layer));
+                player.achievements.doomsday = new Decimal(1)
+                player.points = new Decimal(0);
+            },
+            style() {
+                return {
+                    "background-color": "#000000",  // Black background
+                    "color": "#ffffff",             // White text
+                    "border": "2px solid #ffffff"   // White border
+                };
+            }
+            
+        },
+        24: {
+            display() { return "When you acquire Dark Power level 5"; },
+            title: "Dark Power 5",
+            canClick() { return true; },
+            onClick() {
+                const layersToReset = ['energy', 'battery', 'achievements', 'darkenergy', 'darkcore', 'compactenergy', 'light', 'bomb'];
+                layersToReset.forEach(layer => layerDataReset(layer));
+                player.darkcore.upgrades.push(...[11, 21, 22])
+                player.energy.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24, 41, 42, 43]);
+                player.battery.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34])
+                player.battery.milestones.push(...[0, 1, 2, 3, 4])
+                player.battery.points = new Decimal(20)
+                player.achievements.doomsday = new Decimal(1)
+                player.points = new Decimal(0);
+                setBuyableAmount('darkcore', 11, new Decimal(5))
+                setBuyableAmount('darkcore', 12, new Decimal(50))
+                player.darkenergy.outofrun = new Decimal(1)
+                player.darkenergy.darkenergyexpo = new Decimal(0)
+            },
+            style() {
+                return {
+                    "background-color": "#000000",  // Black background
+                    "color": "#ffffff",             // White text
+                    "border": "2px solid #ffffff"   // White border
+                };
+            }
+            
+        },
+        31: {
+            display() { return "Start of Light Layer"; },
+            title: "Light",
+            canClick() { return true; },
+            onClick() {
+                const layersToReset = ['energy', 'battery', 'achievements', 'darkenergy', 'darkcore', 'compactenergy', 'light', 'bomb'];
+                layersToReset.forEach(layer => layerDataReset(layer));
+                player.achievements.doomsday = new Decimal(1)
+                player.energy.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 35, 41, 42, 43, 44]);
+                player.battery.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 35])
+                player.battery.milestones.push(...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+                player.darkcore.upgrades.push(...[11, 21, 22])
+                player.darkenergy.upgrades.push(...[51])
+                player.battery.points = new Decimal(10000)
+                player.compactenergy.points = new Decimal(1e7)
+                player.compactenergy.total = new Decimal(1e7)
+                player.points = new Decimal(0);
+                player.battery.auto = true
+                player.battery.autobuy1 = true
+                setBuyableAmount('darkcore', 11, new Decimal(10))
+                setBuyableAmount('darkcore', 12, new Decimal(200))
+                player.darkenergy.outofrun = new Decimal(1)
+                player.darkenergy.darkenergyexpo = new Decimal(0)
+            },
+            style() {
+                return {
+                    "background-color": "#80d9ed"
+                }
+            }
+        },
+        32: {
+            display() { return "Start of Bomb Layer"; },
+            title: "Bomb",
+            canClick() { return true; },
+            onClick() {
+                const layersToReset = ['energy', 'battery', 'achievements', 'darkenergy', 'darkcore', 'compactenergy', 'light', 'bomb'];
+                layersToReset.forEach(layer => layerDataReset(layer));
+                player.achievements.doomsday = new Decimal(1)
+                player.energy.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 35, 41, 42, 43, 44]);
+                player.battery.upgrades.push(...[11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 35, 41])
+                player.battery.milestones.push(...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+                player.darkcore.upgrades.push(...[11, 21, 22])
+                player.darkenergy.upgrades.push(...[51])
+                player.battery.points = new Decimal(1e126)
+                player.compactenergy.points = new Decimal(1e260)
+                player.compactenergy.total = new Decimal(1e260)
+                player.darkcore.points = new Decimal("1e430")
+                player.light.points = new Decimal(1e50)
+                player.darkenergy.points = new Decimal("1e6380")
+                player.points = new Decimal(0);
+                player.battery.auto = true
+                player.battery.autobuy1 = true
+                setBuyableAmount('darkcore', 11, new Decimal(81))
+                setBuyableAmount('darkcore', 12, new Decimal(1000))
+                player.darkenergy.outofrun = new Decimal(1)
+                player.darkenergy.darkenergyexpo = new Decimal(0)
+            },
+            style() {
+                return {
+                    "background-image": "radial-gradient(rgb(227, 199, 16), rgb(227, 54, 20)) !important",
+                    "background-size": "100% 100%",
+                    "border-color":"rgb(227, 54, 20) !important",
+                }
+            }
         },
     },
 },
@@ -1303,12 +1436,20 @@ addLayer("battery", {
         style() {
             let rgb1 = player.battery.rgb1;
             let rgb2 = player.battery.rgb2;
+            if (!player.battery.upgrades.includes(41)) {
             return {
                 "height": "200px",
                 "width": "200px",
                 "background-color": `rgb(255, ${rgb1}, ${rgb1})`,
                 "font-size": "15px"
-            }},
+            }
+            }
+            else return {
+                "height": "200px",
+                "width": "200px",
+                "font-size": "15px"
+            }
+        },
         cost() {return new Decimal(1e126)},
         canAfford() {
             let cost = this.cost();
@@ -1513,6 +1654,7 @@ addLayer("compactenergy", {
     },
     baseAmount() {return player.energy.points},  
     unlocked() {
+        if (inChallenge('bomb', 11)) {return false}
         return hasMilestone('battery', 4);
     },
     canReset(){return this.getResetGain().gte(1)},
@@ -1543,8 +1685,7 @@ addLayer("compactenergy", {
         if (segmentedGain.eq(10)) {return finalGain}
         else if (segmentedGain.eq(1)) {return finalGain}
         if (player.achievements.doomsday.eq(1) && new Decimal(finalGain).add(segmentedGain).add(player.compactenergy.total).gt(100)) {
-            if (player.compactenergy.triggeredOnce.eq(0)) {
-            player.compactenergy.triggeredOnce = new Decimal(1);
+            if (player.compactenergy.total.lt(100)) {
             return new Decimal(100).sub(player.compactenergy.total);
             }
         }
@@ -1569,7 +1710,7 @@ addLayer("compactenergy", {
     autoPrestige() {return hasUpgrade('bomb', 14)},
     type: "custom",
     prestigeButtonText() {
-        return '<span style="font-size: 13px;"> Convert </span><span style="font-size: 15px;">' + format(player.energy.points) + '</span><span style="font-size: 13px;"> Energy into </span><span style="font-size: 15px;">' + format(this.getResetGain()) + '</span><span style="font-size: 13px;"> Compact Energy </span><br><span style="font-size: 13px;"> Next: </span><span style="font-size: 15px;">' + format(new Decimal(this.getNextAt())) + '</span><span style="font-size: 13px;"> Energy</span>';
+        return '<span style="font-size: 13px;"> Convert </span><span style="font-size: 15px;">' + format(player.energy.points) + '</span><span style="font-size: 13px;"> Energy into </span><span style="font-size: 15px;">' + format(this.getResetGain()) + '</span><span style="font-size: 13px;"> Compact Energy </span>';
     },
     buyables: {
         respec() {
@@ -1724,6 +1865,7 @@ addLayer("compactenergy", {
     ],
 
     layerShown() {
+        if (inChallenge('bomb', 11)) {return false}
         if (player.achievements.doomsday.eq(1)) {return hasUpgrade('darkcore', 22)}
         else return hasMilestone('battery', 4)},          // Returns a bool for if this layer's node should be visible in the tree.
 }
@@ -1825,7 +1967,7 @@ addLayer("darkenergy", {
 
         passivebase = Decimal.max(0,passivebase.pow(darkenergyexpo))
         if (passivebase.gte(new Decimal("1e3200"))) {passivebase = new Decimal("1e3200").add(passivebase.sub(new Decimal("1e3200")).pow(0.85))}
-        return passivebase.div(100)},
+        return passivebase.div(10)},
     autoPrestige() {if (player.darkenergy.outofrun.eq(1)) return false
         else return true
     },
@@ -2348,7 +2490,7 @@ addLayer("darkcore", {
 
     onPrestige(){player.darkenergy.points = new Decimal(0)},
     autoPrestige() {return hasUpgrade('bomb', 33)},
-    resetsNothing() {return hasUpgrade('bomb', 33)},
+    resetsNothing() {return true},
     canReset(){
         return this.getResetGain().gte(1)
     },
@@ -2468,9 +2610,8 @@ addLayer("darkcore", {
             passivebase = passivebase.times(new Decimal(1.7).pow(getBuyableAmount('bomb', 22)))
     
             // passive
-            console.log(passivebase)
             passive = passivebase
-            return passive;
+            return passive.div(10);
         },
         buyables: {
             respec() {
@@ -2611,6 +2752,7 @@ addLayer("darkcore", {
             layerDataReset('battery')
             layerDataReset('compactenergy')
             layerDataReset('light')
+            if (layers.bomb.radius.gt(layers.bomb.topradius)) {layers.bomb.topradius = layers.bomb.radius}
         },
         style() {
             return {
@@ -2622,22 +2764,30 @@ addLayer("darkcore", {
             return "You need 1e126 Batteries and 1e430 Energy to combine into a bomb."
         },
         canReset(){return player.battery.points.gte(1e126) && player.energy.points.gte(new Decimal("1e430"))},
+        
         getResetGain() {let base = new Decimal(7)
         let batteries = player.battery.points
         let energy = player.energy.points
         let radiusb = Decimal.max(0,Decimal.log10(batteries.div(1e126)))
         let radiuse = Decimal.max(0,Decimal.log10(energy.div(new Decimal("1e430"))))
-        let radius = base.pow(Decimal.max(0,new Decimal(1).add(radiusb.div(100)))).pow(Decimal.max(0,new Decimal(1).add(radiuse.div(100))))
+        let radius = base.times(Decimal.max(0,new Decimal(1).add(radiuse.div(100)))).times(Decimal.max(0,new Decimal(1).add(radiusb.div(100))))
         gain = radius.times(100)
         layers.bomb.radius = radius
-        if (radius.gt(layers.bomb.topradius)) {layers.bomb.topradius = radius}
         gain = gain.times(new Decimal(1.3).pow(getBuyableAmount('bomb', 23)))
+        if (hasMilestone('bomb', 1)) {gain = gain.times(new Decimal(1).add(Decimal.log10(player.light.points).div(100)))}
         return Decimal.floor(gain)
         },
+
         getNextAt() {return new Decimal(0)},
         update(diff) {
-            // upgrade handling stuff
 
+            if (player.bomb.total.gte(1)) {
+                if (!player.darkcore.upgrades.includes(11)) player.darkcore.upgrades.push(11);
+                if (!player.battery.upgrades.includes(41)) player.battery.upgrades.push(41);
+            }
+
+            // upgrade handling stuff
+            
             // energy
 
             if (hasUpgrade('bomb', 11)) {
@@ -2885,222 +3035,266 @@ addLayer("darkcore", {
                 display(){let cost = this.cost()
                     let amt = getBuyableAmount('bomb', 23)
                     return '<span style="font-size: 15px">Multiplies Deaths by 1.3x compounding.</span><span style="font-size: 20px"><br>Effect: x' + format(new Decimal(1.3).pow(amt)) + '<br>Bought: ' + format(amt) + '<br>Cost: ' + format(cost)},
+                
+                                    },
+                            },
+                            upgrades: {
+                                // energy
+                                11: {
+                                    title: "Energy Keeper I",
+                                    description: "Keeps rows 1 and 2 of Energy Upgrades forever.",
+                                    cost(){return new Decimal(1000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                21: {
+                                    title: "Energy Auto I",
+                                    description: "Automatically buys levels of Enhanced Energy without spending.",
+                                    cost(){return new Decimal(10000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                                    onPurchase() {player.energy.autobuy1 = true}
+                            },
+                                31: {
+                                    title: "Energy Keeper II",
+                                    description: "Keeps row 3 of Energy Upgrades forever.",
+                                    cost(){return new Decimal(1e5)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                41: {
+                                    title: "Energy Keeper III",
+                                    description: "Keeps 'dark' Energy Upgrades forever.'",
+                                    cost(){return new Decimal(1e7)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                51: {
+                                    title: "Energy Auto II",
+                                    description: "Overclock is permanently on.",
+                                    cost(){return new Decimal(1e10)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                            // battery
+                                12: {
+                                    title: "Battery Keeper I",
+                                    description: "Keeps rows 1 and 2 of Battery Upgrades forever.",
+                                    cost(){return new Decimal(1000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                22: {
+                                    title: "Battery Keeper II",
+                                    description: "Keeps Battery Milestones 1, 6, and 9 forever. Battery layer stays unlocked.",
+                                    cost(){return new Decimal(10000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                32: {
+                                    title: "Battery Keeper III",
+                                    description: "Keeps every Battery Milestone except 2 and 8.",
+                                    cost(){return new Decimal(1e5)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                42: {
+                                    title: "Battery Auto",
+                                    description: "Automatically buy Batteries without resetting anything.",
+                                    cost(){return new Decimal(1e7)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                                    onPurchase() {player.battery.auto = true}
+                            },
+                                52: {
+                                    title: "Battery Keeper IV",
+                                    description: "Keeps 'dark' Battery Upgrades forever.",
+                                    cost(){return new Decimal(1e10)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                            // dark energy
+                                13: {
+                                    title: "Dark Energy Keeper I",
+                                    description: "Row 1 Dark Energy Upgrades are always enabled.",
+                                    cost(){return new Decimal(1000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                23: {
+                                    title: "Dark Energy Keeper II",
+                                    description: "Row 2 Dark Energy Upgrades are always enabled, without downsides.",
+                                    cost(){return new Decimal(10000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                33: {
+                                    title: "Dark Energy Auto I",
+                                    description: "Removes the Dark Run timer. Passively generate 1% of Dark Cores you'd normally earn.",
+                                    cost(){return new Decimal(1e5)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                43: {
+                                    title: "Dark Energy Keeper III",
+                                    description: "Rows 3 and 4 Dark Energy Upgrades are always enabled, without downsides.",
+                                    cost(){return new Decimal(1e7)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                53: {
+                                    title: "Dark Energy Auto II",
+                                    description: "Dark Energy generates always. Automatically buys levels of Dark Scaling without spending.",
+                                    cost(){return new Decimal(1e10)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                            // miscellanious
+                                14: {
+                                    title: "Compact Energy Auto I",
+                                    description: "Passively generate 100% of Compact Energy you'd normally earn.",
+                                    cost(){return new Decimal(1000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                24: {
+                                    title: "Compact Energy Auto II",
+                                    description: "Earn 5x more Compact Energy. Compact Energy layer stays unlocked.",
+                                    cost(){return new Decimal(10000)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                34: {
+                                    title: "Compact Energy Auto III",
+                                    description: "Earn 5x more Compact Energy again. Automatically buy max buyables without spending.",
+                                    cost(){return new Decimal(1e5)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                44: {
+                                    title: "Something About Light",
+                                    description: "Blessings no longer spend, and they scale 50% slower.",
+                                    cost(){return new Decimal(1e7)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                                54: {
+                                    title: "Light Keeper",
+                                    description: "Blessings are always maxed. Light layer stays unlocked.",
+                                    cost(){return new Decimal(1e10)},
+                                    canAfford() {
+                                        let cost = this.cost();
+                                        return new Decimal(player.bomb.points).gte(cost);
+                                    },
+                                    unlocked(){return true},
+                            },
+                        },
+            milestones: {
+                0: {
+                    requirementDescription: "7km² Radius",
+                    effectDescription: "Dark Power no longer resets everything.",
+                    done() {
+                        return player.bomb.topradius.gte(7)
+                    },
+                    unlocked() {
+                        return true
+                    },
                 },
-        },
-        upgrades: {
-            // energy
-            11: {
-                title: "Energy Keeper I",
-                description: "Keeps rows 1 and 2 of Energy Upgrades forever.",
-                cost(){return new Decimal(1000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
+                1: {
+                    requirementDescription: "10km² Radius",
+                    effectDescription: "Light multiplies Death gain.",
+                    done() {
+                        return player.bomb.topradius.gte(10)
+                    },
+                    unlocked() {
+                        return true
+                    },
                 },
-                unlocked(){return true},
-        },
-            21: {
-                title: "Energy Auto I",
-                description: "Automatically buys levels of Enhanced Energy without spending.",
-                cost(){return new Decimal(10000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
+                2: {
+                    requirementDescription: "20km² Radius",
+                    effectDescription: "Unlock Bomb Challenges.",
+                    done() {
+                        return player.bomb.topradius.gte(20)
+                    },
+                    unlocked() {
+                        return true
+                    },
                 },
-                unlocked(){return hasUpgrade('bomb', 11)},
-                onPurchase() {player.energy.autobuy1 = true}
-        },
-            31: {
-                title: "Energy Keeper II",
-                description: "Keeps row 3 of Energy Upgrades forever.",
-                cost(){return new Decimal(1e5)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
+            },
+            challenges: {
+                11: {
+                    name: "Uncompressed",
+                    challengeDescription: "Compact Energy is locked.",
+                    canComplete: function() {return player.energy.points.gte(new Decimal(1e50))},
+                    goalDescription: function() {return format(new Decimal(1e50).add(new Decimal(1e20).pow(challengeCompletions('bomb', 11)))) + " Energy."},
+                    rewardDescription: "+^0.01 to Energy Base.",
+                    rewardDisplay: function() {return format(new Decimal(0.01).times(challengeCompletions('bomb', 11)))},
+                    completionLimit: 10
                 },
-                unlocked(){return hasUpgrade('bomb', 21)},
-        },
-            41: {
-                title: "Energy Keeper III",
-                description: "Keeps 'dark' Energy Upgrades forever.'",
-                cost(){return new Decimal(1e7)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 31)},
-        },
-            51: {
-                title: "Energy Auto II",
-                description: "Overclock is permanently on.",
-                cost(){return new Decimal(1e10)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 41)},
-        },
-        // battery
-            12: {
-                title: "Battery Keeper I",
-                description: "Keeps rows 1 and 2 of Battery Upgrades forever.",
-                cost(){return new Decimal(1000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return true},
-        },
-            22: {
-                title: "Battery Keeper II",
-                description: "Keeps Battery Milestones 1, 6, and 9 forever. Battery layer stays unlocked.",
-                cost(){return new Decimal(10000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 12)},
-        },
-            32: {
-                title: "Battery Keeper III",
-                description: "Keeps every Battery Milestone except 2 and 8.",
-                cost(){return new Decimal(1e5)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 22)},
-        },
-            42: {
-                title: "Battery Auto",
-                description: "Automatically buy Batteries without resetting anything.",
-                cost(){return new Decimal(1e7)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 32)},
-                onPurchase() {player.battery.auto = true}
-        },
-            52: {
-                title: "Battery Keeper IV",
-                description: "Keeps 'dark' Battery Upgrades forever.",
-                cost(){return new Decimal(1e10)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 42)},
-        },
-        // dark energy
-            13: {
-                title: "Dark Energy Keeper I",
-                description: "Row 1 Dark Energy Upgrades are always enabled.",
-                cost(){return new Decimal(1000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return true},
-        },
-            23: {
-                title: "Dark Energy Keeper II",
-                description: "Row 2 Dark Energy Upgrades are always enabled, without downsides.",
-                cost(){return new Decimal(10000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 13)},
-        },
-            33: {
-                title: "Dark Energy Auto I",
-                description: "Removes the Dark Run timer. Passively generate 1% of Dark Cores you'd normally earn.",
-                cost(){return new Decimal(1e5)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 23)},
-        },
-            43: {
-                title: "Dark Energy Keeper III",
-                description: "Rows 3 and 4 Dark Energy Upgrades are always enabled, without downsides.",
-                cost(){return new Decimal(1e7)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 33)},
-        },
-            53: {
-                title: "Dark Energy Auto II",
-                description: "Dark Energy generates always. Automatically buys levels of Dark Scaling without spending.",
-                cost(){return new Decimal(1e10)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 43)},
-        },
-        // miscellanious
-            14: {
-                title: "Compact Energy Auto I",
-                description: "Passively generate 1% of Compact Energy you'd normally earn.",
-                cost(){return new Decimal(1000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return true},
-        },
-            24: {
-                title: "Compact Energy Auto II",
-                description: "Earn 5x more Compact Energy. Compact Energy layer stays unlocked.",
-                cost(){return new Decimal(10000)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 14)},
-        },
-            34: {
-                title: "Compact Energy Auto III",
-                description: "Earn 5x more Compact Energy again. Automatically buy max buyables without spending.",
-                cost(){return new Decimal(1e5)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 24)},
-        },
-            44: {
-                title: "Something About Light",
-                description: "Blessings no longer spend, and they scale 50% slower.",
-                cost(){return new Decimal(1e7)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 34)},
-        },
-            54: {
-                title: "Light Keeper",
-                description: "Blessings are always maxed. Light layer stays unlocked.",
-                cost(){return new Decimal(1e10)},
-                canAfford() {
-                    let cost = this.cost();
-                    return new Decimal(player.bomb.points).gte(cost);
-                },
-                unlocked(){return hasUpgrade('bomb', 44)},
-        },
-    },
-        tabFormat:[
+            },
+            tabFormat:[
             "main-display",
             "prestige-button",
             "blank",
             ["display-text", function() {
-                    return 'Making a bomb will reset everything prior. Beware. <br> First Bomb will make Dark Power no longer reset everything.';
+            return "Making a bomb will reset everything prior. Beware. <br> Make sure to scroll! There's a lot here.";
             }],
             "blank",
             "h-line",
@@ -3114,11 +3308,28 @@ addLayer("darkcore", {
             "h-line",
             "blank",
             ["display-text", function() {
-                    return '<span style="font-size: 50px">Upgrades';
+                    return '<span style="font-size: 50px">Automation';
             }],
             "blank",
-            "upgrades",
+            ["upgrades", [1, 2 ,3, 4, 5]],
             "blank",
             "h-line",
-]       
-})
+            "blank",
+            ["display-text", function() {
+                if (hasMilestone('bomb', 2)) return '<span style="font-size: 50px">Challenges';
+                else return "";
+            }],
+            () => hasMilestone('bomb', 2) ? "blank" : "",
+            () => hasMilestone('bomb', 2) ? "challenges" : "",
+            () => hasMilestone('bomb', 2) ? "blank" : "",
+            () => hasMilestone('bomb', 2) ? "h-line" : "",
+            "blank",
+            ["display-text", function() {
+                return '<span style="font-size: 50px">Radius Milestones';
+            }],
+            "blank",
+            "milestones",
+            "blank",
+            "h-line",
+            "blank", 
+        ]})
