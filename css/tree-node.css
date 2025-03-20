@@ -4,7 +4,7 @@
 	width: 100px;
 	border: var(--hqProperty1);
 	border-color: rgba(0, 0, 0, 0.125);
-	border-radius: 50%;
+	border-radius: 0%;
 	box-shadow: var(--hqProperty2a), var(--hqProperty2b);
 	font-size: 40px;
 	font-family: "Lucida Console", "Courier New", monospace;
@@ -15,8 +15,14 @@
 }
 
 .nodeLabel {
-	font: inherit;
-	font-family: inherit;
+    font: inherit;
+    font-family: inherit;
+}
+
+.nodeLabel img {
+    width: 90%;
+	height: 90%;
+	margin-top: 5px;
 }
 
 .treeButton {
@@ -45,6 +51,7 @@
 
 .treeNode.can:hover {
 	transform: scale(1.15, 1.15);
+	transform: rotate(-360deg);
 	box-shadow: var(--hqProperty2a), 0 0 20px var(--points);
 }
 

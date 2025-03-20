@@ -1,11 +1,11 @@
 /* Global things */
 body {
-	color: var(--color);
-	overflow: hidden;
-	--background: #0f0f0f;
-	--color: #dfdfdf;
-	--points: #ffffff;
-	background: var(--background)
+    background: black; /* Ensures no white flash */
+    color: var(--color);
+    overflow: hidden;
+    --color: #dfdfdf;
+    --points: #ffffff;
+    background-image: linear-gradient(to bottom, rgba(128, 38, 38, 1), rgb(59, 13, 13));
 }
 
 /* General text */
@@ -20,6 +20,11 @@ h1, h2, h3, b, input {
 	cursor: not-allowed;
 }
 
+.energy.locked {
+	background-color: #9c812e !important;
+	cursor: default;
+}
+
 /* Can meens can be clicked/bought/etc */
 .can {
 	cursor: pointer;
@@ -32,6 +37,11 @@ h1, h2, h3, b, input {
 
 .bought {
 	background-color: #77bf5f;
+	cursor: default;
+}
+
+.energy.bought {
+	background-color: #f5ce5b !important;
 	cursor: default;
 }
 
