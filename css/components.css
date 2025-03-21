@@ -41,6 +41,13 @@
 	background-position: center;
 }
 
+.buyable.battery {
+    background-image: url('../resources/batteryfull.png') !important;
+    background-size: 80% 80%;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 
 .milestone {
 	width: 100%;
