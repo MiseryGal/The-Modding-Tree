@@ -44,6 +44,7 @@ function getPointGen() {
 	let gain = new Decimal(1)
 	gain = gain.add(getBuyableAmount('energy', 31).times(layers.energy.getResetGain(1)))
 	gain = gain.times(Decimal.max(1,getBuyableAmount('energy', 53).times(layers.energy.getResetGain(2)).div(10)))
+	gain = gain.times(new Decimal(1.5).pow(getBuyableAmount('battery', 11)))
 	return gain
 }
 

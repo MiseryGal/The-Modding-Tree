@@ -25,6 +25,11 @@ h1, h2, h3, b, input {
 	cursor: default;
 }
 
+.battery.locked {
+	background-color: #3c3b53 !important;
+	cursor: default;
+}
+
 /* Can meens can be clicked/bought/etc */
 .can {
 	cursor: pointer;
@@ -42,6 +47,11 @@ h1, h2, h3, b, input {
 
 .energy.bought {
 	background-color: #f5ce5b !important;
+	cursor: default;
+}
+
+.battery.bought {
+	background-color: #b2afec !important;
 	cursor: default;
 }
 
