@@ -75,6 +75,8 @@ addLayer("infobutnot", {
     ]
 })
 
+// DEBUG LAYER
+
 addLayer("debug", {
     name: "Debug Tools",
     symbol() { 
